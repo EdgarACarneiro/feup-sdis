@@ -1,0 +1,1 @@
+INDEX VERSION 1.129+Z:\Desktop\feup-sdis\.metadata\.plugins\org.eclipse.jdt.core

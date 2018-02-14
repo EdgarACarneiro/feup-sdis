@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?><rss version="2.0" xml:base="http://marketplace.eclipse.org/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:og="http://ogp.me/ns#" xmlns:article="http://ogp.me/ns/article#" xmlns:book="http://ogp.me/ns/book#" xmlns:profile="http://ogp.me/ns/profile#" xmlns:video="http://ogp.me/ns/video#" xmlns:product="http://ogp.me/ns/product#" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <channel>
+    <title>Eclipse Plugins, Bundles and Products - Eclipse Marketplace</title>
+    <link>http://marketplace.eclipse.org/</link>
+    <description></description>
+    <language>en</language>
+     <atom:link href="http://marketplace.eclipse.org/rss.xml" rel="self" type="application/rss+xml" />
+      <item>
+    <title>ZK Studio</title>
+    <link>http://marketplace.eclipse.org/content/zk-studio</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/zk-logo2.gif&quot; width=&quot;95&quot; height=&quot;68&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Sun, 2011-05-29 22:11&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Wed, 2018-02-14 04:31&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Potix%20Corp.%22&quot;&gt;Potix Corp.&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/zpotix/listings&quot; title=&quot;ZK Potix&quot;&gt;ZK Potix&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;* NOTE: You have to use [Eclipse for J2EE] version or install [Web Tools Platform (WTP)] first before you install ZK Studio.&lt;/p&gt;
+&lt;p&gt;ZK Studio is a visual integrated development environment providing intuitive tools that span the entire application development lifecycle. Tools are included for UI design, prototyping, development, and deployment when implementing ZK applications.&lt;/p&gt;
+&lt;p&gt;ZK Studio provides content assistance, WYSIWYG visual development, hyperlink navigation, variable highlighting, syntax coloring, and many other exciting features. ZK Studio is the most efficient way to develop ZK-based applications.&lt;/p&gt;
+&lt;p&gt;---&lt;/p&gt;
+&lt;p&gt;Update sites:&lt;/p&gt;
+&lt;p&gt;for eclipse 4.2(Juno): &lt;a href=&quot;http://studio.zkoss.org/resource/plugins/eclipse_4_2/&quot; rel=&quot;nofollow&quot;&gt;http://studio.zkoss.org/resource/plugins/eclipse_4_2/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;for eclipse 3.7(Indigo): &lt;a href=&quot;http://studio.zkoss.org/resource/plugins/eclipse_3_7/&quot; rel=&quot;nofollow&quot;&gt;http://studio.zkoss.org/resource/plugins/eclipse_3_7/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;---&lt;/p&gt;
+&lt;p&gt;Feature Highlights&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;
+		Project and page wizards&lt;/li&gt;
+&lt;li&gt;
+		Intelligent editor&lt;/li&gt;
+&lt;li&gt;
+		Content Assist and code completion&lt;/li&gt;
+&lt;li&gt;
+		ZK component palette&lt;/li&gt;
+&lt;li&gt;
+		Automatic update manager&lt;/li&gt;
+&lt;li&gt;
+		ZK Release management&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;---&lt;/p&gt;
+&lt;p&gt;Supported Platforms&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;
+		Eclipse 3.7 - Indigo or later&lt;/li&gt;
+&lt;li&gt;
+		Eclipse 4.2 - Juno or later&lt;/li&gt;
+&lt;li&gt;
+		MyEclipse&lt;/li&gt;
+&lt;li&gt;
+		IBM RAD 7.5&lt;/li&gt;
+&lt;li&gt;
+		Spring Tool Suite 2.5.1&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;Ubuntu users (ver. 16.04 or later) please read the following &lt;a href=&quot;http://forum.zkoss.org/question/101311/zk-studio-with-eclipse-neon-and-mars-and-ubuntu-1604-not-working/?answer=101822&quot; rel=&quot;nofollow&quot;&gt;http://forum.zkoss.org/question/101311/zk-studio-with-eclipse-neon-and-m...&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Mon, 30 May 2011 02:11:07 +0000</pubDate>
+ <dc:creator>zpotix</dc:creator>
+ <guid isPermaLink="false">57140 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/zk-studio#comments</comments>
+  </item>
+  <item>
+    <title>Vue GWT</title>
+    <link>http://marketplace.eclipse.org/content/vue-gwt</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/logo-vue-gwt-eclipse.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:01&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 11:42&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Axellience%22&quot;&gt;Axellience&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/badrient10/listings&quot; title=&quot;Baron Adrien&quot;&gt;Baron Adrien&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;Add support for Vue GWT in Eclipse.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Tue, 13 Feb 2018 10:01:32 +0000</pubDate>
+ <dc:creator>badrient10</dc:creator>
+ <guid isPermaLink="false">3923910 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/vue-gwt#comments</comments>
+  </item>
+  <item>
+    <title>Java 10 Support for Oxygen</title>
+    <link>http://marketplace.eclipse.org/content/java-10-support-oxygen</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/default_images/default_2.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 02:02&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 11:41&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22The%20Eclipse%20Foundation%22&quot;&gt;The Eclipse Foundation&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/jarthanaree/listings&quot; title=&quot;Jay Arthanareeswaran&quot;&gt;Jay Arthanareeswaran&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;Java™ 10 support for Eclipse JDT is available now with Oxygen.3 (4.7.3) builds.&lt;/p&gt;
+&lt;p&gt;    Download most recent Eclipse Oxygen.3 (4.7.3) build from here: &lt;a href=&quot;http://download.eclipse.org/eclipse/downloads/&quot; rel=&quot;nofollow&quot;&gt;http://download.eclipse.org/eclipse/downloads/&lt;/a&gt;&lt;br /&gt;
+	    Software site repository to update your Eclipse installation: &lt;a href=&quot;http://download.eclipse.org/eclipse/updates/4.7-P-builds/P20180213-0045/&quot; rel=&quot;nofollow&quot;&gt;http://download.eclipse.org/eclipse/updates/4.7-P-builds/P20180213-0045/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The earliest eclipse build that supports this patch feature is M20180207-1700.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Tue, 13 Feb 2018 07:02:12 +0000</pubDate>
+ <dc:creator>jarthanaree</dc:creator>
+ <guid isPermaLink="false">3923613 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/java-10-support-oxygen#comments</comments>
+  </item>
+  <item>
+    <title>Teamscale Eclipse Plugin</title>
+    <link>http://marketplace.eclipse.org/content/teamscale-eclipse-plugin</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/logo_114.png&quot; width=&quot;110&quot; height=&quot;25&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Thu, 2015-02-12 10:16&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 10:17&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22CQSE%20GmbH%22&quot;&gt;CQSE GmbH&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/tkinnen/listings&quot; title=&quot;Thomas Kinnen&quot;&gt;Thomas Kinnen&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;The Teamscale Eclipse Plugin allows for seamless integration of quality defects found by the Teamscale software quality analysis server. &lt;strong&gt;&lt;em&gt;Note: An existing Teamscale Server is necessary to use this plugin!&lt;/em&gt;&lt;/strong&gt; Teamscale analyzes your source code incrementally with every commit, providing feedback on the quality of your code in near real-time. This plugin has the following features:&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;
+		Auto-detect which branch is being used (git &amp;amp; svn) and display all data accordingly&lt;/li&gt;
+&lt;li&gt;
+		Display defects in the Findings view&lt;/li&gt;
+&lt;li&gt;
+		Allow comparison of clones using the clone compare editor&lt;/li&gt;
+&lt;li&gt;
+		Display findings next to your code&lt;/li&gt;
+&lt;li&gt;
+		Blacklist findings&lt;/li&gt;
+&lt;li&gt;
+		Use baselines to only display defects that are new&lt;/li&gt;
+&lt;li&gt;
+		Show test coverage from Teamscale server&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Thu, 12 Feb 2015 15:16:07 +0000</pubDate>
+ <dc:creator>tkinnen</dc:creator>
+ <guid isPermaLink="false">2188950 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/teamscale-eclipse-plugin#comments</comments>
+  </item>
+  <item>
+    <title>Webclipse</title>
+    <link>http://marketplace.eclipse.org/content/webclipse</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/webclipse110x80_1.png&quot; width=&quot;100&quot; height=&quot;73&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Mon, 2015-07-27 09:32&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:47&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Genuitec%2C%20LLC%22&quot;&gt;Genuitec, LLC&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twebbcke/listings&quot; title=&quot;Tim Webb&quot;&gt;Tim Webb&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;From JSjet with TypeScript and JavaScript to Live Preview, from Breadcrumbs to an enhanced Project Explorer, &lt;strong&gt;Webclipse&lt;/strong&gt; powers up Eclipse for the full-stack developer. Web developers can now get outstanding web development, from rapid validation, syntax coloring, call hierarchies, content assist to refactoring, outline views, and more. Included in Webclipse:&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;
+		&lt;strong&gt;JSjet&lt;/strong&gt; gives you a jet engine to power your TypeScript &amp;amp; JavaScript coding - no more does JS in Eclipse need to be a second class citizen! Includes support for node.js.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;Angular IDE&lt;/strong&gt; gives you a powerful development environment for Angular 2 development including advanced template editing support.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;TypeScript&lt;/strong&gt; support gives you commercial-grade coding, validation and transpilaton of your TypeScript projects including Angular 2.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;JavaScript Debugger&lt;/strong&gt; lets you find and fix bugs in your JavaScript right inside your Eclipse IDE.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;CodeLive w/Live Preview&lt;/strong&gt; lets you see changes inside Firefox, Chrome, Edge and Safari simultaneously while you change HTML, CSS and JSP files!&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;Emmet&lt;/strong&gt; lets you type short css-like expressions to expand rich blocks in HTML and CSS.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;Slack Code Sharing&lt;/strong&gt; lets you share snippets of code directly from within Eclipse to your teammates.&lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;Breadcrumb&lt;/strong&gt; toolbar simplifies navigation to related elements in your workspace right next to your active editor.&lt;/li&gt;
+&lt;li&gt;
+		Not to mention other power-ups like the &lt;strong&gt;Minimap&lt;/strong&gt; and the &lt;strong&gt;Project Explorer+&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;
+		Stay tuned. We have exciting updates coming frequently!&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Mon, 27 Jul 2015 13:32:00 +0000</pubDate>
+ <dc:creator>twebbcke</dc:creator>
+ <guid isPermaLink="false">2456312 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/webclipse#comments</comments>
+  </item>
+  <item>
+    <title>TypeScript</title>
+    <link>http://marketplace.eclipse.org/content/typescript-0</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/ts-110x80.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Wed, 2016-09-21 18:24&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:45&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Genuitec%2C%20LLC%22&quot;&gt;Genuitec, LLC&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twebbcke/listings&quot; title=&quot;Tim Webb&quot;&gt;Tim Webb&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;TypeScript plugin with: content assist, tsconfig.js support, real-time validation, formatting, coloring, and more. Optimized for Angular 4. Also in &lt;a href=&quot;https://genuitec.com/products/webclipse/&quot; rel=&quot;nofollow&quot;&gt;Webclipse&lt;/a&gt; - click to learn more.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Wed, 21 Sep 2016 22:24:43 +0000</pubDate>
+ <dc:creator>twebbcke</dc:creator>
+ <guid isPermaLink="false">3083980 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/typescript-0#comments</comments>
+  </item>
+  <item>
+    <title>Darkest Dark Theme w/DevStyle</title>
+    <link>http://marketplace.eclipse.org/content/darkest-dark-theme-wdevstyle</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/DARKESTdark-theme.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2017-01-31 12:51&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:44&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Genuitec%2C%20LLC%22&quot;&gt;Genuitec, LLC&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twebbcke/listings&quot; title=&quot;Tim Webb&quot;&gt;Tim Webb&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;&lt;a href=&quot;https://www.genuitec.com/tech/darkest-dark/&quot; rel=&quot;nofollow&quot;&gt;Darkest Dark&lt;/a&gt; is now &lt;a href=&quot;https://www.genuitec.com/products/devstyle/&quot; rel=&quot;nofollow&quot;&gt;DevStyle&lt;/a&gt; - a free plugin providing an enhanced set of experiences for Eclipse. Included:&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;
+		&lt;strong&gt;Darkest Dark theme - #1 in the Marketplace:&lt;/strong&gt;&lt;br /&gt;
+		True dark theme with flat replacement icons&lt;br /&gt;
+		A great experience over Windows, Mac and Linux&lt;br /&gt;
+		 &lt;/li&gt;
+&lt;li&gt;
+		&lt;strong&gt;Included with &lt;a href=&quot;https://www.genuitec.com/products/devstyle/&quot; rel=&quot;nofollow&quot;&gt;DevStyle&lt;/a&gt;&lt;/strong&gt;:&lt;br /&gt;
+		New light and dark color themes&lt;br /&gt;
+		All new startup experience for Eclipse&lt;br /&gt;
+		Inline search for text editors&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;&lt;strong&gt;​&lt;/strong&gt;&lt;strong&gt;Entirely free to use!&lt;/strong&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Tue, 31 Jan 2017 17:51:53 +0000</pubDate>
+ <dc:creator>twebbcke</dc:creator>
+ <guid isPermaLink="false">3274405 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/darkest-dark-theme-wdevstyle#comments</comments>
+  </item>
+  <item>
+    <title>Code Sharing for Slack</title>
+    <link>http://marketplace.eclipse.org/content/code-sharing-slack</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/ecs.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Mon, 2015-10-26 10:10&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:42&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Genuitec%2C%20LLC%22&quot;&gt;Genuitec, LLC&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twebbcke/listings&quot; title=&quot;Tim Webb&quot;&gt;Tim Webb&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;Code Sharing for Slack provides code sharing to your &lt;strong&gt;#Slack&lt;/strong&gt; channel automatically! 100% free, installable separably from the &lt;a href=&quot;https://www.genuitec.com/products/webclipse/&quot; rel=&quot;nofollow&quot;&gt;Webclipse&lt;/a&gt; suite.  If you have Slack for Eclipse installed and a teammate shares code with you, your Eclipse can offer opening the same code being discussed. Made available for free, for unlimited usage. &lt;a href=&quot;https://www.genuitec.com/products/webclipse/pricing/&quot; rel=&quot;nofollow&quot;&gt;Learn more&lt;/a&gt; about other always free Webclipse features as well as some other great features as well!&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Mon, 26 Oct 2015 14:10:50 +0000</pubDate>
+ <dc:creator>twebbcke</dc:creator>
+ <guid isPermaLink="false">2582095 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/code-sharing-slack#comments</comments>
+  </item>
+  <item>
+    <title>Angular IDE</title>
+    <link>http://marketplace.eclipse.org/content/angular-ide</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/angular.png&quot; width=&quot;110&quot; height=&quot;80&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Wed, 2016-11-09 19:04&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 05:39&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22Genuitec%2C%20LLC%22&quot;&gt;Genuitec, LLC&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twebbcke/listings&quot; title=&quot;Tim Webb&quot;&gt;Tim Webb&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;Now with Angular 5! Content assist, TypeScript 2.5 support, real-time validation, formatting, debugging, and more. Standalone version at &lt;a href=&quot;https://www.genuitec.com/products/angular-ide/&quot; rel=&quot;nofollow&quot;&gt;Angular IDE&lt;/a&gt;.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Thu, 10 Nov 2016 00:04:48 +0000</pubDate>
+ <dc:creator>twebbcke</dc:creator>
+ <guid isPermaLink="false">3157661 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/angular-ide#comments</comments>
+  </item>
+  <item>
+    <title>Run-Jetty-Run</title>
+    <link>http://marketplace.eclipse.org/content/run-jetty-run</link>
+    <description>&lt;div class=&quot;field field-name-field-resource-image field-type-image field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;img typeof=&quot;foaf:Image&quot; class=&quot;img-responsive&quot; src=&quot;http://marketplace.eclipse.org/sites/default/files/logo_9.png&quot; width=&quot;16&quot; height=&quot;16&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-created field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Created:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Wed, 2011-05-25 09:09&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;field field-name-shared-date-updated field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Date Updated:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;Tue, 2018-02-13 03:10&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;a href=&quot;/search/content/%22RunJettyRun%22&quot;&gt;RunJettyRun&lt;/a&gt;&lt;div class=&quot;field field-name-shared-submitted-by field-type-text field-label-inline clearfix&quot;&gt;&lt;div class=&quot;field-label&quot;&gt;Submitted by:&amp;nbsp;&lt;/div&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot;&gt;&lt;a href=&quot;/user/twangqjc/listings&quot; title=&quot;Tony Wang&quot;&gt;Tony Wang&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_start --&gt;&lt;div class=&quot;field field-name-body field-type-text-with-summary field-label-hidden&quot;&gt;&lt;div class=&quot;field-items&quot;&gt;&lt;div class=&quot;field-item even&quot; property=&quot;content:encoded&quot;&gt;&lt;p&gt;Support Jetty 6.x, 7.x, 8.x, 9.0, 9.3, 9.4.6, 9.4.8(With Java 9 support) .&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Why this plugin? Because running a web application in Eclipse should be as simple as &#039;clicking run&#039;. No additional setup required. Have fun!&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Our project home page &lt;a href=&quot;https://github.com/xzer/run-jetty-run&quot; rel=&quot;nofollow&quot;&gt;https://github.com/xzer/run-jetty-run&lt;/a&gt; Getting Start Guide &lt;a href=&quot;https://github.com/xzer/run-jetty-run/wiki/GettingStarted &quot; rel=&quot;nofollow&quot;&gt;https://github.com/xzer/run-jetty-run/wiki/GettingStarted &lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;!-- google_ad_section_end --&gt;</description>
+     <pubDate>Wed, 25 May 2011 13:09:17 +0000</pubDate>
+ <dc:creator>twangqjc</dc:creator>
+ <guid isPermaLink="false">56251 at http://marketplace.eclipse.org</guid>
+ <comments>http://marketplace.eclipse.org/content/run-jetty-run#comments</comments>
+  </item>
+  </channel>
+</rss>
