@@ -1,3 +1,5 @@
+package com.src;
+
 import java.util.Scanner;
 import java.net.*;
 
@@ -26,11 +28,12 @@ public class Application {
 	
 	public static void main(String [] args) {
 		//Inicializar a maquina de estados que assegura que o programa:
-		// 1 - abre o servidor (1º estado)
-		// 2 - chamadas consecutivas de cleinetes ( 2º estado)
+		// 1 - abre o servidor (1ï¿½ estado)
+		// 2 - chamadas consecutivas de cleinetes ( 2ï¿½ estado)
 		
-		//Depois mudar isto para ele interpretar, para já fica hardcoded para garantir que funciona
+		//Depois mudar isto para ele interpretar, para jï¿½ fica hardcoded para garantir que funciona
 		// send request
+
 		DatagramSocket socket = new DatagramSocket();
 		byte[] sbuf = 84;
 		InetAddress address = InetAddress.getByName(9823);

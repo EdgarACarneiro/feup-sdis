@@ -1,3 +1,5 @@
+package com.src;
+
 public class Server {
 	
 }
