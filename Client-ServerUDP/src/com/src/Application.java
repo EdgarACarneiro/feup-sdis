@@ -27,7 +27,7 @@ public class Application {
 	 */
 	private static State currentState;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		//Inicializar a maquina de estados que assegura que o programa:
 		// 1 - abre o servidor (1� estado)
 		// 2 - chamadas consecutivas de cleinetes ( 2� estado)
@@ -35,38 +35,21 @@ public class Application {
 		//Depois mudar isto para ele interpretar, para j� fica hardcoded para garantir que funciona
 		// send request
 
-		DatagramSocket socket = null;
-		try {
-			socket = new DatagramSocket();
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
+		DatagramSocket socket = new DatagramSocket(8888);
 		byte[] sbuf = "test".getBytes();
-		InetAddress address = null;
-		try {
-			address = InetAddress.getByName("128.92.232.2");
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 4445);
-		try {
-			socket.send(packet);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		InetAddress address = InetAddress.getByName("127.0.0.1");
+
+		DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8888);
+		socket.send(packet);
 
 		// get response
 		byte[] rbuf = new byte[sbuf.length];
 		packet = new DatagramPacket(rbuf, rbuf.length);
-		try {
-			socket.receive(packet);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		socket.receive(packet);
+
 		// display response
 		String received = new String(packet.getData());
 		System.out.println("Echoed Message: " + received);
 		socket.close();
-
 	}
 }
