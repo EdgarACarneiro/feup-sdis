@@ -1,8 +1,8 @@
 package com.src;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.util.Scanner;
-import java.net.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +16,11 @@ public class Application {
 	 * The application's server
 	 */
 	private static Server server = null;
+
+	/**
+	 * The socket associated to the application
+	 */
+	private static DatagramSocket socket = null;
 
 	/**
 	 * The user's input
@@ -44,36 +49,11 @@ public class Application {
 	 */
 	private static Pattern clientInvoke = Pattern.compile("\\s*?java\\s+?Client\\s+?((\\d+\\.?){1,4})\\s+?(\\d{4})\\s+?(.+)$");
 
-	public static void main(String[] args) throws IOException {
-		//Inicializar a maquina de estados que assegura que o programa:
-		// 1 - abre o servidor (1� estado)
-		// 2 - chamadas consecutivas de cleinetes ( 2� estado)
 
-		//Depois mudar isto para ele interpretar, para j� fica hardcoded para garantir que funciona
-		// send request
+	public static void main(String[] args) throws IOException {
 
 		System.out.println("Welcome to the License Plate Manager");
-
-		while(true) {
-			update();
-		}
-
-		/*DatagramSocket socket = new DatagramSocket(8888);
-		byte[] sbuf = "test".getBytes();
-		InetAddress address = InetAddress.getByName("129.0");
-
-		DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8888);
-		socket.send(packet);
-
-		// get response
-		byte[] rbuf = new byte[sbuf.length];
-		packet = new DatagramPacket(rbuf, rbuf.length);
-		socket.receive(packet);
-
-		// display response
-		String received = new String(packet.getData());
-		System.out.println("Echoed Message: " + received);
-		socket.close();*/
+		while(true) { update();	}
 	}
 
 	private static void update() throws IOException {
@@ -101,13 +81,14 @@ public class Application {
 		}
 		int port = Integer.parseInt(match.group(1));
 
-		if (server == null) {
-			server = new Server(port);
+		if (server == null && socket == null) {
+			socket = new DatagramSocket(port);
+			server = new Server(socket);
 			currentState = State.OPENED_SERVER;
 		}
 	}
 
-	private static void clientCreation(String input) {
+	private static void clientCreation(String input) throws IOException {
 		Matcher match = clientInvoke.matcher(input);
 
 		if (! match.matches()) {
@@ -120,6 +101,6 @@ public class Application {
 		int port = Integer.parseInt(match.group(3));
 		String clientPurpose = match.group(4);
 
-		new Client(host, port, clientPurpose);
+		new Client(socket, host, port, clientPurpose);
 	}
 }

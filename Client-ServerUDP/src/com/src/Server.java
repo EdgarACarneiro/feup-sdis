@@ -1,13 +1,17 @@
 package com.src;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.SocketException;
+import java.net.*;
 
 public class Server {
 
-    public Server(int port) throws IOException {
-        DatagramSocket socket = new DatagramSocket(port);
+    public Server(DatagramSocket socket) throws IOException {
+
+        byte[] sbuf = "test".getBytes();
+        InetAddress address = InetAddress.getByName("127.0.0.1");
+
+        DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8080);
+        socket.send(packet);
     }
 	
 }
