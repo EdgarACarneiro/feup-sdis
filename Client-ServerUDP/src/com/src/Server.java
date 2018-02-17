@@ -1,9 +1,13 @@
 package com.src;
 
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 public class Server {
 
-    public Server(int port) {
-
+    public Server(int port) throws IOException {
+        DatagramSocket socket = new DatagramSocket(port);
     }
 	
 }

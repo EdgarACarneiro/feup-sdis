@@ -37,7 +37,12 @@ public class Application {
 	/**
 	 * Regex's pattern used for analysis of server invocations
 	 */
-	private static Pattern serverCall = Pattern.compile("\\s*?java\\s*?Server\\s*?(\\d{4})");
+	private static Pattern serverInvoke = Pattern.compile("\\s*?java\\s+?Server\\s+?(\\d{4})\\s*?");
+
+	/**
+	 * Regex's pattern used for analysis of client invocations
+	 */
+	private static Pattern clientInvoke = Pattern.compile("\\s*?java\\s+?Client\\s+?((\\d+\\.?){1,4})\\s+?(\\d{4})\\s+?(.+)$");
 
 	public static void main(String[] args) throws IOException {
 		//Inicializar a maquina de estados que assegura que o programa:
@@ -47,13 +52,15 @@ public class Application {
 		//Depois mudar isto para ele interpretar, para j� fica hardcoded para garantir que funciona
 		// send request
 
+		System.out.println("Welcome to the License Plate Manager");
+
 		while(true) {
 			update();
 		}
 
-		DatagramSocket socket = new DatagramSocket(8888);
+		/*DatagramSocket socket = new DatagramSocket(8888);
 		byte[] sbuf = "test".getBytes();
-		InetAddress address = InetAddress.getByName("127.0.0.1");
+		InetAddress address = InetAddress.getByName("129.0");
 
 		DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8888);
 		socket.send(packet);
@@ -66,10 +73,10 @@ public class Application {
 		// display response
 		String received = new String(packet.getData());
 		System.out.println("Echoed Message: " + received);
-		socket.close();
+		socket.close();*/
 	}
 
-	private static void update() {
+	private static void update() throws IOException {
 
 		String msg = input.nextLine();
 
@@ -78,18 +85,18 @@ public class Application {
 				serverCreation(msg);
 				break;
 			case OPENED_SERVER:
-
+				clientCreation(msg);
 				break;
 			default:
 				System.err.println("Error: Unknown Application State.");
 		}
 	}
 
-	private static void serverCreation(String input) {
-		Matcher match = serverCall.matcher(input);
+	private static void serverCreation(String input) throws IOException {
+		Matcher match = serverInvoke.matcher(input);
 
 		if (! match.matches()) {
-			System.out.println("To create a Server use: 'java Server <port>'");
+			System.out.println("To create a Server use: 'java Server <port>'.");
 			return;
 		}
 		int port = Integer.parseInt(match.group(1));
@@ -98,5 +105,21 @@ public class Application {
 			server = new Server(port);
 			currentState = State.OPENED_SERVER;
 		}
+	}
+
+	private static void clientCreation(String input) {
+		Matcher match = clientInvoke.matcher(input);
+
+		if (! match.matches()) {
+			System.out.println("Client usage:\n" +
+					"* 'java Client <host> <port> register <plate number> <owner name>', for register;\n" +
+					"* 'java Client <host> <port> lookup <plate number>', for lookup;");
+			return;
+		}
+		String host = match.group(1);
+		int port = Integer.parseInt(match.group(3));
+		String clientPurpose = match.group(4);
+
+		new Client(host, port, clientPurpose);
 	}
 }
