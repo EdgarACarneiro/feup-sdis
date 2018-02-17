@@ -1,6 +1,10 @@
 package com.src;
 
 public class Server {
+
+    public Server(int port) {
+
+    }
 	
 }
 

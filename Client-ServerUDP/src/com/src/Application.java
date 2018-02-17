@@ -3,6 +3,8 @@ package com.src;
 import java.io.IOException;
 import java.util.Scanner;
 import java.net.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -13,7 +15,12 @@ public class Application {
 	/**
 	 * The application's server
 	 */
-	private static Server server;
+	private static Server server = null;
+
+	/**
+	 * The user's input
+	 */
+	private static Scanner input = new Scanner(System.in);
 
 	/**
 	 * Possible States the Application may be in
@@ -25,7 +32,12 @@ public class Application {
 	/**
 	 * Current State the application is in
 	 */
-	private static State currentState;
+	private static State currentState = State.START;
+
+	/**
+	 * Regex's pattern used for analysis of server invocations
+	 */
+	private static Pattern serverCall = Pattern.compile("\\s*?java\\s*?Server\\s*?(\\d{4})");
 
 	public static void main(String[] args) throws IOException {
 		//Inicializar a maquina de estados que assegura que o programa:
@@ -34,6 +46,10 @@ public class Application {
 
 		//Depois mudar isto para ele interpretar, para j� fica hardcoded para garantir que funciona
 		// send request
+
+		while(true) {
+			update();
+		}
 
 		DatagramSocket socket = new DatagramSocket(8888);
 		byte[] sbuf = "test".getBytes();
@@ -51,5 +67,36 @@ public class Application {
 		String received = new String(packet.getData());
 		System.out.println("Echoed Message: " + received);
 		socket.close();
+	}
+
+	private static void update() {
+
+		String msg = input.nextLine();
+
+		switch(currentState) {
+			case START:
+				serverCreation(msg);
+				break;
+			case OPENED_SERVER:
+
+				break;
+			default:
+				System.err.println("Error: Unknown Application State.");
+		}
+	}
+
+	private static void serverCreation(String input) {
+		Matcher match = serverCall.matcher(input);
+
+		if (! match.matches()) {
+			System.out.println("To create a Server use: 'java Server <port>'");
+			return;
+		}
+		int port = Integer.parseInt(match.group(1));
+
+		if (server == null) {
+			server = new Server(port);
+			currentState = State.OPENED_SERVER;
+		}
 	}
 }
