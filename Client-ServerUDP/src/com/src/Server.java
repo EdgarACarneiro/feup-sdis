@@ -5,13 +5,21 @@ import java.net.*;
 
 public class Server {
 
+    /**
+     * Maximum size of a request received by the Server
+     */
+    private static final int MAX_REQUEST_SIZE = 274;
+
     public Server(DatagramSocket socket) throws IOException {
 
-        byte[] sbuf = "test".getBytes();
-        InetAddress address = InetAddress.getByName("127.0.0.1");
+        byte[] receiver = new byte[MAX_REQUEST_SIZE];
+        DatagramPacket packet = new DatagramPacket(rbuf, rbuf.length);
+        socket.receive(packet);
 
-        DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8080);
-        socket.send(packet);
+        // display response
+        String received = new String(packet.getData());
+        System.out.println("Echoed Message: " + received);
+        //socket.close();
     }
 
     private void receiveMessages() {
@@ -19,6 +27,3 @@ public class Server {
     }
 	
 }
-
-// Use Hashmap for storing license plates
-// java.DatagramScoket //java.DatagramPacket e java.inetAdress
