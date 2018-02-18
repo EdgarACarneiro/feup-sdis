@@ -84,16 +84,29 @@ public class Client {
         }
     }
 
+    /**
+     * Show the User the result of the communication
+     *
+     * @param sentMsg Message sent to the server
+     * @param answer Server's answer
+     */
     private void showReply(String sentMsg, String answer) {
         System.out.println(sentMsg + ": " + answer);
     }
 
+    /**
+     * Get the server's response from the Client's request
+     *
+     * @param socket socket used for the communication
+     * @return The Server's answer's result
+     * @throws IOException
+     */
     private String getServerResult(DatagramSocket socket) throws IOException {
         byte[] serverAnswer = new byte[100];
         DatagramPacket packet = new DatagramPacket(serverAnswer, serverAnswer.length);
         socket.receive(packet);
-        
-        //TODO: PArsing of server result with REGEX here maybe
+
+        //TODO: Parsing of server result with REGEX here maybe
         return new String(packet.getData());
     }
 	

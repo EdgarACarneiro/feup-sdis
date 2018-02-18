@@ -3,12 +3,16 @@ package com.src;
 import java.io.IOException;
 import java.net.*;
 
+/**
+ * Class responsible for receiving Client's requests and handling the license plate management
+ */
 public class Server {
 
     /**
      * Maximum size of a request received by the Server
      */
     private static final int MAX_REQUEST_SIZE = 274;
+
 
     public Server(DatagramSocket socket) throws IOException {
 
@@ -23,7 +27,7 @@ public class Server {
     }
 
     private void receiveMessages() {
-        //scoket.receive(packet);
+        //socket.receive(packet);
     }
 	
 }
