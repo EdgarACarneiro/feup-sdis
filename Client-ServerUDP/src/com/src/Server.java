@@ -13,6 +13,10 @@ public class Server {
         DatagramPacket packet = new DatagramPacket(sbuf, sbuf.length, address, 8080);
         socket.send(packet);
     }
+
+    private void receiveMessages() {
+        //scoket.receive(packet);
+    }
 	
 }
 
