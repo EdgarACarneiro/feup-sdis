@@ -86,6 +86,6 @@ public class Application {
 		int port = Integer.parseInt(match.group(3));
 		String clientPurpose = match.group(4);
 
-		new Client(new DatagramSocket(port), host, port, clientPurpose);
+		new Client(new DatagramSocket(), host, port, clientPurpose);
 	}
 }

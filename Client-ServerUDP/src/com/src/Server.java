@@ -17,7 +17,7 @@ public class Server {
     /**
      * Position where the Owner name starts in the clients register requests
      */
-    private static final int OWNER_NAME_POS = 19;
+    private static final int OWNER_NAME_POS = 18;
 
     /**
      * The license plates database
@@ -36,6 +36,8 @@ public class Server {
      * @throws IOException
      */
     public Server(DatagramSocket socket) throws IOException {
+        System.out.println("Creating a New Server");
+
         database = new HashMap<>();
         this.socket = socket;
 
@@ -81,14 +83,14 @@ public class Server {
      */
     private String getOwner(String licensePlate) {
         String result;
-        String owner = database.get(licensePlate);
+        String owner = database.get(licensePlate.trim());
 
         if (owner == null)
             result = "-1 ";
         else
             result = owner + " ";
 
-        return result + licensePlate;
+        return result + "lookup " + licensePlate;
     }
 
     /**
@@ -106,7 +108,7 @@ public class Server {
             database.put(licensePlate, owner);
             result = Integer.toString(database.size()) + " ";
         }
-        return result + licensePlate + " " + owner;
+        return result + "register " + licensePlate + " " + owner;
     }
 
     /**

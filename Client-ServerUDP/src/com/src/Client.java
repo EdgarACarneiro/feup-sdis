@@ -35,6 +35,7 @@ public class Client {
      * @throws IOException
      */
     public Client(DatagramSocket socket, String host, int port, String msg) throws IOException {
+        System.out.println("Creating New Client!");
         String parsedMsg = buildRequest(msg);
 
         if (parsedMsg != null) {
@@ -81,7 +82,7 @@ public class Client {
 
         } else {
             request = "LOOKUP ";
-            request += matchLookup.group(10);
+            request += matchLookup.group(2);
             System.out.println(request);
             return request;
         }
