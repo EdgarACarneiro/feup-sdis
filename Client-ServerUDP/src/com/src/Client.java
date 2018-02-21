@@ -44,7 +44,6 @@ public class Client {
         } else {
             showReply(msg, "ERROR");
         }
-
     }
 
     /**
