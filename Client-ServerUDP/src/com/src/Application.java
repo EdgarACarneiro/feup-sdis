@@ -28,18 +28,6 @@ public class Application {
 	private static Scanner input = new Scanner(System.in);
 
 	/**
-	 * Possible States the Application may be in
-	 */
-	private enum State {
-		START, OPENED_SERVER
-	}
-
-	/**
-	 * Current State the application is in
-	 */
-	private static State currentState = State.START;
-
-	/**
 	 * Regex's pattern used for analysis of server invocations
 	 */
 	private static Pattern serverInvoke = Pattern.compile("\\s*?java\\s+?Server\\s+?(\\d{4})\\s*?");
@@ -49,54 +37,65 @@ public class Application {
 	 */
 	private static Pattern clientInvoke = Pattern.compile("\\s*?java\\s+?Client\\s+?((\\d+\\.?){1,4})\\s+?(\\d{4})\\s+?(.+)$");
 
-
+	/**
+	 * Main project function, initiates the Application
+	 *
+	 * @param args No args are supposed to be used
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 
 		System.out.println("Welcome to the License Plate Manager");
 		while(true) { update();	}
 	}
 
+	/**
+	 * Application update, supposed to run continuously.
+	 *
+	 * @throws IOException
+	 */
 	private static void update() throws IOException {
 
 		String msg = input.nextLine();
+		Matcher serverMatch = serverInvoke.matcher(msg);
+		Matcher clientMatch = clientInvoke.matcher(msg);
 
-		switch(currentState) {
-			case START:
-				serverCreation(msg);
-				break;
-			case OPENED_SERVER:
-				clientCreation(msg);
-				break;
-			default:
-				System.err.println("Error: Unknown Application State.");
-		}
+		if (serverMatch.matches())
+			serverCreation(serverMatch);
+		else if (clientMatch.matches())
+			clientCreation(clientMatch);
+		else
+			System.out.println(
+					"Server useage:\n " +
+					"* 'java Server <port>'.\n" +
+					"Client usage:\n" +
+					"* 'java Client <host> <port> register <plate number> <owner name>', for register.\n" +
+					"* 'java Client <host> <port> lookup <plate number>', for lookup."
+			);
+
 	}
 
-	private static void serverCreation(String input) throws IOException {
-		Matcher match = serverInvoke.matcher(input);
-
-		if (! match.matches()) {
-			System.out.println("To create a Server use: 'java Server <port>'.");
-			return;
-		}
+	/**
+	 * Creates the Server used for the Client - Server interaction
+	 *
+	 * @param match Match with the server Regex
+	 * @throws IOException
+	 */
+	private static void serverCreation(Matcher match) throws IOException {
 		int port = Integer.parseInt(match.group(1));
 
-		if (server == null && socket == null) {
+		if (server == null && socket == null)
 			socket = new DatagramSocket(port);
 			server = new Server(socket);
-			currentState = State.OPENED_SERVER;
-		}
 	}
 
-	private static void clientCreation(String input) throws IOException {
-		Matcher match = clientInvoke.matcher(input);
-
-		if (! match.matches()) {
-			System.out.println("Client usage:\n" +
-					"* 'java Client <host> <port> register <plate number> <owner name>', for register;\n" +
-					"* 'java Client <host> <port> lookup <plate number>', for lookup;");
-			return;
-		}
+	/**
+	 * Creates a Client for the server Client - Server interaction
+	 *
+	 * @param match Match with the client Regex.
+	 * @throws IOException
+	 */
+	private static void clientCreation(Matcher match) throws IOException {
 		String host = match.group(1);
 		int port = Integer.parseInt(match.group(3));
 		String clientPurpose = match.group(4);
