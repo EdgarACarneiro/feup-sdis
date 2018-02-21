@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 public class Client {
 
     /**
+     * Maximum size of a reply sent by the Server
+     */
+    private static final int MAX_REPLY_SIZE = 274;
+
+    /**
      * Regex's pattern used for analysis of client register requests
      */
     private static Pattern registerRequest = Pattern.compile("\\s*?((register)\\s+?((([A-Z]|[0-9]){2}-?){3})\\s+?(((\\w|\\s)+?){1,256}))$");
@@ -39,10 +44,9 @@ public class Client {
             DatagramPacket packet = new DatagramPacket(request, request.length, address, port);
             socket.send(packet);
 
-            showReply(parsedMsg, getServerResult(socket));
-
+            getServerResult(socket);
         } else {
-            showReply(msg, "ERROR");
+            showErrorReply(msg);
         }
     }
 
@@ -84,29 +88,42 @@ public class Client {
     }
 
     /**
-     * Show the User the result of the communication
+     * Show the User the result of a failed attempt communicate
      *
      * @param sentMsg Message sent to the server
-     * @param answer Server's answer
      */
-    private void showReply(String sentMsg, String answer) {
-        System.out.println(sentMsg + ": " + answer);
+    private void showErrorReply(String sentMsg) {
+        System.out.println("Client: Received Reply: " +  sentMsg + ": ERROR");
+    }
+
+    /**
+     * Show the User the result of the communication with the Server
+     *
+     * @param reply Server's reply
+     * @param args Arguments used in the Server request
+     */
+    private void showReply(String reply, String args) {
+        System.out.println("Client: Received Reply: " + args + ": " + reply);
     }
 
     /**
      * Get the server's response from the Client's request
      *
      * @param socket socket used for the communication
-     * @return The Server's answer's result
      * @throws IOException
      */
-    private String getServerResult(DatagramSocket socket) throws IOException {
-        byte[] serverAnswer = new byte[100];
+    private void getServerResult(DatagramSocket socket) throws IOException {
+        byte[] serverAnswer = new byte[MAX_REPLY_SIZE];
         DatagramPacket packet = new DatagramPacket(serverAnswer, serverAnswer.length);
-        socket.receive(packet);
 
-        //TODO: Parsing of server result with REGEX here maybe
-        return new String(packet.getData());
+        socket.receive(packet);
+        String received = new String(packet.getData());
+
+        String[] groups=  received.split(" ");
+        String result = groups[0];
+        String args = received.substring(result.length() + 1);
+
+        showReply(result, args);
     }
 	
 }

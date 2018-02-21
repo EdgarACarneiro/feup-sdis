@@ -25,6 +25,11 @@ public class Server {
     private HashMap<String, String> database;
 
     /**
+     * The application's socket, used to implement the Client - Server connection
+     */
+    private DatagramSocket socket = null;
+
+    /**
      * Server that saves all the information regarding the license plates and initializes the database
      *
      * @param socket Socket used to communicate with the clients
@@ -32,37 +37,39 @@ public class Server {
      */
     public Server(DatagramSocket socket) throws IOException {
         database = new HashMap<>();
+        this.socket = socket;
 
         //Receive messages
-        while(true) { receiveMessages(socket); }
+        while(true) { receiveMessages(); }
     }
 
     /**
      * Receive the messages sent through the given socket
      *
-     * @param socket Socket used to communicate
      * @throws IOException
      */
-    private void receiveMessages(DatagramSocket socket) throws IOException {
+    private void receiveMessages() throws IOException {
 
         byte[] receiver = new byte[MAX_REQUEST_SIZE];
         DatagramPacket packet = new DatagramPacket(receiver, receiver.length);
 
         socket.receive(packet);
+        SocketAddress socketAddress = packet.getSocketAddress();
+
         String received = new String(packet.getData());
+        System.out.println("Server: Received Request: " + received);
 
         String[] groups=  received.split(" ");
         switch (groups[0]) {
             case "REGISTER":
-                registerUser(groups[1], received.substring(OWNER_NAME_POS)); // Fazer algo com isto, enviar p client resposta, com nova função
+                sendReply(registerUser(groups[1], received.substring(OWNER_NAME_POS)), socketAddress);
                 break;
             case "LOOKUP":
-                getOwner(groups[1]); // Fazer algo com isto, enviar p client resposta, com nova função
+                sendReply(getOwner(groups[1]), socketAddress);
                 break;
             default:
                 System.err.println("Server Error: Received unknown request.");
         }
-
         //socket.close();
     }
 
@@ -70,10 +77,18 @@ public class Server {
      * Getter for the license plate's owner
      *
      * @param licensePlate The given license plate
-     * @return The license plate's owner, or null if the license plate does not belong to the database
+     * @return The owner if the license plate exists on the database, 'ERROR' otherwise
      */
     private String getOwner(String licensePlate) {
-        return database.get(licensePlate);
+        String result;
+        String owner = database.get(licensePlate);
+
+        if (owner == null)
+            result = "-1 ";
+        else
+            result = owner + " ";
+
+        return result + licensePlate;
     }
 
     /**
@@ -81,15 +96,30 @@ public class Server {
      *
      * @param licensePlate The new license plate
      * @param owner The license plate's owner
-     * @return If true, success upon adding the new User to the database, failed otherwise.
+     * @return String containing the number of entries on the database if the client insertion succeeded, '-1' otherwise
      */
-    private boolean registerUser(String licensePlate, String owner) {
+    private String registerUser(String licensePlate, String owner) {
+        String result;
         if (database.containsKey(licensePlate))
-            return false;
+            result = "-1 ";
         else {
             database.put(licensePlate, owner);
-            return true;
+            result = Integer.toString(database.size()) + " ";
         }
+        return result + licensePlate + " " + owner;
+    }
+
+    /**
+     * Sends the Client the Server reply to the Client Request
+     *
+     * @param reply Message to be sent
+     * @param address Address to be used to send the reply
+     * @throws IOException
+     */
+    private void sendReply(String reply, SocketAddress address) throws IOException {
+        byte[] request = reply.getBytes();
+        DatagramPacket packet = new DatagramPacket(request, request.length, address);
+        socket.send(packet);
     }
 	
 }

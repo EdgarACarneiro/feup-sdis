@@ -13,16 +13,6 @@ import java.util.regex.Pattern;
 public class Application {
 
 	/**
-	 * The application's server
-	 */
-	private static Server server = null;
-
-	/**
-	 * The socket associated to the application
-	 */
-	private static DatagramSocket socket = null;
-
-	/**
 	 * The user's input
 	 */
 	private static Scanner input = new Scanner(System.in);
@@ -72,7 +62,6 @@ public class Application {
 					"* 'java Client <host> <port> register <plate number> <owner name>', for register.\n" +
 					"* 'java Client <host> <port> lookup <plate number>', for lookup."
 			);
-
 	}
 
 	/**
@@ -83,10 +72,7 @@ public class Application {
 	 */
 	private static void serverCreation(Matcher match) throws IOException {
 		int port = Integer.parseInt(match.group(1));
-
-		if (server == null && socket == null)
-			socket = new DatagramSocket(port);
-			server = new Server(socket);
+		new Server(new DatagramSocket(port));
 	}
 
 	/**
@@ -100,6 +86,6 @@ public class Application {
 		int port = Integer.parseInt(match.group(3));
 		String clientPurpose = match.group(4);
 
-		new Client(socket, host, port, clientPurpose);
+		new Client(new DatagramSocket(port), host, port, clientPurpose);
 	}
 }
