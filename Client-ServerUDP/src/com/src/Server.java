@@ -15,6 +15,11 @@ public class Server {
     private static final int MAX_REQUEST_SIZE = 274;
 
     /**
+     * Position where the Owner name starts in the clients register requests
+     */
+    private static final int OWNER_NAME_POS = 19;
+
+    /**
      * The license plates database
      */
     private HashMap<String, String> database;
@@ -42,13 +47,22 @@ public class Server {
 
         byte[] receiver = new byte[MAX_REQUEST_SIZE];
         DatagramPacket packet = new DatagramPacket(receiver, receiver.length);
+
         socket.receive(packet);
-
-        //conforme o request, dar update a database ou devolver o user pedido
-
-        // display response -> do template forncedio -> TODO
         String received = new String(packet.getData());
-        System.out.println("Echoed Message: " + received);
+
+        String[] groups=  received.split(" ");
+        switch (groups[0]) {
+            case "REGISTER":
+                registerUser(groups[1], received.substring(OWNER_NAME_POS)); // Fazer algo com isto, enviar p client resposta, com nova função
+                break;
+            case "LOOKUP":
+                getOwner(groups[1]); // Fazer algo com isto, enviar p client resposta, com nova função
+                break;
+            default:
+                System.err.println("Server Error: Received unknown request.");
+        }
+
         //socket.close();
     }
 
