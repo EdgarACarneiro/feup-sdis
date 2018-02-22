@@ -35,7 +35,7 @@ public class Client {
      * @throws IOException
      */
     public Client(DatagramSocket socket, String host, int port, String msg) throws IOException {
-        System.out.println("Creating New Client!");
+        System.out.println("New Client created!");
         String parsedMsg = buildRequest(msg);
 
         if (parsedMsg != null) {
