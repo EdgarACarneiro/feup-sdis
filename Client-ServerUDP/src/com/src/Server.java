@@ -30,13 +30,23 @@ public class Server {
     private DatagramSocket socket = null;
 
     /**
+     * Socket used for the multicast communication ( Server with all the Clients)
+     */
+    private DatagramSocket mcastSocket = null;
+
+    /**
      * Server that saves all the information regarding the license plates and initializes the database
      *
      * @param socket Socket used to communicate with the clients
+     * @param mcastAddr Address used for multicast communication
+     * @param mcastPort Port used for multicast communication
      * @throws IOException
      */
-    public Server(DatagramSocket socket) throws IOException {
-        System.out.println("Creating a New Server");
+    public Server(DatagramSocket socket, String mcastAddr, Integer mcastPort) throws IOException {
+        System.out.println("Booting a New Server");
+
+        mcastSocket = new DatagramSocket(mcastPort, Inet4Address.getByName(mcastAddr));
+        mcastSocket.setBroadcast(true);
 
         database = new HashMap<>();
         this.socket = socket;
@@ -56,7 +66,6 @@ public class Server {
         DatagramPacket packet = new DatagramPacket(receiver, receiver.length);
 
         socket.receive(packet);
-        SocketAddress socketAddress = packet.getSocketAddress();
 
         String received = new String(packet.getData());
         System.out.println("Server: Received Request: " + received);
@@ -64,10 +73,10 @@ public class Server {
         String[] groups=  received.split(" ");
         switch (groups[0]) {
             case "REGISTER":
-                sendReply(registerUser(groups[1], received.substring(OWNER_NAME_POS)), socketAddress);
+                sendReply(registerUser(groups[1], received.substring(OWNER_NAME_POS)));
                 break;
             case "LOOKUP":
-                sendReply(getOwner(groups[1]), socketAddress);
+                sendReply(getOwner(groups[1]));
                 break;
             default:
                 System.err.println("Server Error: Received unknown request.");
@@ -115,13 +124,12 @@ public class Server {
      * Sends the Client the Server reply to the Client Request
      *
      * @param reply Message to be sent
-     * @param address Address to be used to send the reply
      * @throws IOException
      */
-    private void sendReply(String reply, SocketAddress address) throws IOException {
+    private void sendReply(String reply) throws IOException {
         byte[] request = reply.getBytes();
-        DatagramPacket packet = new DatagramPacket(request, request.length, address);
-        socket.send(packet);
+        DatagramPacket packet = new DatagramPacket(request, request.length);
+        mcastSocket.send(packet);
     }
 	
 }
