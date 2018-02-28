@@ -3,6 +3,7 @@ package com.src;
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
+import java.util.Timer;
 
 /**
  * Class responsible for receiving Client's requests and handling the license plate management
@@ -20,6 +21,11 @@ public class Server {
     private static final int OWNER_NAME_POS = 18;
 
     /**
+     * Time elapsed between Server multicasts
+     */
+    private static final int TIMER_PERIOD = 1000;
+
+    /**
      * The license plates database
      */
     private HashMap<String, String> database;
@@ -30,12 +36,18 @@ public class Server {
     private DatagramSocket socket = null;
 
     /**
-     * Socket used for the multicast communication ( Server with all the Clients)
+     * Socket used for the multicast communication (Server with all the Clients)
      */
     private DatagramSocket mcastSocket = null;
 
-    private String mcastAddr = null;
+    /**
+     * Address used in the multicast communication, in format InetAdress
+     */
+    private InetAddress mcastAddr = null;
 
+    /**
+     * Port used in the multicast communication
+     */
     private Integer mcastPort = null;
 
     /**
@@ -48,16 +60,17 @@ public class Server {
      */
     public Server(DatagramSocket socket, String mcastAddr, Integer mcastPort) throws IOException {
         System.out.println("Booting a New Server");
-        System.out.println(mcastPort);
-        System.out.println(mcastAddr);
-        this.mcastAddr = mcastAddr;
-        this.mcastPort = mcastPort;
 
-        mcastSocket = new DatagramSocket(); //mcastPort, Inet4Address.getByName(mcastAddr));
-        mcastSocket.setBroadcast(true);
+        this.mcastAddr = InetAddress.getByName(mcastAddr);
+        this.mcastPort = mcastPort;
+        mcastSocket = new DatagramSocket();
 
         database = new HashMap<>();
         this.socket = socket;
+
+        //Creation of threads, 1 for loop of advertisement, other for cicle receiveMessages -> create advertisement function
+        Timer timer  = new Timer();
+        timer.scheduleAtFixedRate(null,  0, TIMER_PERIOD);
 
         //Receive messages
         while(true) { receiveMessages(); }
