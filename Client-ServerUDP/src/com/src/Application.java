@@ -56,11 +56,11 @@ public class Application {
 			clientCreation(clientMatch);
 		else
 			System.out.println(
-					"Server useage:\n " +
-					"* 'java Server <port>'.\n" +
+					"Server usage:\n " +
+					"* 'java Server <srvc_port> <mcast_addr> <mcast_port>'.\n" +
 					"Client usage:\n" +
-					"* 'java Client <host> <port> register <plate number> <owner name>', for register.\n" +
-					"* 'java Client <host> <port> lookup <plate number>', for lookup."
+					"* 'java client <mcast_addr> <mcast_port> register <plate number> <owner name>', for register.\n" +
+					"* 'java client <mcast_addr> <mcast_port> lookup <plate number>', for lookup."
 			);
 	}
 
