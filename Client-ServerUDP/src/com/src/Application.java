@@ -74,6 +74,7 @@ public class Application {
 		int servicePort = Integer.parseInt(match.group(1));
 		String mcastAddr = match.group(2);
 		int mcastPort = Integer.parseInt(match.group(3));
+
 		new Server(new DatagramSocket(servicePort), mcastAddr, mcastPort);
 	}
 
