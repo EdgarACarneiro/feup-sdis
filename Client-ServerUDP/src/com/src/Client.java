@@ -34,17 +34,30 @@ public class Client {
      * @param msg The request to send to the Server
      * @throws IOException
      */
-    public Client(DatagramSocket socket, String host, int port, String msg) throws IOException {
+    public Client(DatagramSocket socket, String mcastAddr, int mcastPort, String msg) throws IOException {
         System.out.println("New Client created!");
         String parsedMsg = buildRequest(msg);
 
         if (parsedMsg != null) {
+            InetAddress address = InetAddress.getByName(mcastAddr);
             byte[] request = parsedMsg.getBytes();
-            InetAddress address = InetAddress.getByName(host);
 
-            DatagramPacket packet = new DatagramPacket(request, request.length, address, port);
-            socket.send(packet);
-
+            try (MulticastSocket clientSocket = new MulticastSocket(mcastPort)){
+                //Joint the Multicast group.
+                clientSocket.joinGroup(address);
+            
+                while (true) {
+                    // Receive the information and print it.
+                    DatagramPacket packet = new DatagramPacket(request, request.length);
+                    clientSocket.receive(packet);
+        
+                    String msgFromPacket = new String(request, 0, request.length);
+                    System.out.println("multicast: " + mcastAddr + " " + mcastPort + ": " + srvc_port + " Received msg: " + msgFromPacket);
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+                
             getServerResult(socket);
         } else {
             showErrorReply(msg);
