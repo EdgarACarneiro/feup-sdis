@@ -73,7 +73,7 @@ public class Application {
 	private static void serverCreation(Matcher match) throws IOException {
 		int servicePort = Integer.parseInt(match.group(1));
 		String mcastAddr = match.group(2);
-		int mcastPort = Integer.parseInt(match.group(3));
+		int mcastPort = Integer.parseInt(match.group(4));
 
 		new Server(new DatagramSocket(servicePort), mcastAddr, mcastPort);
 	}

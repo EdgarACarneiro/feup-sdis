@@ -42,17 +42,18 @@ public class Client {
             InetAddress address = InetAddress.getByName(mcastAddr);
             byte[] request = parsedMsg.getBytes();
 
-            try (MulticastSocket clientSocket = new MulticastSocket(mcastPort)){
+            try (MulticastSocket clientSocket = new MulticastSocket(mcastPort)) {
                 //Joint the Multicast group.
                 clientSocket.joinGroup(address);
             
                 while (true) {
                     // Receive the information and print it.
                     DatagramPacket packet = new DatagramPacket(request, request.length);
-                    clientSocket.receive(packet);
+                    //clientSocket.receive(packet);
         
                     String msgFromPacket = new String(request, 0, request.length);
-                    System.out.println("multicast: " + mcastAddr + " " + mcastPort + ": " + srvc_port + " Received msg: " + msgFromPacket);
+                    System.out.println("multicast: " + mcastAddr + " " + mcastPort + ": " + msgFromPacket);
+                    clientSocket.send(packet);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();

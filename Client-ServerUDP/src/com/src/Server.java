@@ -34,6 +34,10 @@ public class Server {
      */
     private DatagramSocket mcastSocket = null;
 
+    private String mcastAddr = null;
+
+    private Integer mcastPort = null;
+
     /**
      * Server that saves all the information regarding the license plates and initializes the database
      *
@@ -44,8 +48,12 @@ public class Server {
      */
     public Server(DatagramSocket socket, String mcastAddr, Integer mcastPort) throws IOException {
         System.out.println("Booting a New Server");
+        System.out.println(mcastPort);
+        System.out.println(mcastAddr);
+        this.mcastAddr = mcastAddr;
+        this.mcastPort = mcastPort;
 
-        mcastSocket = new DatagramSocket(mcastPort, Inet4Address.getByName(mcastAddr));
+        mcastSocket = new DatagramSocket(); //mcastPort, Inet4Address.getByName(mcastAddr));
         mcastSocket.setBroadcast(true);
 
         database = new HashMap<>();
@@ -128,7 +136,7 @@ public class Server {
      */
     private void sendReply(String reply) throws IOException {
         byte[] request = reply.getBytes();
-        DatagramPacket packet = new DatagramPacket(request, request.length);
+        DatagramPacket packet = new DatagramPacket(request, request.length, InetAddress.getByName(mcastAddr), mcastPort);
         mcastSocket.send(packet);
     }
 	
