@@ -71,8 +71,10 @@ public class Application {
 	 * @throws IOException
 	 */
 	private static void serverCreation(Matcher match) throws IOException {
-		int port = Integer.parseInt(match.group(1));
-		new Server(new DatagramSocket(port));
+		int servicePort = Integer.parseInt(match.group(1));
+		String mcastAddr = match.group(2);
+		int mcastPort = Integer.parseInt(match.group(3));
+		new Server(new DatagramSocket(servicePort), mcastAddr, mcastPort);
 	}
 
 	/**
@@ -82,10 +84,10 @@ public class Application {
 	 * @throws IOException
 	 */
 	private static void clientCreation(Matcher match) throws IOException {
-		String host = match.group(1);
-		int port = Integer.parseInt(match.group(3));
+		String mcastAddr = match.group(1);
+		int mcastPort = Integer.parseInt(match.group(3));
 		String clientPurpose = match.group(4);
 
-		new Client(new DatagramSocket(), host, port, clientPurpose);
+		new Client(new DatagramSocket(), mcastAddr, mcastPort, clientPurpose);
 	}
 }
