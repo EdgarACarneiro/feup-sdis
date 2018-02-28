@@ -20,7 +20,7 @@ public class Application {
 	/**
 	 * Regex's pattern used for analysis of server invocations
 	 */
-	private static Pattern serverInvoke = Pattern.compile("\\s*?java\\s+?Server\\s+?(\\d{4})\\s*?");
+	private static Pattern serverInvoke = Pattern.compile("\\s*?java\\s+?Server\\s+?(\\d{4})\\s+?((\\d+\\.?){1,4})\\s+?(\\d{4})\\s*?$");
 
 	/**
 	 * Regex's pattern used for analysis of client invocations
