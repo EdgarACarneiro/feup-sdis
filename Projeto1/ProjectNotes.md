@@ -2,7 +2,7 @@
 
 Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaço livre do disco.
 
-## GUIÃO(!https://web.fe.up.pt/~pfs/aulas/sd2018/projs/proj1/proj1.html)
+## [GUIÃO](https://web.fe.up.pt/~pfs/aulas/sd2018/projs/proj1/proj1.html)
 
 ## Suposições:
  * Possibilidade de mais do que um servidor por computador
@@ -26,12 +26,12 @@ Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaç
  * Todos os subprotocolos usam um canal multicast (canal de controlo MC) para trocar mensagens de controlo.
  * Os cananis multicast MDB e MDR são usados respetivamente para backup e para restaurar data chunks.
  * #### Message Format and Fieldd Encoding (ver guião) -> Informação geral do formato das mensagens
- * ### Chunk backup subprotocol (ver guião) -> Como implmementar o protocolo de backup
-**_Importante_: Um peer nunca guarda chunks dos seus próprios ficheiros**
- * ### Chunk restore protocol (ver guião) -> Como implmementar o protocolo de restauro
- * ### File deletion subprotocol (ver guião) -> Como implmementar o protocolo de eliminação de ficheiros
- * ### Space reclaiming subprotocol (ver guião) -> Como implementar o protocolo de reclamação de espaço
-**_Importante_: Se quiser melhorar o protocolo , seguir guias de '3.6 Protocol Enhancement'**
+ * #### Chunk backup subprotocol (ver guião) -> Como implmementar o protocolo de backup
+**_Importante_**: Um peer nunca guarda chunks dos seus próprios ficheiros
+ * #### Chunk restore protocol (ver guião) -> Como implmementar o protocolo de restauro
+ * #### File deletion subprotocol (ver guião) -> Como implmementar o protocolo de eliminação de ficheiros
+ * #### Space reclaiming subprotocol (ver guião) -> Como implementar o protocolo de reclamação de espaço
+**_Importante_**: Se quiser melhorar o protocolo , seguir guias de '3.6 Protocol Enhancement'
 
 ## Interface
  * Verificar especificações no guião. Serão implementadas 5 funcionalidaes: backup, restaurp, eliminação, espaço de armazenamento e informação local do serviço
