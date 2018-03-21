@@ -3,7 +3,8 @@ public class Main {
      * Main function
      *
      */
-    public void main(){
-        
+    public static void main(String args[]){
+        FileSplitter f = new FileSplitter();
+        f.splitFile("C:\\Users\\ASUS\\Pictures\\test\\Shade.jpg");
     }
 }
