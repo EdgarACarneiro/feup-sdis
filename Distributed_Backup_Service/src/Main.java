@@ -1,4 +1,9 @@
 public class Main {
-
-    //Class to initialize the program
+    /**
+     * Main function
+     *
+     */
+    public void main(){
+        
+    }
 }
