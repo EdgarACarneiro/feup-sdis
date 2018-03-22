@@ -20,7 +20,7 @@ public final class FileSplitter {
 
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
-            System.err.println("FileSplitter Error: Given File does not exist");
+            Utils.showError("Given File does not exist", FileSplitter.class);
             return false;
         }
 
@@ -33,7 +33,8 @@ public final class FileSplitter {
             while (writtenBytes <= fileSize) {
 
                 // To remove this from here to later create a folder only for backups -< new class or some shit TODO
-                new File("backup-files").mkdirs();
+                if(! new File("backup-files").mkdirs())
+                    Utils.showError("Failed to create directory for backup files", FileSplitter.class);
 
                 FileOutputStream out = new FileOutputStream("backup-files/" + Integer.toString(writtenBytes));
                 out.write(fileData, writtenBytes,
@@ -43,7 +44,7 @@ public final class FileSplitter {
             }
 
         } catch (java.io.IOException e) {
-            System.err.println("FileSplitter Error: Unable to handle file bytes");
+            Utils.showError("Unable to handle file bytes", FileSplitter.class);
         }
 
         return true;
