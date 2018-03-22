@@ -8,23 +8,21 @@ import java.util.ArrayList;
 /**
  * Class responsible for splitting a file in chunks
  */
-public class FileSplitter {
+public final class FileSplitter {
 
     /**
      * Chunks' size in bytes : 64KBytes
      */
-    private final int CHUNKS_SIZE = 64000;
+    private static final int CHUNKS_SIZE = 64000;
 
-    public FileSplitter(){}
 
-    public ArrayList<Integer> splitFile(String filePath) {
+    public static boolean splitFile(String filePath) {
 
         Path path = Paths.get(filePath);
         if (!Files.exists(path)) {
             System.err.println("FileSplitter Error: Given File does not exist");
-            return null;
+            return false;
         }
-
 
         try {
 
@@ -48,7 +46,7 @@ public class FileSplitter {
             System.err.println("FileSplitter Error: Unable to handle file bytes");
         }
 
-        return null;
+        return true;
     }
 
     // Function to merge files here
