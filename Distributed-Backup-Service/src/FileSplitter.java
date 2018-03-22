@@ -33,7 +33,11 @@ public class FileSplitter {
             int writtenBytes = 0;
 
             while (writtenBytes <= fileSize) {
-                FileOutputStream out = new FileOutputStream("test/" + Integer.toString(writtenBytes));
+
+                // To remove this from here to later create a folder only for backups -< new class or some shit TODO
+                new File("backup-files").mkdirs();
+
+                FileOutputStream out = new FileOutputStream("backup-files/" + Integer.toString(writtenBytes));
                 out.write(fileData, writtenBytes,
                         ((fileSize - writtenBytes)< CHUNKS_SIZE? (fileSize - writtenBytes) : CHUNKS_SIZE)
                 );
