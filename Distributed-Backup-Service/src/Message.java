@@ -7,7 +7,7 @@ public class Message {
      * Regex useful for parsing Message Headers
      */
     private static final Pattern msgHeaderRegex = Pattern.compile(
-            "\\s*?(\\w+?)\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([A-F0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s*?"
+            "\\s*?(\\w+?)\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([A-F0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s*?$"
     );
 
     /**
@@ -51,6 +51,8 @@ public class Message {
             Utils.showError("Failed to get a Regex match in message Header", this.getClass());
             return false;
         }
+
+        //TODO MISSING THE FINAL HEADER FLAG <CRLF>
 
         String msgType = headerMatch.group(TYPE_GROUP);
         String version = headerMatch.group(VERSION_GROUP);

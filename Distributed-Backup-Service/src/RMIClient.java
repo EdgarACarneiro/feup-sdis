@@ -1,9 +1,9 @@
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class Client {
+public class RMIClient {
 
-    private Client() {}
+    private RMIClient() {}
 
     public static void main(String[] args) {
 

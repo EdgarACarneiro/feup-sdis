@@ -3,9 +3,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
         
-public class MulticastService implements RMIInterface {
+public class RMIMulticast implements RMIInterface {
         
-    public MulticastService() {}
+    public RMIMulticast() {}
 
     public String sayHello() {
         return "Hello, world!";
@@ -14,7 +14,7 @@ public class MulticastService implements RMIInterface {
     public static void main(String args[]) {
         
         try {
-            MulticastService obj = new MulticastService();
+            RMIMulticast obj = new RMIMulticast();
             RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(obj, 0);
 
             // Bind the remote object's stub in the registry
