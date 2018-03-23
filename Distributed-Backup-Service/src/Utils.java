@@ -10,6 +10,6 @@ public final class Utils {
      * @param callingClass The Class where the error occurred
      */
     public static void showError(String errorMsg, Object callingClass) {
-        System.err.println(callingClass.toString() + " Error: " + errorMsg);
+        System.err.println(callingClass.toString() + " error: " + errorMsg);
     }
 }
