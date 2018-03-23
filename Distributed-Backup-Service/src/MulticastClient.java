@@ -6,6 +6,12 @@ import java.net.UnknownHostException;
 
 public class MulticastClient {
 
+    private ControlChannel controlChannel;
+
+    private BackupChannel backupChannel;
+
+    private RestoreChannel restoreChannel;
+
     final static String INET_ADDR = "224.0.0.3";
     final static int PORT = 8888;
 
@@ -35,5 +41,17 @@ public class MulticastClient {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    MulticastClient(boolean usesMC, boolean usesMDB, boolean usesMDR) {
+        if (usesMC)
+            controlChannel = new ControlChannel();
+        if (usesMDB)
+            backupChannel = new BackupChannel();
+        if (usesMDR)
+            restoreChannel = new RestoreChannel();
+
+        // TODO- Abrir a comunicação usado o coidog da main acima e lançando para cada um um função que gere o channel, através de threads. Para já fazer com controlchannel so
+
     }
 }
