@@ -1,57 +1,45 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 
 public class MulticastClient {
 
-    private ControlChannel controlChannel;
+    public MulticastClient(MulticastChannel channel, boolean test, String test_name) {
 
-    private BackupChannel backupChannel;
-
-    private RestoreChannel restoreChannel;
-
-    final static String INET_ADDR = "224.0.0.3";
-    final static int PORT = 8888;
-
-    public static void main(String[] args) throws UnknownHostException {
-        // Get the address that we are going to connect to.
-        InetAddress address = InetAddress.getByName(INET_ADDR);
-
-        // Create a buffer of bytes, which will be used to store
-        // the incoming bytes containing the information from the server.
-        // Since the message is small here, 256 bytes should be enough.
         byte[] buf = new byte[256];
 
-        // Create a new Multicast socket (that will allow other sockets/programs
-        // to join it as well.
-        try (MulticastSocket clientSocket = new MulticastSocket(PORT)){
-            //Joint the Multicast group.
-            clientSocket.joinGroup(address);
+        // Create a new Multicast socket (that will allow other sockets/programs to join it as well.
+        try {
+            MulticastSocket clientSocket = new MulticastSocket(channel.getPort());
 
-            while (true) {
-                // Receive the information and print it.
-                DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
-                clientSocket.receive(msgPacket);
+            //Joint the Multicast group
+            clientSocket.joinGroup(channel.getInetAddr());
 
-                String msg = new String(buf, 0, buf.length);
-                System.out.println("Socket 1 received msg: " + msg);
+            if(test){
+                while (true) {
+                    // Receive the information and print it.
+                    DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
+                    clientSocket.receive(msgPacket);
+
+                    String msg = new String(buf, 0, buf.length);
+                    System.out.println("Socket " + test_name + "  received msg: " + msg);
+                }
+            } else {
+                for (int i = 0; i < 5; i++) {
+                    String msg = "Sent message no " + i;
+
+                    // Create a packet that will contain the data
+                    // (in the form of bytes) and send it.
+                    DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(),
+                            msg.getBytes().length, channel.getInetAddr(), channel.getPort());
+                    clientSocket.send(msgPacket);
+
+                    System.out.println("Socket " + test_name + " sent packet with msg: " + msg);
+                    Thread.sleep(500);
+                }
             }
-        } catch (IOException ex) {
+        } catch (IOException | java.lang.InterruptedException ex) {
             ex.printStackTrace();
         }
-    }
-
-    MulticastClient(boolean usesMC, boolean usesMDB, boolean usesMDR) {
-        if (usesMC)
-            controlChannel = new ControlChannel();
-        if (usesMDB)
-            backupChannel = new BackupChannel();
-        if (usesMDR)
-            restoreChannel = new RestoreChannel();
-
-        // TODO- Abrir a comunicação usado o coidog da main acima e lançando para cada um um função que gere o channel, através de threads. Para já fazer com controlchannel so
-
     }
 }
