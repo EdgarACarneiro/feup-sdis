@@ -1,6 +1,10 @@
 import Channel.BackupChannel;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
+import Utils.Utils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class representing a Peer in the service
@@ -37,9 +41,13 @@ public class Peer {
      */
     private String acessPoint;
 
+    /**
+     * Regex used to validate the program args for initiating a peer
+     */
+    private final static Pattern argsRegex = Pattern.compile("\\s*?(\\d+(\\.\\d*)?)\\s+?(\\d+)\\s+?(\\w+)\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s*?");
+
 
     Peer(String protocolVersion, String serverID, String accessPoint, String channelMC, String channelMDB, String channelMDR) {
-
         this.protocolVersion = Float.parseFloat(protocolVersion);
         peerID = Integer.parseInt(serverID);
         this.acessPoint = accessPoint;
@@ -48,11 +56,7 @@ public class Peer {
         backupChannel = new BackupChannel(channelMDB);
         restoreChannel = new RestoreChannel(channelMDR);
 
-        // TODO Contem tb a funcionalidade test app que interpreta logo o comando
-        //TODO- The "name" of each multicast channel consists of the IP multicast address and port
-        // todo - The "name" of the channels should be provided in the following order MC, MDB, MDR. These arguments must follow immediately the first three command line arguments, which are the protocol version, the server id and the service access point
-
-        //MulticastClient tretas = new MulticastClient(controlChannel);
+       // TODO - lançar aqui o listener thread
 
     }
 
@@ -60,7 +64,14 @@ public class Peer {
      * Peer main function. Initiates a new Peer.
      */
     public static void main(String args[]){
-        // TODO - Fazer parsing através do regex
-        //new Peer(false, false, args[0].equals("1"), args[1]);
+
+        String argString = String.join(" ", args);
+
+        if (argsRegex.matcher(argString).matches())
+            new Peer(args[0], args[1], args[2], args[3],args[4], args[5]);
+        else
+            Utils.showError("Unacceptable arguments\n" +
+                    "Usage: <protocol version> <server ID> <access point name> <MC address>:<MC port> <MDB address>:<MDB port> <MDR address>:<MDR port>", Peer.class);
+
     }
 }
