@@ -28,9 +28,6 @@ public class MulticastChannel {
         String addr = extractAddr(channelName);
         int port = extractPort(channelName);
 
-        System.out.println(addr);
-        System.out.println(port);
-
         try {
             inetAddr = InetAddress.getByName(addr);
             this.port = port;

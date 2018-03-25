@@ -3,7 +3,6 @@ import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Utils.Utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -47,7 +46,7 @@ public class Peer {
     private final static Pattern argsRegex = Pattern.compile("\\s*?(\\d+(\\.\\d*)?)\\s+?(\\d+)\\s+?(\\w+)\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s*?");
 
 
-    Peer(String protocolVersion, String serverID, String accessPoint, String channelMC, String channelMDB, String channelMDR) {
+    private Peer(String protocolVersion, String serverID, String accessPoint, String channelMC, String channelMDB, String channelMDR) {
         this.protocolVersion = Float.parseFloat(protocolVersion);
         peerID = Integer.parseInt(serverID);
         this.acessPoint = accessPoint;
@@ -64,7 +63,6 @@ public class Peer {
      * Peer main function. Initiates a new Peer.
      */
     public static void main(String args[]){
-
         String argString = String.join(" ", args);
 
         if (argsRegex.matcher(argString).matches())
@@ -72,6 +70,5 @@ public class Peer {
         else
             Utils.showError("Unacceptable arguments\n" +
                     "Usage: <protocol version> <server ID> <access point name> <MC address>:<MC port> <MDB address>:<MDB port> <MDR address>:<MDR port>", Peer.class);
-
     }
 }
