@@ -1,8 +1,7 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+package Channel;
+
+import Utils.Utils;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * Generic class representing a multicast network address, used for communication between peers
@@ -22,10 +21,16 @@ public class MulticastChannel {
     /**
      * Multicast Network unique Constructor.
      *
-     * @param addr The Inet Address to be used in the communication
-     * @param port The Port to be used in the communication
+     * @param channelName The Communication address and Port, using a string
      */
-    protected MulticastChannel(String addr, int port) {
+    protected MulticastChannel(String channelName) {
+
+        String addr = extractAddr(channelName);
+        int port = extractPort(channelName);
+
+        System.out.println(addr);
+        System.out.println(port);
+
         try {
             inetAddr = InetAddress.getByName(addr);
             this.port = port;
@@ -50,5 +55,27 @@ public class MulticastChannel {
      */
     public int getPort() {
         return port;
+    }
+
+    /**
+     * Extract the adress for a channel, from a given String
+     *
+     * @param channelName The String to be parsed
+     * @return The resultant adress
+     */
+    private String extractAddr(String channelName) {
+        String[] nameParts = channelName.split(":");
+        return nameParts[0];
+    }
+
+    /**
+     * Extract the port for a channel, from a given String
+     *
+     * @param channelName The String to be parsed
+     * @return The resultant port
+     */
+    private int extractPort(String channelName) {
+        String[] nameParts = channelName.split(":");
+        return Integer.parseInt(nameParts[1]);
     }
 }

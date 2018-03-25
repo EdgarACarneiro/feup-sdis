@@ -1,3 +1,7 @@
+package Channel;
+
+import Channel.MulticastChannel;
+
 /**
  * Class to implement the Restore channel, using a multicast channel
  */
@@ -6,8 +10,10 @@ public class RestoreChannel extends MulticastChannel {
     /**
      * Restore channel constructor.
      * Defines multicast communication settings used.
+     *
+     * @param channelName The channel name used to build the Restore channel
      */
-    public RestoreChannel() {
-        super("224.0.0.5", 8888);
+    public RestoreChannel(String channelName) {
+        super(channelName);
     }
 }

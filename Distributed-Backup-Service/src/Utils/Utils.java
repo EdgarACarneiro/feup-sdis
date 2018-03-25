@@ -1,3 +1,5 @@
+package Utils;
+
 /**
  * A class filled with Utilities methods
  */
