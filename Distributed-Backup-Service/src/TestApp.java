@@ -28,7 +28,7 @@ public class TestApp {
      * @param args List of arguments necessary to perform a new test
      */
     private TestApp(String args[]) {
-        rmi = (new RMIClient(args[0])).getStub();
+
         action = args[1];
 
         for(int i = 2; i < args.length; ++i) {
