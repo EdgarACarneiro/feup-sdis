@@ -2,6 +2,7 @@ import Channel.BackupChannel;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Utils.Utils;
+import ThreadPool.ThreadPool;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -45,6 +46,11 @@ public class Peer implements RMIInterface {
     private String acessPoint;
 
     /**
+     * The thread pool for running different action at the same time
+     */
+    private ThreadPool threadPool;
+
+    /**
      * Regex used to validate the program args for initiating a peer
      */
     private final static Pattern argsRegex = Pattern.compile("\\s*?(\\d+(\\.\\d*)?)\\s+?(\\d+)\\s+?(\\w+)\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s*?");
@@ -68,6 +74,8 @@ public class Peer implements RMIInterface {
         controlChannel = new ControlChannel(channelMC);
         backupChannel = new BackupChannel(channelMDB);
         restoreChannel = new RestoreChannel(channelMDR);
+
+        threadPool = new ThreadPool();
 
         initializeRMI(accessPoint);
 
