@@ -11,8 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import static java.lang.Thread.sleep;
-
 /**
  * Class representing a Peer in the service
  */
