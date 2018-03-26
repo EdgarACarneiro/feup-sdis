@@ -1,3 +1,4 @@
+import Action.*;
 import Channel.BackupChannel;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
@@ -9,6 +10,8 @@ import java.rmi.server.UnicastRemoteObject;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Class representing a Peer in the service
@@ -43,7 +46,7 @@ public class Peer implements RMIInterface {
     /**
      * Name of the access point to be accessed by the Client or TestApp using RMI
      */
-    private String acessPoint;
+    private String accessPoint;
 
     /**
      * The thread pool for running different action at the same time
@@ -69,7 +72,7 @@ public class Peer implements RMIInterface {
 
         this.protocolVersion = Float.parseFloat(protocolVersion);
         peerID = Integer.parseInt(serverID);
-        this.acessPoint = accessPoint;
+        this.accessPoint = accessPoint;
 
         controlChannel = new ControlChannel(channelMC);
         backupChannel = new BackupChannel(channelMDB);
@@ -77,10 +80,9 @@ public class Peer implements RMIInterface {
 
         threadPool = new ThreadPool();
 
-        initializeRMI(accessPoint);
+        initializeRMI();
 
-       // TODO - lançar aqui o listener thread
-
+       // TODO - Fica à escuta do canal/ canais(?) multicast p ver se recebe pedidos e dps delega
     }
 
     /**
@@ -100,10 +102,8 @@ public class Peer implements RMIInterface {
 
     /**
      * Initialize the RMI service from the Server part
-     *
-     * @param accessPoint The RMI name for usage on the other end of the service
      */
-    private void initializeRMI(String accessPoint) {
+    private void initializeRMI() {
         try {
             RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(this, 0);
 
@@ -122,46 +122,46 @@ public class Peer implements RMIInterface {
 
     // TODO - below functions
 
-    public String backupAction(ArrayList<String> args) {
+    public void backupAction(ArrayList<String> args) {
         if (args.size() < 2)
             Utils.showError("Not enough arguments given for backup action", this.getClass());
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        return "BackingUp!";
+        threadPool.executeThread(new BackupAction());
     }
 
-    public String restoreAction(ArrayList<String> args) {
+    public void restoreAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for restore action", this.getClass());
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for restore action", this.getClass());
 
-        return "Restoring!";
+        threadPool.executeThread(new RestoreAction());
     }
 
-    public String deleteAction(ArrayList<String> args) {
+    public void deleteAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for delete action", this.getClass());
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for delete action", this.getClass());
 
-        return "Deleting!";
+        threadPool.executeThread(new DeleteAction());
     }
 
-    public String reclaimAction(ArrayList<String> args) {
+    public void reclaimAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for reclaim disk space action", this.getClass());
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for reclaim disk space action", this.getClass());
 
-        return "Reclaiming!";
+        threadPool.executeThread(new ReclaimAction());
     }
 
-    public String stateAction(ArrayList<String> args) {
+    public void stateAction(ArrayList<String> args) {
         if (args.size() > 0)
             Utils.showWarning("Too many arguments given for state action", this.getClass());
 
-        return "Stating!";
+        threadPool.executeThread(new StateAction());
     }
 }

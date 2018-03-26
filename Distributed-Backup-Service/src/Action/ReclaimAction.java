@@ -1,6 +1,6 @@
 package Action;
 
-public class BackupAction extends Action {
+public class ReclaimAction extends Action {
 
     public void run() {
 

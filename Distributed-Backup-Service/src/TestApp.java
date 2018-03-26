@@ -55,7 +55,7 @@ public class TestApp {
         try {
             switch (action) {
                 case "BACKUP":
-                    rmi.backupAction(actionArgs);
+                   rmi.backupAction(actionArgs);
                     break;
                 case "RESTORE":
                     rmi.restoreAction(actionArgs);

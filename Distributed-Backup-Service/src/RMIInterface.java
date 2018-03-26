@@ -7,9 +7,9 @@ import java.util.ArrayList;
  */
 public interface RMIInterface extends Remote {
 
-    String backupAction(ArrayList<String> args) throws RemoteException;
-    String restoreAction(ArrayList<String> args) throws RemoteException;
-    String deleteAction(ArrayList<String> args) throws RemoteException;
-    String reclaimAction(ArrayList<String> args) throws RemoteException;
-    String stateAction(ArrayList<String> args) throws RemoteException;
+    void backupAction(ArrayList<String> args) throws RemoteException;
+    void restoreAction(ArrayList<String> args) throws RemoteException;
+    void deleteAction(ArrayList<String> args) throws RemoteException;
+    void reclaimAction(ArrayList<String> args) throws RemoteException;
+    void stateAction(ArrayList<String> args) throws RemoteException;
 }
