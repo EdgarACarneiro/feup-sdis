@@ -15,7 +15,7 @@ public class TestApp {
     /**
      * List of arguments necessary to perform the requested action
      */
-    private ArrayList<String> actionArgs = new ArrayList<String>();
+    private ArrayList<String> actionArgs = new ArrayList<>();
 
     /**
      * Object to make requests to Peer using RMI;
@@ -55,19 +55,19 @@ public class TestApp {
         try {
             switch (action) {
                 case "BACKUP":
-                    rmi.backupAction();
+                    rmi.backupAction(actionArgs);
                     break;
                 case "RESTORE":
-                    rmi.restoreAction();
+                    rmi.restoreAction(actionArgs);
                     break;
                 case "DELETE":
-                    rmi.deleteAction();
+                    rmi.deleteAction(actionArgs);
                     break;
                 case "RECLAIM":
-                    rmi.reclaimAction();
+                    rmi.reclaimAction(actionArgs);
                     break;
                 case "STATE":
-                    rmi.stateAction();
+                    rmi.stateAction(actionArgs);
                     break;
                 default:
                     Utils.showError("Unknown test action requested\n" +

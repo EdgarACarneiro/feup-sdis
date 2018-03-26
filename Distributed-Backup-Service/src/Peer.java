@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -110,25 +111,49 @@ public class Peer implements RMIInterface {
         }
     }
 
+
     // TODO - below functions
 
-    public String backupAction() {
+    public String backupAction(ArrayList<String> args) {
+        if (args.size() < 2)
+            Utils.showError("Not enough arguments given for backup action", this.getClass());
+        else if (args.size() > 2)
+            Utils.showWarning("Too many arguments given for backup action", this.getClass());
+
         return "BackingUp!";
     }
 
-    public String restoreAction() {
+    public String restoreAction(ArrayList<String> args) {
+        if (args.isEmpty())
+            Utils.showError("Not enough arguments given for restore action", this.getClass());
+        if (args.size() > 1)
+            Utils.showWarning("Too many arguments given for restore action", this.getClass());
+
         return "Restoring!";
     }
 
-    public String deleteAction() {
+    public String deleteAction(ArrayList<String> args) {
+        if (args.isEmpty())
+            Utils.showError("Not enough arguments given for delete action", this.getClass());
+        if (args.size() > 1)
+            Utils.showWarning("Too many arguments given for delete action", this.getClass());
+
         return "Deleting!";
     }
 
-    public String reclaimAction() {
+    public String reclaimAction(ArrayList<String> args) {
+        if (args.isEmpty())
+            Utils.showError("Not enough arguments given for reclaim disk space action", this.getClass());
+        if (args.size() > 1)
+            Utils.showWarning("Too many arguments given for reclaim disk space action", this.getClass());
+
         return "Reclaiming!";
     }
 
-    public String stateAction() {
+    public String stateAction(ArrayList<String> args) {
+        if (args.size() > 0)
+            Utils.showWarning("Too many arguments given for state action", this.getClass());
+
         return "Stating!";
     }
 }
