@@ -97,6 +97,17 @@ public class Message {
         this.repDegree = repDegree;
     }
 
+    public Message(String msgType, float protocolVersion, int senderID, String fileID) {
+        this.msgType = msgType;
+        this.protocolVersion = protocolVersion;
+        this.senderID = senderID;
+        if (fileID.equals("")) {
+            Utils.showError("Unacceptable file identifier", this.getClass());
+            throw new ExceptionInInitializerError();
+        }
+        this.fileID = fileID;
+    }
+
     public Message(String header) {
         Matcher headerMatch = msgHeaderRegex.matcher(header);
 

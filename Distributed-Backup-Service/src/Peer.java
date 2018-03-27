@@ -145,7 +145,7 @@ public class Peer implements RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for delete action", this.getClass());
 
-        threadPool.executeThread(new DeleteAction());
+        threadPool.executeThread(new DeleteAction(controlChannel, protocolVersion, peerID, args.get(0)));
     }
 
     public void reclaimAction(ArrayList<String> args) {
