@@ -1,4 +1,4 @@
-import Utils.Utils;
+package Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,7 +10,7 @@ import java.security.MessageDigest;
 /**
  * Class responsible for splitting a file in chunks
  */
-public final class FileSplitter {
+public final class FileManager {
 
     /**
      * Chunks' size in bytes : 64KBytes
@@ -19,11 +19,9 @@ public final class FileSplitter {
 
     public static boolean splitFile(String filePath) {
 
-        Path path = Paths.get(filePath);
-        if (!Files.exists(path)) {
-            Utils.showError("Given File does not exist", FileSplitter.class);
+        Path path = getPath(filePath);
+        if (path == null)
             return false;
-        }
 
         try {
 
@@ -35,7 +33,7 @@ public final class FileSplitter {
 
                 // To remove this from here to later create a folder only for backups -< new class or some shit TODO
                 if(! new File("backup-files").mkdirs())
-                    Utils.showError("Failed to create directory for backup files", FileSplitter.class);
+                    Utils.showError("Failed to create directory for backup files", FileManager.class);
 
                 FileOutputStream out = new FileOutputStream("backup-files/" + Integer.toString(writtenBytes));
                 out.write(fileData, writtenBytes,
@@ -45,7 +43,7 @@ public final class FileSplitter {
             }
 
         } catch (java.io.IOException e) {
-            Utils.showError("Unable to handle file bytes", FileSplitter.class);
+            Utils.showError("Unable to handle file bytes", FileManager.class);
         }
 
         return true;
@@ -54,10 +52,17 @@ public final class FileSplitter {
     /**
      * Generates the fileId of a given file, using sha256 over some file peculiarity
      *
-     * @param file The file to be processed
+     * @param filePath The path of the file to be processed
      * @return The resultant fileID or empty string if  something failed
      */
-    public static String genFileID(File file) {
+    public static String genFileID(String filePath) {
+
+        Path path = getPath(filePath);
+        if (path == null)
+            return "";
+
+        File file = path.toFile();
+
         try {
             MessageDigest hasher = MessageDigest.getInstance("SHA-256");
             byte[] hashedMessage =  hasher.digest(
@@ -72,9 +77,24 @@ public final class FileSplitter {
             return hashAsString.toString();
 
         } catch (java.security.NoSuchAlgorithmException | java.io.UnsupportedEncodingException e) {
-            Utils.showError("failed to apply sha256", FileSplitter.class);
+            Utils.showError("failed to apply sha256", FileManager.class);
         }
         return "";
+    }
+
+    /**
+     * Verifies if the file correspondent to a given fileName exists
+     *
+     * @param filePath The filepath
+     * @return returns a Path object if the file exists, null otherwise
+     */
+    private static Path getPath(String filePath) {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            Utils.showError("Given File does not exist", FileManager.class);
+            return null;
+        }
+        return path;
     }
 
     // Function to merge files here

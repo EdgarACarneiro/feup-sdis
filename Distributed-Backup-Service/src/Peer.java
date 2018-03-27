@@ -128,7 +128,7 @@ public class Peer implements RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new BackupAction());
+        threadPool.executeThread(new BackupAction(protocolVersion, peerID, args.get(1), args.get(2)));
     }
 
     public void restoreAction(ArrayList<String> args) {

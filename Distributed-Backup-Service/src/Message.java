@@ -42,27 +42,85 @@ public class Message {
      */
     private static final int REP_DEGREE_GROUP = 8;
 
+    /**
+     * The entry in the ASCII table for the carriage return char
+     */
+    private static final int ASCII_CR = 13;
 
-    public Message() {}
+    /**
+     * The entry in the ASCII table for the line feed char
+     */
+    private static final int ASCII_LF = 10;
 
-    public boolean parseHeader(String header) {
+    /**
+     * The message type
+     */
+    private String msgType;
 
+    /**
+     * The Message protocol version
+     */
+    private float protocolVersion;
+
+    /**
+     * The id of the peer who sent / is going to send the message
+     */
+    private int senderID;
+
+    /**
+     * The file identifier of the file the chunk belongs to
+     */
+    private String fileID;
+
+    /**
+     * The chunk number
+     */
+    private int chunkNum;
+
+    /**
+     * The desired replication degree for the given chunk
+     */
+    private int repDegree;
+
+    public Message(String msgType, float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree) {
+        this.msgType = msgType;
+        this.protocolVersion = protocolVersion;
+        this.senderID = senderID;
+        this.fileID = fileID;
+        this.chunkNum = chunkNum;
+        this.repDegree = repDegree;
+    }
+
+    public Message(String header) {
         Matcher headerMatch = msgHeaderRegex.matcher(header);
 
         if (! headerMatch.matches()) {
             Utils.showError("Failed to get a Regex match in message Header", this.getClass());
-            return false;
+            throw new ExceptionInInitializerError();
         }
 
+        msgType = headerMatch.group(TYPE_GROUP);
+        protocolVersion = Float.parseFloat(headerMatch.group(VERSION_GROUP));
+        senderID = Integer.parseInt(headerMatch.group(SENDER_ID_GROUP));
+        fileID = headerMatch.group(FIELD_ID_GROUP);
+        chunkNum = Integer.parseInt(headerMatch.group(CHUNK_NUM_GROUP));
+        repDegree = Integer.parseInt(headerMatch.group(REP_DEGREE_GROUP));
+
         //TODO MISSING THE FINAL HEADER FLAG <CRLF>
+    }
 
-        String msgType = headerMatch.group(TYPE_GROUP);
-        String version = headerMatch.group(VERSION_GROUP);
-        int senderID = Integer.parseInt(headerMatch.group(SENDER_ID_GROUP));
-        String fileID = headerMatch.group(FIELD_ID_GROUP);
-        int chunkNum = Integer.parseInt(headerMatch.group(CHUNK_NUM_GROUP));
-        int replicationDegree = Integer.parseInt(headerMatch.group(REP_DEGREE_GROUP));
-
-        return true;
+    /**
+     * Generate the Message from private fields
+     *
+     * @return The String containing the message
+     */
+    public String genMsg() {
+        return (msgType + " " +
+                protocolVersion + " " +
+                senderID + " " +
+                fileID + " " +
+                chunkNum + " " +
+                repDegree + " " +
+                (char) ASCII_CR + (char) ASCII_LF);
     }
 }
