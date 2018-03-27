@@ -1,0 +1,3 @@
+#!/bin/bash
+
+javac Action/Action.java Action/BackupAction.java Action/DeleteAction.java Action/ReclaimAction.java Action/RestoreAction.java Action/StateAction.java Channel/BackupChannel.java Channel/ControlChannel.java Channel/MulticastChannel.java Channel/RestoreChannel.java ThreadPool/ThreadPool.java Utils/FileManager.java Utils/Message.java Utils/Utils.java Client.java Peer.java RMIClient.java RMIInterface.java TestApp.java
