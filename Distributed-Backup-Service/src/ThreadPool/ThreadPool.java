@@ -1,6 +1,7 @@
 package ThreadPool;
 
 import Action.Action;
+import Channel.MulticastChannel;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +35,15 @@ public class ThreadPool {
      */
     public void executeThread(Action action) {
         executor.execute(action);
+    }
+
+    /**
+     * Run a new thread with a given channel, initiating its listening functionality
+     *
+     * @param channel permanent listener channel
+     */
+    public void executeThread(MulticastChannel channel) {
+        executor.execute(channel);
     }
 
     /**

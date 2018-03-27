@@ -9,7 +9,7 @@ public class Message {
      * Regex useful for parsing Message Headers
      */
     private static final Pattern msgHeaderRegex = Pattern.compile(
-            "\\s*?(\\w+?)\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([A-F0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s*?$"
+            "\\s*?(\\w+?)\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s*?$"
     );
 
     /**

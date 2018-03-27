@@ -1,12 +1,16 @@
 package Channel;
 
 import Utils.Utils;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 /**
  * Generic class representing a multicast network address, used for communication between peers
  */
-public class MulticastChannel {
+public class MulticastChannel implements Runnable{
 
     /**
      * Inet Address used in the communication
@@ -19,11 +23,16 @@ public class MulticastChannel {
     private int port;
 
     /**
+     * The multicast socket used
+     */
+    private MulticastSocket socket;
+
+    /**
      * Multicast Network unique Constructor.
      *
      * @param channelName The Communication address and Port, using a string
      */
-    protected MulticastChannel(String channelName) {
+    public MulticastChannel(String channelName) {
 
         String addr = extractAddr(channelName);
         int port = extractPort(channelName);
@@ -33,6 +42,16 @@ public class MulticastChannel {
             this.port = port;
         } catch (java.net.UnknownHostException e) {
             Utils.showError("Unable to recognize host given to initialize network", this.getClass());
+        }
+
+        try {
+            socket = new MulticastSocket(port);
+
+            //Joint the Multicast group
+            socket.joinGroup(inetAddr);
+        }
+        catch (java.io.IOException e) {
+            Utils.showError("Failed to join multicast channel", this.getClass());
         }
     }
 
@@ -74,5 +93,40 @@ public class MulticastChannel {
     private int extractPort(String channelName) {
         String[] nameParts = channelName.split(":");
         return Integer.parseInt(nameParts[1]);
+    }
+
+    @Override
+    public void run() {
+        byte[] buf = new byte[256];
+
+        // Create a new Multicast socket (that will allow other sockets/programs to join it as well.
+        try {
+            while (true) {
+                // Receive the information and print it.
+                DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
+                socket.receive(msgPacket);
+
+                String msg = new String(buf, 0, buf.length);
+                System.out.println("Received msg: " + msg);
+            }
+        } catch (IOException ex) {
+            Utils.showError("Failed to receive messages using multicast channel", this.getClass());
+        }
+    }
+
+    public void sendMessage(String msg) {
+        try {
+            // Create a packet that will contain the data
+            // (in the form of bytes) and send it.
+            DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(),
+                    msg.getBytes().length, inetAddr, port);
+            socket.send(msgPacket);
+
+            System.out.println("Sent packet with msg: " + msg);
+            Thread.sleep(500);
+
+        } catch (IOException | java.lang.InterruptedException ex) {
+            Utils.showError("Failed to send message through multicast channel", this.getClass());
+        }
     }
 }

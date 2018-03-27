@@ -1,6 +1,7 @@
 import Action.*;
 import Channel.BackupChannel;
 import Channel.ControlChannel;
+import Channel.MulticastChannel;
 import Channel.RestoreChannel;
 import Utils.Utils;
 import ThreadPool.ThreadPool;
@@ -77,10 +78,11 @@ public class Peer implements RMIInterface {
         restoreChannel = new RestoreChannel(channelMDR);
 
         threadPool = new ThreadPool();
+        threadPool.executeThread(controlChannel);
+        threadPool.executeThread(backupChannel);
+        threadPool.executeThread(restoreChannel);
 
         initializeRMI();
-
-       // TODO - Fica à escuta do canal/ canais(?) multicast p ver se recebe pedidos e dps delega
     }
 
     /**
