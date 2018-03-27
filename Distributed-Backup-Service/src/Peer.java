@@ -1,7 +1,6 @@
 import Action.*;
 import Channel.BackupChannel;
 import Channel.ControlChannel;
-import Channel.MulticastChannel;
 import Channel.RestoreChannel;
 import Utils.Utils;
 import ThreadPool.ThreadPool;
@@ -128,7 +127,7 @@ public class Peer implements RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new BackupAction(protocolVersion, peerID, args.get(1), args.get(2)));
+        threadPool.executeThread(new BackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
     public void restoreAction(ArrayList<String> args) {

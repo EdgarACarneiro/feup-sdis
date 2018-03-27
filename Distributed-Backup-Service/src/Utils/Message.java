@@ -1,3 +1,5 @@
+package Utils;
+
 import Utils.Utils;
 
 import java.util.regex.Matcher;
@@ -6,7 +8,7 @@ import java.util.regex.Pattern;
 public class Message {
 
     /**
-     * Regex useful for parsing Message Headers
+     * Regex useful for parsing Utils.Message Headers
      */
     private static final Pattern msgHeaderRegex = Pattern.compile(
             "\\s*?(\\w+?)\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s*?$"
@@ -58,7 +60,7 @@ public class Message {
     private String msgType;
 
     /**
-     * The Message protocol version
+     * The Utils.Message protocol version
      */
     private float protocolVersion;
 
@@ -86,6 +88,10 @@ public class Message {
         this.msgType = msgType;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
+        if (fileID.equals("")) {
+            Utils.showError("Unacceptable file identifier", this.getClass());
+            throw new ExceptionInInitializerError();
+        }
         this.fileID = fileID;
         this.chunkNum = chunkNum;
         this.repDegree = repDegree;
@@ -110,7 +116,7 @@ public class Message {
     }
 
     /**
-     * Generate the Message from private fields
+     * Generate the Utils.Message from private fields
      *
      * @return The String containing the message
      */

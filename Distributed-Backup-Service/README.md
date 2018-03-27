@@ -25,7 +25,7 @@ Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaç
  * Existência de uma initator-peer, usada para iniciar sub-protocolos
  * Todos os subprotocolos usam um canal multicast (canal de controlo MC) para trocar mensagens de controlo.
  * Os cananis multicast MDB e MDR são usados respetivamente para backup e para restaurar data chunks.
- * #### Message Format and Fieldd Encoding (ver guião) -> Informação geral do formato das mensagens
+ * #### Utils.Message Format and Fieldd Encoding (ver guião) -> Informação geral do formato das mensagens
  * #### Chunk backup subprotocol (ver guião) -> Como implmementar o protocolo de backup
 **_Importante_**: Um peer nunca guarda chunks dos seus próprios ficheiros
  * #### Chunk restore protocol (ver guião) -> Como implmementar o protocolo de restauro
