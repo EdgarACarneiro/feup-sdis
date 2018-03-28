@@ -4,7 +4,7 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
-public class RemovedMsg extends Message {
+public class RemovedMsg extends Message implements msgGenerator {
 
     /**
      * Regex used to parse a String containing a 'remove' message

@@ -4,7 +4,7 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
-public class PutchunkMsg extends Message {
+public class PutchunkMsg extends Message implements msgGenerator {
 
     /**
      * Regex used to parse a String containing a putchunk message

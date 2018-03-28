@@ -4,7 +4,7 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
-public class ChunkMsg extends Message {
+public class ChunkMsg extends Message implements msgGenerator {
 
     /**
      * Regex used to parse a String containing a 'chunk' message

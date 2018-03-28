@@ -4,7 +4,7 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
-public class StoredMsg extends Message {
+public class StoredMsg extends Message implements msgGenerator {
 
     /**
      * Regex used to parse a String containing a 'stored' message

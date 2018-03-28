@@ -4,7 +4,7 @@ import Utils.Utils;
 
 import java.util.regex.Pattern;
 
-public abstract class Message {
+public class Message {
 
     /**
      * Regex useful for parsing Messages
@@ -62,11 +62,11 @@ public abstract class Message {
     protected String fileID;
 
 
-    public Message(String Regex) {
+    protected Message(String Regex) {
         msgRegex = Pattern.compile(Regex);
     }
 
-    public Message (float protocolVersion, int senderID, String fileID) {
+    protected Message (float protocolVersion, int senderID, String fileID) {
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
 
@@ -76,11 +76,4 @@ public abstract class Message {
         }
         this.fileID = fileID;
     }
-
-    /**
-     * Generate the Messages. Message from private fields
-     *
-     * @return The String containing the message
-     */
-    public abstract String genMsg();
 }

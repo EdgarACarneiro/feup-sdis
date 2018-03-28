@@ -14,11 +14,6 @@ public class BackupAction extends Action {
     private BackupChannel backupChannel;
 
     /**
-     * The type for generating the messages associated to the backup action
-     */
-    private final static String BACKUP_TYPE = "PUTCHUNK";
-
-    /**
      * Protocol Version in the communication
      */
     private float protocolVersion;

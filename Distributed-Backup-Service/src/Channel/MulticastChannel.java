@@ -1,5 +1,7 @@
 package Channel;
 
+import Messages.Message;
+import Messages.MessageHandler;
 import Utils.Utils;
 
 import java.io.IOException;
@@ -119,6 +121,8 @@ public abstract class MulticastChannel implements Runnable{
 
                 String msg = new String(buf, 0, buf.length);
                 System.out.println("Received msg: " + msg);
+                Message result = MessageHandler.messageHandler(msg);
+                // TODO - Do sth with the resultant msg or mby let the msg itself trigger the action
             }
         } catch (IOException ex) {
             Utils.showError("Failed to receive messages using multicast channel", this.getClass());
