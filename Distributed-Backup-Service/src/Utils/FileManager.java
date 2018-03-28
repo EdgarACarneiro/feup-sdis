@@ -15,7 +15,7 @@ import java.util.Arrays;
 public final class FileManager {
 
     /**
-     * Chunks' size in bytes : 64KBytes
+     * Chunks' size in bytes : 64KBytes (chunk's Body)
      */
     private static final int CHUNKS_SIZE = 64000;
 

@@ -72,9 +72,9 @@ public class Peer implements RMIInterface {
         peerID = Integer.parseInt(serverID);
         this.accessPoint = accessPoint;
 
-        controlChannel = new ControlChannel(channelMC);
-        backupChannel = new BackupChannel(channelMDB);
-        restoreChannel = new RestoreChannel(channelMDR);
+        controlChannel = new ControlChannel(channelMC, peerID);
+        backupChannel = new BackupChannel(channelMDB, peerID);
+        restoreChannel = new RestoreChannel(channelMDR, peerID);
 
         threadPool = new ThreadPool();
         threadPool.executeThread(controlChannel);

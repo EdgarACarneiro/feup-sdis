@@ -10,7 +10,17 @@ import java.net.MulticastSocket;
 /**
  * Generic class representing a multicast network address, used for communication between peers
  */
-public class MulticastChannel implements Runnable{
+public abstract class MulticastChannel implements Runnable{
+
+    /**
+     * The maximum size of a chunk ( Header + Body)
+     */
+    private static final int CHUNK_MAXIMUM_SIZE = 65000;
+
+    /**
+     * The identifier of the Peer associated to the channel
+     */
+    private int peerID;
 
     /**
      * Inet Address used in the communication
@@ -31,8 +41,9 @@ public class MulticastChannel implements Runnable{
      * Multicast Network unique Constructor.
      *
      * @param channelName The Communication address and Port, using a string
+     * @param peerID The peerID of the Peer associated to the channel
      */
-    public MulticastChannel(String channelName) {
+    public MulticastChannel(String channelName, int peerID) {
 
         String addr = extractAddr(channelName);
         int port = extractPort(channelName);
@@ -97,7 +108,7 @@ public class MulticastChannel implements Runnable{
 
     @Override
     public void run() {
-        byte[] buf = new byte[256];
+        byte[] buf = new byte[CHUNK_MAXIMUM_SIZE];
 
         // Create a new Multicast socket (that will allow other sockets/programs to join it as well.
         try {
