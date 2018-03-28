@@ -2,44 +2,39 @@ package Messages;
 
 import Utils.Utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Message {
+public abstract class Message {
 
     /**
      * Regex useful for parsing Messages
      */
     protected Pattern msgRegex;
-    /**
-     * Regex catch group corresponding to the message type
-     */
-    private static final int TYPE_GROUP = 1;
 
     /**
      * Regex catch group corresponding to the message version
      */
-    private static final int VERSION_GROUP = 2;
+    protected static final int VERSION_GROUP = 1;
 
     /**
      * Regex catch group corresponding to the message sender ID
      */
-    private static final int SENDER_ID_GROUP = 3;
+    protected static final int SENDER_ID_GROUP = 2;
 
     /**
      * Regex catch group corresponding to the message filed ID
      */
-    private static final int FIELD_ID_GROUP = 4;
+    protected static final int FIELD_ID_GROUP = 3;
 
     /**
      * Regex catch group corresponding to the message correspondent chunk number
      */
-    private static final int CHUNK_NUM_GROUP = 6;
+    protected static final int CHUNK_NUM_GROUP = 5;
 
     /**
      * Regex catch group corresponding to the message correspondent replication degree
      */
-    private static final int REP_DEGREE_GROUP = 8;
+    protected static final int REP_DEGREE_GROUP = 7;
 
     /**
      * The entry in the ASCII table for the carriage return char
@@ -66,7 +61,10 @@ public class Message {
      */
     protected String fileID;
 
-    public Message() {}
+
+    public Message(String Regex) {
+        msgRegex = Pattern.compile(Regex);
+    }
 
     public Message (float protocolVersion, int senderID, String fileID) {
         this.protocolVersion = protocolVersion;
@@ -80,17 +78,9 @@ public class Message {
     }
 
     /**
-     * Generate the Messages.Message from private fields
+     * Generate the Messages. Message from private fields
      *
      * @return The String containing the message
      */
-    public String genMsg() {
-        return (msgType + " " +
-                protocolVersion + " " +
-                senderID + " " +
-                fileID + " " +
-                chunkNum + " " +
-                repDegree + " " +
-                (char) ASCII_CR + (char) ASCII_LF);
-    }
+    public abstract String genMsg();
 }
