@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Messages.DeleteMsg;
 import Messages.Message;
 import Utils.*;
 
@@ -12,11 +13,6 @@ public class DeleteAction extends Action {
      * The channel used to communicate with other peers, regarding backup files
      */
     private ControlChannel controlChannel;
-
-    /**
-     * The type for generating the messages associated to the backup action
-     */
-    private final static String MSG_TYPE = "DELETE";
 
     /**
      * Protocol Version in the communication
@@ -50,7 +46,7 @@ public class DeleteAction extends Action {
         for (int i = 0; i < chunks.size(); ++i) {
             try {
                 controlChannel.sendMessage(
-                    new Message(MSG_TYPE, protocolVersion, senderID, fileID).genMsg()
+                    new DeleteMsg(protocolVersion, senderID, fileID).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping delete action", this.getClass());

@@ -32,7 +32,7 @@ public class GetchunkMsg extends Message implements msgGenerator {
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
     }
 
-    public GetchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree) {
+    public GetchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
     }

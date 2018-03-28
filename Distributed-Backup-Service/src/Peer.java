@@ -136,7 +136,7 @@ public class Peer implements RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for restore action", this.getClass());
 
-        threadPool.executeThread(new RestoreAction());
+        threadPool.executeThread(new RestoreAction(controlChannel, protocolVersion, peerID, args.get(0)));
     }
 
     public void deleteAction(ArrayList<String> args) {
@@ -154,7 +154,7 @@ public class Peer implements RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for reclaim disk space action", this.getClass());
 
-        threadPool.executeThread(new ReclaimAction());
+        threadPool.executeThread(new ReclaimAction(controlChannel, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
     public void stateAction(ArrayList<String> args) {
