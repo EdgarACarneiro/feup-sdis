@@ -34,8 +34,8 @@ public class RestoreAction extends Action {
      */
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
-    public RestoreAction(RestoreChannle restoreChannel, float protocolVersion, int senderID, String file) {
-        this.controlChannel = controlChannel;
+    public RestoreAction(RestoreChannel restoreChannel, float protocolVersion, int senderID, String file) {
+        this.restoreChannel = restoreChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
@@ -45,7 +45,7 @@ public class RestoreAction extends Action {
     public void run() {
         for (int i = 0; i < chunks.size(); ++i) {
             try {
-                controlChannel.sendMessage(
+                restoreChannel.sendMessage(
                     new GetchunkMsg(protocolVersion, senderID, fileID, i+1).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {

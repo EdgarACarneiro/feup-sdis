@@ -32,7 +32,7 @@ public class RemovedMsg extends Message implements msgGenerator {
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
     }
 
-    public RemovedMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree) {
+    public RemovedMsg(float protocolVersion, int senderID, String fileID, int chunkNum) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
     }
