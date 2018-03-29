@@ -38,13 +38,13 @@ public class GetchunkMsg extends Message implements msgGenerator {
     }
 
     @Override
-    public String genMsg() {
+    public byte[] genMsg() {
         return ("GETCHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +
                 chunkNum + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
-                (char) ASCII_CR + (char) ASCII_LF);
+                (char) ASCII_CR + (char) ASCII_LF).getBytes();
     }
 }

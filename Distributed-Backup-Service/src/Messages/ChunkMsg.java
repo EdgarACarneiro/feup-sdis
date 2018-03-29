@@ -4,6 +4,8 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
+import static Utils.Utils.byteArrayConcat;
+
 public class ChunkMsg extends Message implements msgGenerator {
 
     /**
@@ -47,14 +49,14 @@ public class ChunkMsg extends Message implements msgGenerator {
     }
 
     @Override
-    public String genMsg() {
-        return ("CHUNK" + " " +
+    public byte[] genMsg() {
+        byte[] header = ("PUTCHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +
                 chunkNum + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
-                (char) ASCII_CR + (char) ASCII_LF)+
-                new String(chunk);
+                (char) ASCII_CR + (char) ASCII_LF).getBytes();
+        return byteArrayConcat(header, chunk);
     }
 }

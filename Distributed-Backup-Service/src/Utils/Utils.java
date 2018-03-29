@@ -63,4 +63,18 @@ public final class Utils {
 			System.err.println(ANSI_RED + "LOGGER: Could not write to log." + ANSI_RESET);
 		}
 	}
+
+	/**
+	 * Concatenates two byte arrays into one
+	 *
+	 * @param array1 One of the arrays
+	 * @param array2 The other array
+	 * @return Array containing the concatenation of the two given arrays
+	 */
+	public static byte[] byteArrayConcat(byte[] array1, byte[] array2) {
+		byte[] array1and2 = new byte[array1.length + array2.length];
+		System.arraycopy(array1, 0, array1and2, 0, array1.length);
+		System.arraycopy(array2, 0, array1and2, array1.length, array2.length);
+		return array1and2;
+	}
 }

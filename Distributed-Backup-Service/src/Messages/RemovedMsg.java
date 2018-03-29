@@ -38,13 +38,13 @@ public class RemovedMsg extends Message implements msgGenerator {
     }
 
     @Override
-    public String genMsg() {
+    public byte[] genMsg() {
         return ("REMOVED" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +
                 chunkNum + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
-                (char) ASCII_CR + (char) ASCII_LF);
+                (char) ASCII_CR + (char) ASCII_LF).getBytes();
     }
 }

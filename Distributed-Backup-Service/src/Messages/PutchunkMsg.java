@@ -2,7 +2,12 @@ package Messages;
 
 import Utils.Utils;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
+import java.util.stream.Stream;
+
+import static Utils.Utils.byteArrayConcat;
 
 public class PutchunkMsg extends Message implements msgGenerator {
 
@@ -50,18 +55,19 @@ public class PutchunkMsg extends Message implements msgGenerator {
         this.chunkNum = chunkNum;
         this.repDegree = repDegree;
         this.chunk = chunk;
+        Utils.showWarning("" + this.chunk.length, PutchunkMsg.class);
     }
 
     @Override
-    public String genMsg() {
-        return ("PUTCHUNK" + " " +
+    public byte[] genMsg() {
+         byte[] header = ("PUTCHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +
                 chunkNum + " " +
                 repDegree + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
-                (char) ASCII_CR + (char) ASCII_LF) +
-                new String(chunk);
+                (char) ASCII_CR + (char) ASCII_LF).getBytes();
+         return byteArrayConcat(header, chunk);
     }
 }

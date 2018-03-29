@@ -17,7 +17,7 @@ public abstract class MulticastChannel implements Runnable{
     /**
      * The maximum size of a chunk ( Header + Body)
      */
-    private static final int CHUNK_MAXIMUM_SIZE = 65000;
+    private static final int CHUNK_MAXIMUM_SIZE = 64100;
 
     /**
      * The identifier of the Peer associated to the channel
@@ -129,19 +129,19 @@ public abstract class MulticastChannel implements Runnable{
         }
     }
 
-    public void sendMessage(String msg) {
+    public void sendMessage(byte[] msg) {
         try {
             // Create a packet that will contain the data
             // (in the form of bytes) and send it.
-            DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(),
-                    msg.getBytes().length, inetAddr, port);
+            DatagramPacket msgPacket = new DatagramPacket(msg,
+                    msg.length, inetAddr, port);
             socket.send(msgPacket);
 
-            System.out.println("Sent packet with msg: " + msg);
-            Thread.sleep(500);
+            System.out.println("Sent packet with msg: " + new String(msg));
 
-        } catch (IOException | java.lang.InterruptedException ex) {
+        } catch (IOException  ex) {
             Utils.showError("Failed to send message through multicast channel", this.getClass());
+            ex.printStackTrace();
         }
     }
 }
