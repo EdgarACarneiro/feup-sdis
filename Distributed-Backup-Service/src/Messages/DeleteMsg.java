@@ -36,15 +36,17 @@ public class DeleteMsg extends Message implements msgGenerator {
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {
-                try {
-                    Files.deleteIfExists(Paths.get(child.getPath()));
-                } catch (NoSuchFileException e) {
-                    System.err.println("No such file/directory exists");
-                } catch (DirectoryNotEmptyException e) {
-                    System.err.println("Directory is not empty.");
-                } catch (IOException e) {
-                    System.err.println("Invalid permissions.");
-                }
+                if (child.isDirectory())
+                    if (fileID == child.getName())
+                        try {
+                            Files.deleteIfExists(Paths.get(child.getPath()));
+                        } catch (NoSuchFileException e) {
+                            System.err.println("No such file/directory exists");
+                        } catch (DirectoryNotEmptyException e) {
+                            System.err.println("Directory is not empty.");
+                        } catch (IOException e) {
+                            System.err.println("Invalid permissions.");
+                        }
             }
         }
     }
