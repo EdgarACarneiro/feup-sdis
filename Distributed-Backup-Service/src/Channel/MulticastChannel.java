@@ -20,6 +20,9 @@ public abstract class MulticastChannel implements Runnable{
      */
     private static final int CHUNK_MAXIMUM_SIZE = 65535;
 
+    /**
+     * The associated Peer to this multicast channel
+     */
     private Peer peer;
 
     /**
@@ -119,9 +122,9 @@ public abstract class MulticastChannel implements Runnable{
                 socket.receive(msgPacket);
 
                 String msg = new String(buf, 0, buf.length);
-                System.out.println("Received msg: " + msg);
                 MessageHandler.messageHandler(
-                        peer.getControlChannel(), peer.getPeerID(), MessageHandler.messageInterpreter(msg)
+                        peer.getControlChannel(), peer.threadPool,
+                        peer.getPeerID(), MessageHandler.messageInterpreter(msg)
                 );
                 // TODO - Do sth with the resultant msg or mby let the msg itself trigger the action
             }

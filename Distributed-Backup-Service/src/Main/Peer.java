@@ -60,7 +60,7 @@ public class Peer implements RMI.RMIInterface {
     /**
      * The thread pool for running different action at the same time
      */
-    private ThreadPool threadPool;
+    public ThreadPool threadPool;
 
     /**
      * Regex used to validate the program args for initiating a peer

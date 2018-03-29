@@ -2,6 +2,7 @@ package Messages;
 
 import Action.StoreAction;
 import Channel.ControlChannel;
+import ThreadPool.ThreadPool;
 import Utils.Utils;
 
 public class MessageHandler {
@@ -39,12 +40,16 @@ public class MessageHandler {
         }
     }
 
-    public static void messageHandler(ControlChannel controlChannel, int peerID, Message message) {
+    public static void messageHandler(ControlChannel controlChannel, ThreadPool threadPool, int peerID, Message message) {
         if (message == null || peerID == message.getSenderID())
             return;
 
+        System.out.println("RECEIVED MESSAGE: " + message);
+
         if (message instanceof PutchunkMsg) {
-            new StoreAction(controlChannel, peerID, (PutchunkMsg) message);
+            threadPool.executeThread(
+                    new StoreAction(controlChannel, peerID, (PutchunkMsg) message)
+            );
         }
     }
 }
