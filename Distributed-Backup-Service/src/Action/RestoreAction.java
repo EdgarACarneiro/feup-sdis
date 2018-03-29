@@ -55,7 +55,7 @@ public class RestoreAction extends ActionHasReply {
         }
     }
 
-    public void checkResponse(Message msg) {
+    public void parseResponse(Message msg) {
 
     }
 }

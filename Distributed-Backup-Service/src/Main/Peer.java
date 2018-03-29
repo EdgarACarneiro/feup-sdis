@@ -161,7 +161,9 @@ public class Peer implements RMI.RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new TriggerBackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
+        TriggerBackupAction action = new TriggerBackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1));
+        controlChannel.subscribeAction(action);
+        threadPool.executeThread(action);
     }
 
     public void restoreAction(ArrayList<String> args) {

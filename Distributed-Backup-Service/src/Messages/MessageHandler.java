@@ -38,7 +38,7 @@ public class MessageHandler implements Runnable {
             (new StoreAction(controlChannel, peerID, (PutchunkMsg) message)).run();
         } else if (message instanceof  StoredMsg) {
             for (ActionHasReply action : subscribedActions) {
-                action.checkResponse(message);
+                action.parseResponse(message);
             }
         }
     }

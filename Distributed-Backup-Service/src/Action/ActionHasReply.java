@@ -7,6 +7,11 @@ import Messages.Message;
  */
 public abstract class ActionHasReply extends Action {
 
-    public abstract void checkResponse(Message msg);
+    /**
+     * Do something with the message to a action previously made by this class
+     *
+     * @param msg Msg to be interpreted
+     */
+    public abstract void parseResponse(Message msg);
 
 }

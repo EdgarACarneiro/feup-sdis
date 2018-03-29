@@ -7,10 +7,16 @@ import Utils.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Random;
 
 import static Utils.FileManager.geFileDirectory;
 
 public class StoreAction extends Action {
+
+    /**
+     * Maximum time waited to trigger the Store Action, exclusively.
+     */
+    private final static int MAX_TIME_TO_SEND = 4001;
 
     /**
      * The putchunk message that triggered this action
@@ -49,12 +55,15 @@ public class StoreAction extends Action {
 
     public void run() {
         try {
+            Thread.sleep(new Random().nextInt(MAX_TIME_TO_SEND));
             controlChannel.sendMessage(
                     new StoredMsg(putchunkMsg.getProtocolVersion(), putchunkMsg.getSenderID(),
                             putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
             );
         } catch (ExceptionInInitializerError e) {
-            Utils.showError("Failed to build message, stopping backup action", this.getClass());
+            Utils.showError("Failed to build message, stopping Store action", this.getClass());
+        } catch (java.lang.InterruptedException e) {
+            Utils.showError("Unable to wait before proceeding.", this.getClass());
         }
     }
 
