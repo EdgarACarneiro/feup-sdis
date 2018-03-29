@@ -70,4 +70,12 @@ public class PutchunkMsg extends Message implements msgGenerator {
                 (char) ASCII_CR + (char) ASCII_LF).getBytes();
          return byteArrayConcat(header, chunk);
     }
+
+    public int getChunkNum() {
+        return chunkNum;
+    }
+
+    public byte[] getChunk() {
+        return chunk;
+    }
 }

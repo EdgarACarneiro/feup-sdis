@@ -15,9 +15,9 @@ import java.net.MulticastSocket;
 public abstract class MulticastChannel implements Runnable{
 
     /**
-     * The maximum size of a chunk ( Header + Body)
+     * The maximum size of a chunk ( Header + Body) : 64K (1024B)
      */
-    private static final int CHUNK_MAXIMUM_SIZE = 64100;
+    private static final int CHUNK_MAXIMUM_SIZE = 65535;
 
     /**
      * The identifier of the Peer associated to the channel
@@ -121,7 +121,7 @@ public abstract class MulticastChannel implements Runnable{
 
                 String msg = new String(buf, 0, buf.length);
                 System.out.println("Received msg: " + msg);
-                Message result = MessageHandler.messageHandler(msg);
+                Message result = MessageHandler.messageInterpreter(msg);
                 // TODO - Do sth with the resultant msg or mby let the msg itself trigger the action
             }
         } catch (IOException ex) {

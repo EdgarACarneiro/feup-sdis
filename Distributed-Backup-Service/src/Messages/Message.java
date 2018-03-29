@@ -47,12 +47,12 @@ public class Message {
     protected static final int ASCII_LF = 10;
 
     /**
-     * The Messages.Message protocol version
+     * The application protocol version
      */
     protected float protocolVersion;
 
     /**
-     * The id of the peer who sent / is going to send the message
+     * The id of the peer that sent / is going to send the message
      */
     protected int senderID;
 
@@ -75,5 +75,17 @@ public class Message {
             throw new ExceptionInInitializerError();
         }
         this.fileID = fileID;
+    }
+
+    public float getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public int getSenderID() {
+        return senderID;
+    }
+
+    public String getFileID() {
+        return fileID;
     }
 }

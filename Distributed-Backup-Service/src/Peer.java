@@ -4,6 +4,8 @@ import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Utils.Utils;
 import ThreadPool.ThreadPool;
+
+import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -15,6 +17,11 @@ import java.util.regex.Pattern;
  * Class representing a Peer in the service
  */
 public class Peer implements RMIInterface {
+
+    /**
+     * The base directory for a directory containing all the peer associated chunks and files
+     */
+    private final static String BASE_DIRECTORY_NAME = "backup-";
 
     /**
      * The channel used for communication regarding control
@@ -30,6 +37,11 @@ public class Peer implements RMIInterface {
      * The channel used for communication regarding the restore of files action
      */
     private RestoreChannel restoreChannel;
+
+    /**
+     * Directory containing the Peer associated files
+     */
+    private String dirName;
 
     /**
      * Protocol Version in the communication
@@ -71,6 +83,9 @@ public class Peer implements RMIInterface {
         this.protocolVersion = Float.parseFloat(protocolVersion);
         peerID = Integer.parseInt(serverID);
         this.accessPoint = accessPoint;
+
+        dirName = BASE_DIRECTORY_NAME + peerID;
+        new File(dirName).mkdir();
 
         controlChannel = new ControlChannel(channelMC, peerID);
         backupChannel = new BackupChannel(channelMDB, peerID);
@@ -119,6 +134,7 @@ public class Peer implements RMIInterface {
     }
 
 
+    /* INTERFACE FUNCTIONS */
     // TODO - below functions
 
     public void backupAction(ArrayList<String> args) {
@@ -127,7 +143,7 @@ public class Peer implements RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new BackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
+        threadPool.executeThread(new BackupAction(backupChannel, controlChannel, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
     public void restoreAction(ArrayList<String> args) {
