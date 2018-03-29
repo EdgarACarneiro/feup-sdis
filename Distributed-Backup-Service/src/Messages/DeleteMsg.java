@@ -1,7 +1,14 @@
 package Messages;
 
+import Utils.FileManager;
 import Utils.Utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 
 public class DeleteMsg extends Message implements msgGenerator {
@@ -24,6 +31,22 @@ public class DeleteMsg extends Message implements msgGenerator {
         protocolVersion = Float.parseFloat(protocolMatch.group(VERSION_GROUP));
         senderID = Integer.parseInt(protocolMatch.group(SENDER_ID_GROUP));
         fileID = protocolMatch.group(FIELD_ID_GROUP);
+
+        File dir = new File(System.getProperty("user.dir"));
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                try {
+                    Files.deleteIfExists(Paths.get(child.getPath()));
+                } catch (NoSuchFileException e) {
+                    System.err.println("No such file/directory exists");
+                } catch (DirectoryNotEmptyException e) {
+                    System.err.println("Directory is not empty.");
+                } catch (IOException e) {
+                    System.err.println("Invalid permissions.");
+                }
+            }
+        }
     }
 
     public DeleteMsg(float protocolVersion, int senderID, String fileID) {
