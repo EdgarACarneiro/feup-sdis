@@ -7,7 +7,7 @@ import Utils.*;
 
 import java.util.ArrayList;
 
-public class RestoreAction extends Action {
+public class RestoreAction extends ActionHasReply {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
@@ -53,5 +53,9 @@ public class RestoreAction extends Action {
                 return;
             }
         }
+    }
+
+    public void checkResponse(Message msg) {
+
     }
 }

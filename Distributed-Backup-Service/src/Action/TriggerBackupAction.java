@@ -1,13 +1,13 @@
 package Action;
 
 import Channel.BackupChannel;
-import Channel.ControlChannel;
+import Messages.Message;
 import Messages.PutchunkMsg;
 import Utils.*;
 
 import java.util.ArrayList;
 
-public class BackupAction extends Action {
+public class TriggerBackupAction extends ActionHasReply {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
@@ -39,7 +39,7 @@ public class BackupAction extends Action {
      */
     private int repDegree;
 
-    public BackupAction(BackupChannel backupChannel, float protocolVersion, int senderID, String file, String repDegree) {
+    public TriggerBackupAction(BackupChannel backupChannel, float protocolVersion, int senderID, String file, String repDegree) {
         this.backupChannel = backupChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
@@ -59,5 +59,9 @@ public class BackupAction extends Action {
                 return;
             }
         }
+    }
+
+    public void checkResponse(Message msg) {
+
     }
 }

@@ -6,7 +6,6 @@ import Messages.StoredMsg;
 import Utils.Utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import static Utils.FileManager.geFileDirectory;

@@ -1,21 +1,52 @@
 package Messages;
 
+import Action.ActionHasReply;
 import Action.StoreAction;
 import Channel.ControlChannel;
 import ThreadPool.ThreadPool;
 import Utils.Utils;
 
-public class MessageHandler {
+import java.util.ArrayList;
+
+public class MessageHandler implements Runnable {
 
     /**
      * The maximum length of a possible message type
      */
     private final static int MAXIMUM_TYPE_SIZE = 8;
 
+    private ControlChannel controlChannel;
+
+    private int peerID;
+
+    private ArrayList<ActionHasReply> subscribedActions;
+
+    private Message message;
+
+    public MessageHandler(ControlChannel controlChannel, int peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+        this.controlChannel = controlChannel;
+        this.peerID = peerID;
+        this.subscribedActions = subscribedActions;
+        this.message = message;
+    }
+
+    public void run() {
+        if (message == null || peerID == message.getSenderID())
+            return;
+
+        if (message instanceof PutchunkMsg) {
+            (new StoreAction(controlChannel, peerID, (PutchunkMsg) message)).run();
+        } else if (message instanceof  StoredMsg) {
+            for (ActionHasReply action : subscribedActions) {
+                action.checkResponse(message);
+            }
+        }
+    }
+
     public static Message messageInterpreter(String receivedMsg) {
         String[] temp = receivedMsg.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
 
-        System.out.println(receivedMsg);
+        System.out.println(temp[0]);
 
         try {
             switch (temp[0].trim()) {
@@ -38,17 +69,6 @@ public class MessageHandler {
         } catch (ExceptionInInitializerError e) {
             Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
             return null;
-        }
-    }
-
-    public static void messageHandler(ControlChannel controlChannel, ThreadPool threadPool, int peerID, Message message) {
-        if (message == null || peerID == message.getSenderID())
-            return;
-
-        if (message instanceof PutchunkMsg) {
-            threadPool.executeThread(
-                    new StoreAction(controlChannel, peerID, (PutchunkMsg) message)
-            );
         }
     }
 }

@@ -1,7 +1,7 @@
 package Channel;
 
+import Action.ActionHasReply;
 import Main.Peer;
-import Messages.Message;
 import Messages.MessageHandler;
 import Utils.Utils;
 
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 
 /**
  * Generic class representing a multicast network address, used for communication between peers
@@ -19,6 +20,11 @@ public abstract class MulticastChannel implements Runnable{
      * The maximum size of a chunk ( Header + Body) : 64K (1024B)
      */
     private static final int CHUNK_MAXIMUM_SIZE = 65535;
+
+    /**
+     * ArrayList containing the subscribed Actions to the channel
+     */
+    private ArrayList<ActionHasReply> subscribedActions = new ArrayList<>();
 
     /**
      * The associated Peer to this multicast channel
@@ -117,16 +123,14 @@ public abstract class MulticastChannel implements Runnable{
         // Create a new Multicast socket (that will allow other sockets/programs to join it as well.
         try {
             while (true) {
-                // Receive the information and print it.
                 DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
                 socket.receive(msgPacket);
 
                 String msg = new String(buf, 0, msgPacket.getLength());
-                MessageHandler.messageHandler(
-                        peer.getControlChannel(), peer.threadPool,
-                        peer.getPeerID(), MessageHandler.messageInterpreter(msg)
+                peer.getThreadPool().executeThread(
+                        new MessageHandler(peer.getControlChannel(), peer.getPeerID(),
+                                subscribedActions, MessageHandler.messageInterpreter(msg))
                 );
-                // TODO - Do sth with the resultant msg or mby let the msg itself trigger the action
             }
         } catch (IOException ex) {
             Utils.showError("Failed to receive messages using multicast channel", this.getClass());
@@ -141,11 +145,15 @@ public abstract class MulticastChannel implements Runnable{
                     msg.length, inetAddr, port);
             socket.send(msgPacket);
 
-            System.out.println("Sent packet with msg: " + new String(msg));
+            System.out.println("Sent packet with msg: " + new String(msg, 0, 8));
 
         } catch (IOException  ex) {
             Utils.showError("Failed to send message through multicast channel", this.getClass());
             ex.printStackTrace();
         }
+    }
+
+    public void subscribeAction(ActionHasReply action) {
+        subscribedActions.add(action);
     }
 }

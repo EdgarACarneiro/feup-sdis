@@ -60,7 +60,7 @@ public class Peer implements RMI.RMIInterface {
     /**
      * The thread pool for running different action at the same time
      */
-    public ThreadPool threadPool;
+    private ThreadPool threadPool;
 
     /**
      * Regex used to validate the program args for initiating a peer
@@ -148,6 +148,10 @@ public class Peer implements RMI.RMIInterface {
         return peerID;
     }
 
+    public ThreadPool getThreadPool() {
+        return threadPool;
+    }
+
     /* INTERFACE FUNCTIONS */
     // TODO - below functions
 
@@ -157,7 +161,7 @@ public class Peer implements RMI.RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new BackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
+        threadPool.executeThread(new TriggerBackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
     public void restoreAction(ArrayList<String> args) {
