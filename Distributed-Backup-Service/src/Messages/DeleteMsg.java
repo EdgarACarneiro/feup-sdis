@@ -5,7 +5,7 @@ import Utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
@@ -36,19 +36,34 @@ public class DeleteMsg extends Message implements msgGenerator {
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {
-                if (child.isDirectory())
-                    if (fileID == child.getName())
-                        try {
-                            Files.deleteIfExists(Paths.get(child.getPath()));
-                        } catch (NoSuchFileException e) {
-                            System.err.println("No such file/directory exists");
-                        } catch (DirectoryNotEmptyException e) {
-                            System.err.println("Directory is not empty.");
-                        } catch (IOException e) {
-                            System.err.println("Invalid permissions.");
+                if (child.getName().substring(0, Math.min(6, child.getName().length())).equals("backup")){
+                    File newDir = new File(dir, child.getName());
+                    System.out.println("DIR: " + newDir.getName());
+                    for (File newchild : newDir.listFiles()) {
+                        System.out.println("NEW CHILD: " + newchild.getName());
+                        if (newchild.isDirectory()){
+                            if (newchild.getName().equals(fileID)){   
+                                System.out.println("DELETING " + newchild.getName() + "...");   
+                                if (deleteFolder(newchild))
+                                    System.out.println("DELETING " + newchild.getName() + "...");   
+                                else
+                                    System.out.println("FAILED");  
+                            }
                         }
+                    }
+                }
             }
         }
+    }
+
+    public boolean deleteFolder(File folder){
+        File[] directoryListing = folder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                child.delete();
+            }
+        }
+        return folder.delete();
     }
 
     public DeleteMsg(float protocolVersion, int senderID, String fileID) {

@@ -43,15 +43,13 @@ public class DeleteAction extends Action {
     }
 
     public void run() {
-        for (int i = 0; i < chunks.size(); ++i) {
-            try {
-                controlChannel.sendMessage(
-                    new DeleteMsg(protocolVersion, senderID, fileID).genMsg()
-                );
-            } catch (ExceptionInInitializerError e) {
-                Utils.showError("Failed to build message, stopping delete action", this.getClass());
-                return;
-            }
+        try {
+            controlChannel.sendMessage(
+                new DeleteMsg(protocolVersion, senderID, fileID).genMsg()
+            );
+        } catch (ExceptionInInitializerError e) {
+            Utils.showError("Failed to build message, stopping delete action", this.getClass());
+            return;
         }
     }
 }

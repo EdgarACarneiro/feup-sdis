@@ -76,5 +76,21 @@ public final class Utils {
 		System.arraycopy(array1, 0, array1and2, 0, array1.length);
 		System.arraycopy(array2, 0, array1and2, array1.length, array2.length);
 		return array1and2;
-	}
+    }
+    
+    /**
+	 * Deletes a Folder with files in it
+	 *
+	 * @param folder folder to be deleted
+	 * @return Boolean with success or not 
+	 */
+    public boolean deleteFolder(File folder){
+        File[] directoryListing = folder.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                child.delete();
+            }
+        }
+        return folder.delete();
+    }
 }
