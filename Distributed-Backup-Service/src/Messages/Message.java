@@ -63,7 +63,7 @@ public class Message {
 
 
     protected Message(String Regex) {
-        msgRegex = Pattern.compile(Regex);
+        msgRegex = Pattern.compile(Regex, Pattern.UNIX_LINES);
     }
 
     protected Message (float protocolVersion, int senderID, String fileID) {

@@ -39,7 +39,7 @@ public class RemovedMsg extends Message implements msgGenerator {
 
     @Override
     public String genMsg() {
-        return ("REMOVED" +
+        return ("REMOVED" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

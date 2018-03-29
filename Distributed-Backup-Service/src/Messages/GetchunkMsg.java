@@ -39,7 +39,7 @@ public class GetchunkMsg extends Message implements msgGenerator {
 
     @Override
     public String genMsg() {
-        return ("GETCHUNK" +
+        return ("GETCHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

@@ -39,7 +39,7 @@ public class StoredMsg extends Message implements msgGenerator {
 
     @Override
     public String genMsg() {
-        return ("STORED" +
+        return ("STORED" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

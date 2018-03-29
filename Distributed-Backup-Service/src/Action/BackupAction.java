@@ -51,7 +51,7 @@ public class BackupAction extends Action {
         for (int i = 0; i < chunks.size(); ++i) {
             try {
                 backupChannel.sendMessage(
-                        new PutchunkMsg(protocolVersion, senderID, fileID, i+1, repDegree).genMsg()
+                        new PutchunkMsg(protocolVersion, senderID, fileID, i+1, repDegree, chunks.get(i)).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping backup action", this.getClass());

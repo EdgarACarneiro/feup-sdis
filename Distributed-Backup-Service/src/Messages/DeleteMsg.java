@@ -32,7 +32,7 @@ public class DeleteMsg extends Message implements msgGenerator {
 
     @Override
     public String genMsg() {
-        return ("DELETE" +
+        return ("DELETE" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

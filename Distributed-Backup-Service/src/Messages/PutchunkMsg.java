@@ -10,12 +10,7 @@ public class PutchunkMsg extends Message implements msgGenerator {
      * Regex used to parse a String containing a putchunk message
      */
     private final static String REGEX_STRING =
-            "\\s*?PUTCHUNK\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s+?\\r\\n\\r\\n(.*)";
-
-    /**
-     * Regex catch group corresponding to the message body
-     */
-    private static final int BODY_GROUP = 8;
+            "\\s*?PUTCHUNK\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+((\\d){1,6})\\s+(\\d)\\s+?\\r\\n\\r\\n";
 
     /**
      * The chunk number
@@ -25,7 +20,7 @@ public class PutchunkMsg extends Message implements msgGenerator {
     /**
      * The message associated chunk
      */
-    private String chunk;
+    private byte[] chunk;
 
     /**
      * The desired replication degree for the given chunk
@@ -36,28 +31,30 @@ public class PutchunkMsg extends Message implements msgGenerator {
         super(REGEX_STRING);
         Matcher protocolMatch = msgRegex.matcher(receivedMsg);
 
-        if (! protocolMatch.matches()) {
+        if (! protocolMatch.find()) {
             Utils.showError("Failed to get a Regex match in received message", this.getClass());
             throw new ExceptionInInitializerError();
         }
+        String header = protocolMatch.group();
 
         protocolVersion = Float.parseFloat(protocolMatch.group(VERSION_GROUP));
         senderID = Integer.parseInt(protocolMatch.group(SENDER_ID_GROUP));
         fileID = protocolMatch.group(FIELD_ID_GROUP);
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
         repDegree = Integer.parseInt(protocolMatch.group(REP_DEGREE_GROUP));
-        chunk = protocolMatch.group(BODY_GROUP);
+        chunk = receivedMsg.substring(header.length(), receivedMsg.length()).getBytes();
     }
 
-    public PutchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree) {
+    public PutchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree, byte[] chunk) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
         this.repDegree = repDegree;
+        this.chunk = chunk;
     }
 
     @Override
     public String genMsg() {
-        return ("PUTCHUNK" +
+        return ("PUTCHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +
@@ -65,6 +62,6 @@ public class PutchunkMsg extends Message implements msgGenerator {
                 repDegree + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
                 (char) ASCII_CR + (char) ASCII_LF) +
-                chunk;
+                new String(chunk);
     }
 }
