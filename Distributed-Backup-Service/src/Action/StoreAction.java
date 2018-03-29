@@ -41,7 +41,7 @@ public class StoreAction extends Action {
 
     private void storeChunk() {
         try {
-            FileOutputStream out = new FileOutputStream (fileDir + putchunkMsg.getChunkNum());
+            FileOutputStream out = new FileOutputStream (fileDir + "/" + putchunkMsg.getChunkNum());
             out.write(putchunkMsg.getChunk(), 0, putchunkMsg.getChunk().length);
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());

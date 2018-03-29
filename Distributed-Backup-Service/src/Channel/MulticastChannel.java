@@ -121,7 +121,7 @@ public abstract class MulticastChannel implements Runnable{
                 DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
                 socket.receive(msgPacket);
 
-                String msg = new String(buf, 0, buf.length);
+                String msg = new String(buf, 0, msgPacket.getLength());
                 MessageHandler.messageHandler(
                         peer.getControlChannel(), peer.threadPool,
                         peer.getPeerID(), MessageHandler.messageInterpreter(msg)

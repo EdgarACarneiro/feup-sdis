@@ -13,23 +13,24 @@ public class MessageHandler {
     private final static int MAXIMUM_TYPE_SIZE = 8;
 
     public static Message messageInterpreter(String receivedMsg) {
-        String trimmedMsg = receivedMsg.trim();
-        String[] temp = trimmedMsg.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
+        String[] temp = receivedMsg.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
+
+        System.out.println(receivedMsg);
 
         try {
             switch (temp[0].trim()) {
                 case "PUTCHUNK":
-                    return new PutchunkMsg(trimmedMsg);
+                    return new PutchunkMsg(receivedMsg);
                 case "STORED":
-                    return new StoredMsg(trimmedMsg);
+                    return new StoredMsg(receivedMsg);
                 case "GETCHUNK":
-                    return new GetchunkMsg(trimmedMsg);
+                    return new GetchunkMsg(receivedMsg);
                 case "CHUNK":
-                    return new ChunkMsg(trimmedMsg);
+                    return new ChunkMsg(receivedMsg);
                 case "DELETE":
-                    return new DeleteMsg(trimmedMsg);
+                    return new DeleteMsg(receivedMsg);
                 case "REMOVED":
-                    return new RemovedMsg(trimmedMsg);
+                    return new RemovedMsg(receivedMsg);
                 default:
                     Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
                     return null;
@@ -43,8 +44,6 @@ public class MessageHandler {
     public static void messageHandler(ControlChannel controlChannel, ThreadPool threadPool, int peerID, Message message) {
         if (message == null || peerID == message.getSenderID())
             return;
-
-        System.out.println("RECEIVED MESSAGE: " + message);
 
         if (message instanceof PutchunkMsg) {
             threadPool.executeThread(
