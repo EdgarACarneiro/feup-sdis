@@ -1,3 +1,5 @@
+package Main;
+
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 public class TestApp {
 
     /**
-     * Action to be performed by the Peer
+     * Action to be performed by the Main.Peer
      */
     private String action;
 
@@ -18,17 +20,17 @@ public class TestApp {
     private ArrayList<String> actionArgs = new ArrayList<>();
 
     /**
-     * Object to make requests to Peer using RMI;
+     * Object to make requests to Main.Peer using RMI;
      */
-    private RMIInterface rmi;
+    private RMI.RMIInterface rmi;
 
     /**
-     * TestApp constructor.
+     * Main.TestApp constructor.
      *
      * @param args List of arguments necessary to perform a new test
      */
     private TestApp(String args[]) {
-        rmi = (new RMIClient(args[0])).getStub();
+        rmi = (new RMI.RMIClient(args[0])).getStub();
         action = args[1];
 
         for(int i = 2; i < args.length; ++i) {
@@ -39,7 +41,7 @@ public class TestApp {
     }
 
     /**
-     * TestApp main function.
+     * Main.TestApp main function.
      *
      * @param args List of arguments containing the user input
      */

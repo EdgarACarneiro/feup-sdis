@@ -10,9 +10,9 @@ public class BackupChannel extends MulticastChannel {
      * Defines multicast communication settings used.
      *
      * @param channelName The channel name used to build the Back up channel
-     * @param peerID The peerID of the Peer associated to the channel
+     * @param peer The peerID of the Main.Peer associated to the channel
      */
-    public BackupChannel(String channelName, int peerID) {
-        super(channelName, peerID);
+    public BackupChannel(String channelName, Main.Peer peer) {
+        super(channelName, peer);
     }
 }

@@ -11,7 +11,7 @@ public class CommonMsg extends Message {
      */
     protected int chunkNum;
 
-    public CommonMsg(String receivedMsg, String regex) {
+    protected CommonMsg(String receivedMsg, String regex) {
         super(regex);
         Matcher protocolMatch = msgRegex.matcher(receivedMsg);
 
@@ -26,12 +26,10 @@ public class CommonMsg extends Message {
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
     }
 
-    public CommonMsg(float protocolVersion, int senderID, String fileID, int chunkNum) {
+    protected CommonMsg(float protocolVersion, int senderID, String fileID, int chunkNum) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
     }
-
-
 
     public int getChunkNum() {
         return chunkNum;

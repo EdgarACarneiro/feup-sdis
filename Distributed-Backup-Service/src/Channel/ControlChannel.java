@@ -10,9 +10,9 @@ public class ControlChannel extends MulticastChannel {
      * Defines multicast communication settings used.
      *
      * @param channelName The channel name used to build the Control channel
-     * @param peerID The peerID of the Peer associated to the channel
+     * @param peer The peerID of the Main.Peer associated to the channel
      */
-    public ControlChannel(String channelName, int peerID) {
-        super(channelName, peerID);
+    public ControlChannel(String channelName, Main.Peer peer) {
+        super(channelName, peer);
     }
 }

@@ -1,3 +1,5 @@
+package Main;
+
 import Action.*;
 import Channel.BackupChannel;
 import Channel.ControlChannel;
@@ -13,15 +15,12 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-/**
- * Class representing a Peer in the service
- */
-public class Peer implements RMIInterface {
+import static Utils.FileManager.getPeerDirectory;
 
-    /**
-     * The base directory for a directory containing all the peer associated chunks and files
-     */
-    private final static String BASE_DIRECTORY_NAME = "backup-";
+/**
+ * Class representing a Main.Peer in the service
+ */
+public class Peer implements RMI.RMIInterface {
 
     /**
      * The channel used for communication regarding control
@@ -39,7 +38,7 @@ public class Peer implements RMIInterface {
     private RestoreChannel restoreChannel;
 
     /**
-     * Directory containing the Peer associated files
+     * Directory containing the Main.Peer associated files
      */
     private String dirName;
 
@@ -54,7 +53,7 @@ public class Peer implements RMIInterface {
     private int peerID;
 
     /**
-     * Name of the access point to be accessed by the Client or TestApp using RMI
+     * Name of the access point to be accessed by the Client or Main.TestApp using RMI
      */
     private String accessPoint;
 
@@ -69,7 +68,7 @@ public class Peer implements RMIInterface {
     private final static Pattern argsRegex = Pattern.compile("\\s*?(\\d+(\\.\\d*)?)\\s+?(\\d+)\\s+?(\\w+)\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s+?(((\\d+\\.?){1,4}):(\\d{4}))\\s*?");
 
     /**
-     * Peer constructor. Receives the necessary arguments to initiate a new peer
+     * Main.Peer constructor. Receives the necessary arguments to initiate a new peer
      *
      * @param protocolVersion The protocol version to be used
      * @param serverID The id of the peer
@@ -84,12 +83,12 @@ public class Peer implements RMIInterface {
         peerID = Integer.parseInt(serverID);
         this.accessPoint = accessPoint;
 
-        dirName = BASE_DIRECTORY_NAME + peerID;
+        dirName = getPeerDirectory(peerID);
         new File(dirName).mkdir();
 
-        controlChannel = new ControlChannel(channelMC, peerID);
-        backupChannel = new BackupChannel(channelMDB, peerID);
-        restoreChannel = new RestoreChannel(channelMDR, peerID);
+        controlChannel = new ControlChannel(channelMC, this);
+        backupChannel = new BackupChannel(channelMDB, this);
+        restoreChannel = new RestoreChannel(channelMDR, this);
 
         threadPool = new ThreadPool();
         threadPool.executeThread(controlChannel);
@@ -100,7 +99,7 @@ public class Peer implements RMIInterface {
     }
 
     /**
-     * Peer main function. Initiates a new Peer.
+     * Main.Peer main function. Initiates a new Main.Peer.
      *
      * @param args List of arguments containing the user input
      */
@@ -119,7 +118,7 @@ public class Peer implements RMIInterface {
      */
     private void initializeRMI() {
         try {
-            RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(this, 0);
+            RMI.RMIInterface stub = (RMI.RMIInterface) UnicastRemoteObject.exportObject(this, 0);
 
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.getRegistry();
@@ -133,6 +132,21 @@ public class Peer implements RMIInterface {
         }
     }
 
+    public BackupChannel getBackupChannel() {
+        return backupChannel;
+    }
+
+    public ControlChannel getControlChannel() {
+        return controlChannel;
+    }
+
+    public RestoreChannel getRestoreChannel() {
+        return restoreChannel;
+    }
+
+    public int getPeerID() {
+        return peerID;
+    }
 
     /* INTERFACE FUNCTIONS */
     // TODO - below functions
@@ -143,7 +157,7 @@ public class Peer implements RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        threadPool.executeThread(new BackupAction(backupChannel, controlChannel, protocolVersion, peerID, args.get(0), args.get(1)));
+        threadPool.executeThread(new BackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
     public void restoreAction(ArrayList<String> args) {

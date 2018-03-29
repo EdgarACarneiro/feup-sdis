@@ -1,5 +1,7 @@
 package Messages;
 
+import Action.StoreAction;
+import Channel.ControlChannel;
 import Utils.Utils;
 
 public class MessageHandler {
@@ -37,12 +39,12 @@ public class MessageHandler {
         }
     }
 
-    public static void messageHandler(Message message , int peerID) {
+    public static void messageHandler(ControlChannel controlChannel, int peerID, Message message) {
         if (message == null || peerID == message.getSenderID())
             return;
 
         if (message instanceof PutchunkMsg) {
-
+            new StoreAction(controlChannel, peerID, (PutchunkMsg) message);
         }
     }
 }

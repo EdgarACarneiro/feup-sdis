@@ -14,6 +14,11 @@ import java.util.Arrays;
 public final class FileManager {
 
     /**
+     * The base directory for a directory containing all the peer associated chunks and files
+     */
+    private final static String BASE_DIRECTORY_NAME = "backup-";
+
+    /**
      * Chunks' size in bytes : 64KBytes (chunk's Body)
      */
     private static final int CHUNKS_SIZE = 64000;
@@ -32,20 +37,11 @@ public final class FileManager {
             int writtenBytes = 0;
 
             while (writtenBytes < fileSize) {
-
-                // To remove this from here to later create a folder only for backups -< new class or some shit TODO
-                //if(! new File("backup-files").mkdirs())
-                //    Utils.showError("Failed to create directory for backup files", FileManager.class);
-
-                //FileOutputStream out = new FileOutputStream("backup-files/" + Integer.toString(writtenBytes));
-                //out.write(fileData, writtenBytes,
-                //        ((fileSize - writtenBytes)< CHUNKS_SIZE? (fileSize - writtenBytes) : CHUNKS_SIZE)
-                //);
-                System.out.println(fileSize + " " + writtenBytes);
                 chunks.add(Arrays.copyOfRange(fileData, writtenBytes,
                         ((fileSize - writtenBytes) < CHUNKS_SIZE?
                                 (writtenBytes += (fileSize - writtenBytes)):
-                                (writtenBytes += CHUNKS_SIZE))
+                                (writtenBytes += CHUNKS_SIZE)
+                        )
                 ));
             }
 
@@ -104,5 +100,21 @@ public final class FileManager {
         return path;
     }
 
-    // Function to merge files here
+    /**
+     * Gets the standard directory name for a given Main.Peer
+     *
+     * @return the Main.Peer's directory name
+     */
+    public static String getPeerDirectory(int peerID) {
+        return BASE_DIRECTORY_NAME + peerID;
+    }
+
+    /**
+     * Gets the standard directory name for a given file, in a given Main.Peer
+     *
+     * @return the File's directory name
+     */
+    public static String geFileDirectory(int peerID, String fileID) {
+        return BASE_DIRECTORY_NAME + peerID + "/" + fileID;
+    }
 }

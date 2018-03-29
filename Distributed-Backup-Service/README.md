@@ -21,7 +21,7 @@ Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaç
  * Funcionalidade de reclamar espaço no disco -> obriga a libertar alguns chunks -> criar novos chunks noutros peers para manter o DRD
  * Funcionalidade eliminar ficheiro -> eliminar todos os chunks desse ficheiro (Note: modificar um ficheiro é apagar e adicionar novo)
 
-## Peer Protocol
+## Main.Peer Protocol
  * Existência de uma initator-peer, usada para iniciar sub-protocolos
  * Todos os subprotocolos usam um canal multicast (canal de controlo MC) para trocar mensagens de controlo.
  * Os cananis multicast MDB e MDR são usados respetivamente para backup e para restaurar data chunks.

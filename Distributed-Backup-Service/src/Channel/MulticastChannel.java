@@ -1,5 +1,6 @@
 package Channel;
 
+import Main.Peer;
 import Messages.Message;
 import Messages.MessageHandler;
 import Utils.Utils;
@@ -19,10 +20,7 @@ public abstract class MulticastChannel implements Runnable{
      */
     private static final int CHUNK_MAXIMUM_SIZE = 65535;
 
-    /**
-     * The identifier of the Peer associated to the channel
-     */
-    private int peerID;
+    private Peer peer;
 
     /**
      * Inet Address used in the communication
@@ -43,9 +41,10 @@ public abstract class MulticastChannel implements Runnable{
      * Multicast Network unique Constructor.
      *
      * @param channelName The Communication address and Port, using a string
-     * @param peerID The peerID of the Peer associated to the channel
+     * @param peer The peerID of the Main.Peer associated to the channel
      */
-    public MulticastChannel(String channelName, int peerID) {
+    public MulticastChannel(String channelName, Main.Peer peer) {
+        this.peer= peer;
 
         String addr = extractAddr(channelName);
         int port = extractPort(channelName);
@@ -121,7 +120,9 @@ public abstract class MulticastChannel implements Runnable{
 
                 String msg = new String(buf, 0, buf.length);
                 System.out.println("Received msg: " + msg);
-                Message result = MessageHandler.messageInterpreter(msg);
+                MessageHandler.messageHandler(
+                        peer.getControlChannel(), peer.getPeerID(), MessageHandler.messageInterpreter(msg)
+                );
                 // TODO - Do sth with the resultant msg or mby let the msg itself trigger the action
             }
         } catch (IOException ex) {
