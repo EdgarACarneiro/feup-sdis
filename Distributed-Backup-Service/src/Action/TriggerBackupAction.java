@@ -7,6 +7,7 @@ import Messages.StoredMsg;
 import Utils.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TriggerBackupAction extends ActionHasReply {
 
@@ -57,6 +58,11 @@ public class TriggerBackupAction extends ActionHasReply {
     private ArrayList<Integer> chunksRD = new ArrayList<>();
 
     /**
+     * An hashmap containing the chunks associated to each Peer, telling whether they were already received or not
+     */
+    private HashMap <Integer, ArrayList<Boolean> > peersChunks = new HashMap<>();
+
+    /**
      * The desired replication degree of the file
      */
     private int repDegree;
@@ -87,6 +93,7 @@ public class TriggerBackupAction extends ActionHasReply {
         }
     }
 
+    @Override
     public void run() {
         for (int i = 0; i < chunks.size(); ++i)
             requestBackUp(i);
@@ -96,6 +103,7 @@ public class TriggerBackupAction extends ActionHasReply {
     }
 
     private void checkLoop() {
+        Utils.showWarning("TRIES BACKUP: " + numTimeCycles, this.getClass());
         if (numTimeCycles >= MAXIMUM_NUM_CYCLES)
             return;
 
@@ -129,15 +137,39 @@ public class TriggerBackupAction extends ActionHasReply {
             return;
 
         StoredMsg realMsg = (StoredMsg) msg;
-        chunksRD.set(realMsg.getChunkNum(), chunksRD.get(realMsg.getChunkNum()));
+        int chunkNum = realMsg.getChunkNum();
+
+        if (peersChunks.containsKey(realMsg.getSenderID())) {
+
+            ArrayList<Boolean> peerChunks = peersChunks.get(realMsg.getSenderID());
+            if (peerChunks.get(chunkNum))
+                return;
+            else peerChunks.set(chunkNum, true);
+
+        } else {
+            peersChunks.put(realMsg.getSenderID(), initCheckArray(new ArrayList<>(), chunkNum) );
+        }
+
+        chunksRD.set(chunkNum, chunksRD.get(chunkNum) + 1);
     }
 
     /**
      * Initialize the counter for the replication degree for each chunk
      */
     private void initRDCounter() {
-        for (int i = 0; i < chunks.size(); ++i) {
+        for (int i = 0; i < chunks.size(); ++i)
             chunksRD.add(0);
-        }
+    }
+
+    /**
+     * Initialize the chunks array while also marking the given chunk as received
+     *
+     * @param array The received chunks array to be initialized
+     * @param chunkNum The chunk that was already received
+     */
+    private ArrayList<Boolean> initCheckArray(ArrayList<Boolean> array, int chunkNum) {
+        for (int i = 0; i < chunks.size(); ++i)
+            array.add(i == chunkNum);
+        return array;
     }
 }
