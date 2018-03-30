@@ -41,3 +41,14 @@ Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaç
  * Usar RMI como protocolo de comunicação
  * Ver no guião como escolha de protocolo de transporte afeta a chamada dos arugmentos
  * Um serviço deve descartar mensagens que não compreende
+
+## Build Tips (Terminal)
+```
+# Linux
+$ find -name "*.java" > sources.txt
+$ javac @sources.txt
+
+:: Windows
+> dir /s /B *.java > sources.txt
+> javac @sources.txt
+```

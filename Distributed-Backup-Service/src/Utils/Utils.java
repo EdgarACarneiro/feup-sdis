@@ -84,7 +84,7 @@ public final class Utils {
 	 * @param folder folder to be deleted
 	 * @return Boolean with success or not 
 	 */
-    public boolean deleteFolder(File folder){
+    public static boolean deleteFolder(File folder){
         File[] directoryListing = folder.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {
