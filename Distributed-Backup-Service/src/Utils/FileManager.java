@@ -16,7 +16,7 @@ public final class FileManager {
     /**
      * The base directory for a directory containing all the peer associated chunks and files
      */
-    private final static String BASE_DIRECTORY_NAME = "backup-";
+    public final static String BASE_DIRECTORY_NAME = "backup-";
 
     /**
      * Chunks' size in bytes : 64KBytes (chunk's Body)
