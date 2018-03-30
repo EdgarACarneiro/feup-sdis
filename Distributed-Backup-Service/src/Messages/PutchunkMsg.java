@@ -55,7 +55,6 @@ public class PutchunkMsg extends Message implements msgGenerator {
         this.chunkNum = chunkNum;
         this.repDegree = repDegree;
         this.chunk = chunk;
-        Utils.showWarning("" + this.chunk.length, PutchunkMsg.class);
     }
 
     @Override
