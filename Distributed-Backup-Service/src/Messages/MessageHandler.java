@@ -1,6 +1,7 @@
 package Messages;
 
 import Action.ActionHasReply;
+import Action.DeleteAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
 import Utils.Utils;
@@ -36,10 +37,13 @@ public class MessageHandler implements Runnable {
 
         if (message instanceof PutchunkMsg) {
             (new StoreAction(controlChannel, peerID, (PutchunkMsg) message)).run();
-        } else if (message instanceof  StoredMsg) {
-            for (ActionHasReply action : subscribedActions) {
+        }
+        else if (message instanceof  StoredMsg) {
+            for (ActionHasReply action : subscribedActions)
                 action.parseResponse(message);
-            }
+        }
+        else if (message instanceof DeleteMsg) {
+            (new DeleteAction(message)).run();
         }
     }
 

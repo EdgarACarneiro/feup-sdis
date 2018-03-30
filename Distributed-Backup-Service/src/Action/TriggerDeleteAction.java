@@ -2,10 +2,7 @@ package Action;
 
 import Channel.ControlChannel;
 import Messages.DeleteMsg;
-import Messages.Message;
 import Utils.*;
-
-import java.util.ArrayList;
 
 public class TriggerDeleteAction extends Action {
 
@@ -29,17 +26,11 @@ public class TriggerDeleteAction extends Action {
      */
     private String fileID;
 
-    /**
-     * ArrayList containing the file correspondent chunks
-     */
-    private ArrayList<byte[]> chunks = new ArrayList<>();
-
     public TriggerDeleteAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
-        chunks = FileManager.splitFile(file);
     }
 
     public void run() {
@@ -49,7 +40,6 @@ public class TriggerDeleteAction extends Action {
             );
         } catch (ExceptionInInitializerError e) {
             Utils.showError("Failed to build message, stopping delete action", this.getClass());
-            return;
         }
     }
 }
