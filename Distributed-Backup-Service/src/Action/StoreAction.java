@@ -8,6 +8,8 @@ import Utils.Utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static Utils.FileManager.geFileDirectory;
 
@@ -59,17 +61,27 @@ public class StoreAction extends Action {
         }
     }
 
+    @Override
     public void run() {
-        try {
-            Thread.sleep(new Random().nextInt(MAX_TIME_TO_SEND));
-            controlChannel.sendMessage(
-                    new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
-                            putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
-            );
-        } catch (ExceptionInInitializerError e) {
-            Utils.showError("Failed to build message, stopping Store action", this.getClass());
-        } catch (java.lang.InterruptedException e) {
-            Utils.showError("Unable to wait before proceeding.", this.getClass());
+        ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
+        scheduledThread.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Class used to Send the Action correspondent message to the channel, using ScheduledThreadPoolExecutor
+     */
+    private class Sender implements Runnable {
+
+        @Override
+        public void run() {
+            try {
+                controlChannel.sendMessage(
+                        new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
+                                putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
+                );
+            } catch (ExceptionInInitializerError e) {
+                Utils.showError("Failed to build message, stopping Store action", this.getClass());
+            }
         }
     }
 
