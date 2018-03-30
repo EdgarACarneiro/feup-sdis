@@ -3,7 +3,6 @@ package Messages;
 import Action.ActionHasReply;
 import Action.StoreAction;
 import Channel.ControlChannel;
-import ThreadPool.ThreadPool;
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class MessageHandler implements Runnable {
         this.message = message;
     }
 
+    @Override
     public void run() {
         if (message == null || peerID == message.getSenderID())
             return;
@@ -46,7 +46,7 @@ public class MessageHandler implements Runnable {
     public static Message messageInterpreter(String receivedMsg) {
         String[] temp = receivedMsg.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
 
-        System.out.println(temp[0]);
+        System.out.println(temp[0]); // TODO - Delete
 
         try {
             switch (temp[0].trim()) {

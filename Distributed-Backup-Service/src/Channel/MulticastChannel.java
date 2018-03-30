@@ -77,24 +77,6 @@ public abstract class MulticastChannel implements Runnable{
     }
 
     /**
-     * Getter for multicast network inet adress
-     *
-     * @return multicast network inet adress
-     */
-    public InetAddress getInetAddr() {
-        return inetAddr;
-    }
-
-    /**
-     * Getter for multicast network port
-     *
-     * @return multicast network port
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
      * Extract the adress for a channel, from a given String
      *
      * @param channelName The String to be parsed

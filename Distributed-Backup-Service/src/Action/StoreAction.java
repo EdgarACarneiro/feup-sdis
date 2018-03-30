@@ -33,9 +33,15 @@ public class StoreAction extends Action {
      */
     private ControlChannel controlChannel;
 
+    /**
+     * The identifier of the Peer associated to this action
+     */
+    private int peerID;
+
 
     public StoreAction (ControlChannel controlChannel, int peerID, PutchunkMsg requestMsg) {
         this.controlChannel = controlChannel;
+        this.peerID = peerID;
         putchunkMsg = requestMsg;
 
         this.fileDir = geFileDirectory(peerID, putchunkMsg.getFileID());
@@ -57,7 +63,7 @@ public class StoreAction extends Action {
         try {
             Thread.sleep(new Random().nextInt(MAX_TIME_TO_SEND));
             controlChannel.sendMessage(
-                    new StoredMsg(putchunkMsg.getProtocolVersion(), putchunkMsg.getSenderID(),
+                    new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
                             putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
             );
         } catch (ExceptionInInitializerError e) {
