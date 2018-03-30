@@ -50,7 +50,7 @@ public class Peer implements RMI.RMIInterface {
     /**
      * The peer's ID
      */
-    private int peerID;
+    private static int peerID;
 
     /**
      * Name of the access point to be accessed by the Client or Main.TestApp using RMI
@@ -144,7 +144,7 @@ public class Peer implements RMI.RMIInterface {
         return restoreChannel;
     }
 
-    public int getPeerID() {
+    public static int getPeerID() {
         return peerID;
     }
 
