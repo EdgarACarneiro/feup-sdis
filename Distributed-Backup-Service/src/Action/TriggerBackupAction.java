@@ -8,7 +8,12 @@ import Utils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * Action used to begin a back up. It also handles the other Peer's answers.
+ */
 public class TriggerBackupAction extends ActionHasReply {
 
     /**
@@ -21,6 +26,11 @@ public class TriggerBackupAction extends ActionHasReply {
      * The channel used to communicate with other peers, regarding backup files
      */
     private BackupChannel backupChannel;
+
+    /**
+     * Thread Pool useful for running scheduled check loops
+     */
+    private ScheduledThreadPoolExecutor sleepThreadPool;
 
     /**
      * The thread waiting time for checking chunks RD, in mili seconds
@@ -67,6 +77,15 @@ public class TriggerBackupAction extends ActionHasReply {
      */
     private int repDegree;
 
+    /**
+     * Trigger Backup Action Constructor
+     *
+     * @param backupChannel The channel used to communicate the desired course of action
+     * @param protocolVersion The protocol version used
+     * @param senderID The identifier of the sender peer
+     * @param file The File to be backed up
+     * @param repDegree The desired replication degree of the file
+     */
     public TriggerBackupAction(BackupChannel backupChannel, float protocolVersion, int senderID, String file, String repDegree) {
         this.backupChannel = backupChannel;
         this.protocolVersion = protocolVersion;
@@ -75,6 +94,7 @@ public class TriggerBackupAction extends ActionHasReply {
         this.repDegree = Integer.parseInt(repDegree);
         chunks = FileManager.splitFile(file);
 
+        sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
         initRDCounter();
     }
 
@@ -99,39 +119,48 @@ public class TriggerBackupAction extends ActionHasReply {
             requestBackUp(i);
 
         numTimeCycles += 1;
-        checkLoop();
+        sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
     }
 
-    private void checkLoop() {
-        Utils.showWarning("TRIES BACKUP: " + numTimeCycles, this.getClass());
-        if (numTimeCycles >= MAXIMUM_NUM_CYCLES)
-            return;
+    /**
+     * Class used to implement the Check loop for the action.
+     * A class was used instead of a method, in order to implement it with ScheduledThreadPoolExecutor
+     */
+    private class Repeater implements Runnable {
 
-        try {
-            Thread.sleep(waitCheckTime);
-        } catch (java.lang.InterruptedException e) {
-            Utils.showError("Unable to wait " + waitCheckTime + "mili seconds to proceed. Proceeding now.", this.getClass());
+        @Override
+        public void run() {
+            Utils.showWarning("TRIES BACKUP: " + numTimeCycles, this.getClass());
+            if (numTimeCycles >= MAXIMUM_NUM_CYCLES)
+                return;
+
+            try {
+                Thread.sleep(waitCheckTime);
+            } catch (java.lang.InterruptedException e) {
+                Utils.showError("Unable to wait " + waitCheckTime + "mili seconds to proceed. Proceeding now.", this.getClass());
+            }
+
+            // Get chunks whose RD isn't superior to repDegree
+            ArrayList<Integer> missingRDChunks = new ArrayList<>();
+            for (int i = 0; i < chunksRD.size(); ++i) {
+                if (chunksRD.get(i) < repDegree)
+                    missingRDChunks.add(i);
+            }
+
+            // If size is bigger than 0, all chunks have the desired repDegree
+            if (missingRDChunks.size() == 0)
+                return;
+
+            for (int chunkIdx : missingRDChunks)
+                requestBackUp(chunkIdx);
+
+            numTimeCycles += 1;
+            waitCheckTime *= 2;
+            sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
         }
-
-        // Get chunks whose RD isn't superior to repDegree
-        ArrayList<Integer> missingRDChunks = new ArrayList<>();
-        for (int i = 0; i < chunksRD.size(); ++i) {
-            if (chunksRD.get(i) < repDegree)
-                missingRDChunks.add(i);
-        }
-
-        // If size is bigger than 0, all chunks have the desired repDegree
-        if (missingRDChunks.size() == 0)
-            return;
-
-        for (int chunkIdx : missingRDChunks)
-            requestBackUp(chunkIdx);
-
-        numTimeCycles += 1;
-        waitCheckTime *= 2;
-        checkLoop();
     }
 
+    @Override
     public void parseResponse(Message msg) {
         if (! msg.getFileID().equals(fileID))
             return;

@@ -1,19 +1,18 @@
 package Action;
 
-import Messages.RemovedMsg;
-import Channel.ControlChannel;
+import Messages.GetchunkMsg;
+import Channel.RestoreChannel;
 import Messages.Message;
-import Messages.RemovedMsg;
 import Utils.*;
 
 import java.util.ArrayList;
 
-public class ReclaimAction extends Action {
+public class TriggerRestoreAction extends ActionHasReply {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
      */
-    private ControlChannel controlChannel;
+    private RestoreChannel restoreChannel;
 
     /**
      * Protocol Version in the communication
@@ -35,8 +34,8 @@ public class ReclaimAction extends Action {
      */
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
-    public ReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
-        this.controlChannel = controlChannel;
+    public TriggerRestoreAction(RestoreChannel restoreChannel, float protocolVersion, int senderID, String file) {
+        this.restoreChannel = restoreChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
@@ -46,13 +45,17 @@ public class ReclaimAction extends Action {
     public void run() {
         for (int i = 0; i < chunks.size(); ++i) {
             try {
-                controlChannel.sendMessage(
-                    new RemovedMsg(protocolVersion, senderID, fileID, i+1).genMsg()
+                restoreChannel.sendMessage(
+                    new GetchunkMsg(protocolVersion, senderID, fileID, i+1).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping delete action", this.getClass());
                 return;
             }
         }
+    }
+
+    public void parseResponse(Message msg) {
+
     }
 }

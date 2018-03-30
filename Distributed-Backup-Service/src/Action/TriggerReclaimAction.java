@@ -1,13 +1,14 @@
 package Action;
 
+import Messages.RemovedMsg;
 import Channel.ControlChannel;
-import Messages.DeleteMsg;
 import Messages.Message;
+import Messages.RemovedMsg;
 import Utils.*;
 
 import java.util.ArrayList;
 
-public class DeleteAction extends Action {
+public class TriggerReclaimAction extends Action {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
@@ -34,7 +35,7 @@ public class DeleteAction extends Action {
      */
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
-    public DeleteAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
+    public TriggerReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
@@ -43,13 +44,15 @@ public class DeleteAction extends Action {
     }
 
     public void run() {
-        try {
-            controlChannel.sendMessage(
-                new DeleteMsg(protocolVersion, senderID, fileID).genMsg()
-            );
-        } catch (ExceptionInInitializerError e) {
-            Utils.showError("Failed to build message, stopping delete action", this.getClass());
-            return;
+        for (int i = 0; i < chunks.size(); ++i) {
+            try {
+                controlChannel.sendMessage(
+                    new RemovedMsg(protocolVersion, senderID, fileID, i+1).genMsg()
+                );
+            } catch (ExceptionInInitializerError e) {
+                Utils.showError("Failed to build message, stopping delete action", this.getClass());
+                return;
+            }
         }
     }
 }
