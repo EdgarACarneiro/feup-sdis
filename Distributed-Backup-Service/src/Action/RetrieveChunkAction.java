@@ -1,18 +1,15 @@
 package Action;
 
-import Channel.ControlChannel;
 import Channel.RestoreChannel;
+import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
-import Messages.StoredMsg;
-import Utils.Utils;
+import Utils.*;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.nio.file.Files;xx
 import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import static Utils.FileManager.geFileDirectory;
 
 public class RetrieveChunkAction extends Action {
 
@@ -41,24 +38,33 @@ public class RetrieveChunkAction extends Action {
      */
     private int peerID;
 
+    private byte[] chunk;
+
 
     public RetrieveChunkAction (RestoreChannel restoreChannel, int peerID, GetchunkMsg requestMsg) {
         this.restoreChannel = restoreChannel;
         this.peerID = peerID;
         getchunkMsg = requestMsg;
 
-        this.fileDir = geFileDirectory(peerID, getchunkMsg.getFileID());
-        new File(fileDir).mkdirs();
-
-        storeChunk();
+        getChunks();
     }
 
-    private void storeChunk() {
-        try {
-            FileOutputStream out = new FileOutputStream (fileDir + "/" + getchunkMsg.getChunkNum());
-            out.write(getchunkMsg.getChunk(), 0, getchunkMsg.getChunk().length);
-        } catch (java.io.IOException e) {
-            Utils.showError("Failed to save chunk in disk", this.getClass());
+    private void getChunks() {
+        File[] backupFiles = FileManager.getPeerBackups(peerID);
+        if (backupFiles == null)
+            Utils.showError("Failed to get Peer backup files", this.getClass());
+
+        for (File backupFile : backupFiles) {
+            if ( backupFile.isDirectory() && backupFile.getName().equals(getchunkMsg.getFileID()) ) {
+                for (File chunk : backupFile.listFiles()) {
+                    if ( chunk.getName().equals(Integer.toString(getchunkMsg.getChunkNum())) )
+                    try {
+                        this.chunk = Files.readAllBytes(chunk.toPath());
+                    } catch (java.io.IOException e) {
+                        Utils.showWarning("Failed to get chunk Bytes", this.getClass());
+                    }
+                }
+            }
         }
     }
 
@@ -69,7 +75,7 @@ public class RetrieveChunkAction extends Action {
     }
 
     /**
-     * Class used to Send the Action correspondent message to the channel, using ScheduledThreadPoolExecutor
+     * Class used to Send the Chunk correspondent message to the channel, using ScheduledThreadPoolExecutor
      */
     private class Sender implements Runnable {
 
@@ -77,8 +83,8 @@ public class RetrieveChunkAction extends Action {
         public void run() {
             try {
                 restoreChannel.sendMessage(
-                        new StoredMsg(getchunkMsg.getProtocolVersion(), peerID,
-                                getchunkMsg.getFileID(), getchunkMsg.getChunkNum()).genMsg()
+                    new ChunkMsg(getchunkMsg.getProtocolVersion(), peerID,
+                            getchunkMsg.getFileID(), getchunkMsg.getChunkNum(), chunk).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping Store action", this.getClass());

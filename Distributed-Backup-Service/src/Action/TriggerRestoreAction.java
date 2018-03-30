@@ -56,6 +56,7 @@ public class TriggerRestoreAction extends ActionHasReply {
         }
     }
 
+    @Override
     public void parseResponse(Message msg) {
 
     }

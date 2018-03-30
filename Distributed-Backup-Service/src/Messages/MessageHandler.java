@@ -2,8 +2,10 @@ package Messages;
 
 import Action.ActionHasReply;
 import Action.DeleteAction;
+import Action.RetrieveChunkAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
+import Channel.RestoreChannel;
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -17,14 +19,17 @@ public class MessageHandler implements Runnable {
 
     private ControlChannel controlChannel;
 
+    private RestoreChannel restoreChannel;
+
     private int peerID;
 
     private ArrayList<ActionHasReply> subscribedActions;
 
     private Message message;
 
-    public MessageHandler(ControlChannel controlChannel, int peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+    public MessageHandler(ControlChannel controlChannel, RestoreChannel restoreChannel, int peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
         this.controlChannel = controlChannel;
+        this.restoreChannel = restoreChannel;
         this.peerID = peerID;
         this.subscribedActions = subscribedActions;
         this.message = message;
@@ -39,6 +44,13 @@ public class MessageHandler implements Runnable {
             (new StoreAction(controlChannel, peerID, (PutchunkMsg) message)).run();
         }
         else if (message instanceof  StoredMsg) {
+            for (ActionHasReply action : subscribedActions)
+                action.parseResponse(message);
+        }
+        else if (message instanceof GetchunkMsg) {
+            (new RetrieveChunkAction(restoreChannel, peerID, (GetchunkMsg) message)).run();
+        }
+        else if (message instanceof ChunkMsg) {
             for (ActionHasReply action : subscribedActions)
                 action.parseResponse(message);
         }

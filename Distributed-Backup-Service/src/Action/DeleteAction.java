@@ -20,22 +20,19 @@ public class DeleteAction extends Action {
     @Override
     public void run() {
         File[] backupFiles = FileManager.getPeerBackups(peerID);
-        if (backupFiles == null) {
+        if (backupFiles == null)
             Utils.showError("Failed to get Peer backup files", this.getClass());
-        }
 
-        for (File newChild : backupFiles) {
-            System.out.println("NEW CHILD: " + newChild.getName());
+        for (File backupFile : backupFiles) {
+            System.out.println("NEW CHILD: " + backupFile.getName());
 
-            if (newChild.isDirectory()){
-                if (newChild.getName().equals(fileID)){
-                    System.out.println("DELETING " + newChild.getName() + "...");
+            if (backupFile.isDirectory() && backupFile.getName().equals(fileID)) {
+                System.out.println("DELETING " + backupFile.getName() + "...");
 
-                    if (deleteFolder(newChild))
-                        System.out.println("DELETING " + newChild.getName() + "...");
-                    else
-                        System.out.println("FAILED");
-                }
+                if (deleteFolder(backupFile))
+                    System.out.println("DELETING " + backupFile.getName() + "...");
+                else
+                    System.out.println("FAILED");
             }
         }
     }
