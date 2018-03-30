@@ -14,6 +14,11 @@ import java.util.Arrays;
 public final class FileManager {
 
     /**
+     * The application workspace, where the backup files will be
+     */
+    private final static String APPLICATION_WORKSPACE = "user.dir";
+
+    /**
      * The base directory for a directory containing all the peer associated chunks and files
      */
     public final static String BASE_DIRECTORY_NAME = "backup-";
@@ -116,5 +121,25 @@ public final class FileManager {
      */
     public static String geFileDirectory(int peerID, String fileID) {
         return BASE_DIRECTORY_NAME + peerID + "/" + fileID;
+    }
+
+    /**
+     * Getter for all the Files stored in a Peer's backup directory
+     *
+     * @param peerID The peer identifier
+     * @return Array containing all the Files stored in the Peer backup directory
+     */
+    public static File[] getPeerBackups(int peerID) {
+        File dir = new File(System.getProperty(APPLICATION_WORKSPACE));
+        File[] directoryListing = dir.listFiles();
+
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                if ( child.getName().equals(getPeerDirectory(peerID)) ) {
+                    return new File(dir, child.getName()).listFiles();
+                }
+            }
+        }
+        return null;
     }
 }

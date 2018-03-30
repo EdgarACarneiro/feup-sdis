@@ -2,6 +2,7 @@ package Action;
 
 import Messages.Message;
 import Utils.FileManager;
+import Utils.Utils;
 
 import java.io.File;
 
@@ -18,29 +19,22 @@ public class DeleteAction extends Action {
 
     @Override
     public void run() {
-        File dir = new File(System.getProperty("user.dir"));
-        File[] directoryListing = dir.listFiles();
+        File[] backupFiles = FileManager.getPeerBackups(peerID);
+        if (backupFiles == null) {
+            Utils.showError("Failed to get Peer backup files", this.getClass());
+        }
 
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + peerID)){
-                    File newDir = new File(dir, child.getName());
-                    System.out.println("DIR: " + newDir.getName());
+        for (File newChild : backupFiles) {
+            System.out.println("NEW CHILD: " + newChild.getName());
 
-                    for (File newchild : newDir.listFiles()) {
-                        System.out.println("NEW CHILD: " + newchild.getName());
+            if (newChild.isDirectory()){
+                if (newChild.getName().equals(fileID)){
+                    System.out.println("DELETING " + newChild.getName() + "...");
 
-                        if (newchild.isDirectory()){
-                            if (newchild.getName().equals(fileID)){
-                                System.out.println("DELETING " + newchild.getName() + "...");
-
-                                if (deleteFolder(newchild))
-                                    System.out.println("DELETING " + newchild.getName() + "...");
-                                else
-                                    System.out.println("FAILED");
-                            }
-                        }
-                    }
+                    if (deleteFolder(newChild))
+                        System.out.println("DELETING " + newChild.getName() + "...");
+                    else
+                        System.out.println("FAILED");
                 }
             }
         }

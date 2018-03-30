@@ -1,7 +1,7 @@
 package Action;
 
+import Channel.ControlChannel;
 import Messages.GetchunkMsg;
-import Channel.RestoreChannel;
 import Messages.Message;
 import Utils.*;
 
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public class TriggerRestoreAction extends ActionHasReply {
 
     /**
-     * The channel used to communicate with other peers, regarding backup files
+     * The channel used to communicate with other peers, regarding control messages
      */
-    private RestoreChannel restoreChannel;
+    private ControlChannel controlChannel;
 
     /**
      * Protocol Version in the communication
@@ -34,18 +34,19 @@ public class TriggerRestoreAction extends ActionHasReply {
      */
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
-    public TriggerRestoreAction(RestoreChannel restoreChannel, float protocolVersion, int senderID, String file) {
-        this.restoreChannel = restoreChannel;
+    public TriggerRestoreAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
+        this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
         chunks = FileManager.splitFile(file);
     }
 
+    @Override
     public void run() {
         for (int i = 0; i < chunks.size(); ++i) {
             try {
-                restoreChannel.sendMessage(
+                controlChannel.sendMessage(
                     new GetchunkMsg(protocolVersion, senderID, fileID, i+1).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {

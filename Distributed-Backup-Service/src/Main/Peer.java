@@ -172,7 +172,9 @@ public class Peer implements RMI.RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for restore action", this.getClass());
 
-        threadPool.executeThread(new TriggerRestoreAction(restoreChannel, protocolVersion, peerID, args.get(0)));
+        TriggerRestoreAction action = new TriggerRestoreAction(controlChannel, protocolVersion, peerID, args.get(0));
+        restoreChannel.subscribeAction(action);
+        threadPool.executeThread(action);
     }
 
     public void deleteAction(ArrayList<String> args) {

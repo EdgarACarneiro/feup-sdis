@@ -110,7 +110,7 @@ public abstract class MulticastChannel implements Runnable{
 
                 String msg = new String(buf, 0, msgPacket.getLength());
                 peer.getThreadPool().executeThread(
-                        new MessageHandler(peer.getControlChannel(), peer.getPeerID(),
+                        new MessageHandler(peer.getControlChannel(), peer.getRestoreChannel(), peer.getPeerID(),
                                 subscribedActions, MessageHandler.messageInterpreter(msg))
                 );
             }
