@@ -1,10 +1,12 @@
 package Action;
 
 import Channel.ControlChannel;
+import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
 import Messages.Message;
 import Utils.*;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class TriggerRestoreAction extends ActionHasReply {
@@ -39,7 +41,7 @@ public class TriggerRestoreAction extends ActionHasReply {
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
-        chunks = FileManager.splitFile(file);
+        chunks = FileManager.splitFile(file); // TODO - mudar isto para ele passar a ir buscar antes quais os chunks que tem guardado de um file, que estara na PEer
     }
 
     @Override
@@ -58,6 +60,15 @@ public class TriggerRestoreAction extends ActionHasReply {
 
     @Override
     public void parseResponse(Message msg) {
+        if (! msg.getFileID().equals(fileID))
+            return;
 
+        ChunkMsg realMsg = (ChunkMsg) msg;
+        try {
+            FileOutputStream out = new FileOutputStream (FileManager.getFileDirectory(senderID, fileID) + "/" + realMsg.getChunkNum());
+            out.write(realMsg.getChunk(), 0, realMsg.getChunk().length);
+        } catch (java.io.IOException e) {
+            Utils.showError("Failed to save chunk in disk", this.getClass());
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static Utils.FileManager.geFileDirectory;
+import static Utils.FileManager.getFileDirectory;
 
 public class StoreAction extends Action {
 
@@ -46,7 +46,7 @@ public class StoreAction extends Action {
         this.peerID = peerID;
         putchunkMsg = requestMsg;
 
-        this.fileDir = geFileDirectory(peerID, putchunkMsg.getFileID());
+        this.fileDir = getFileDirectory(peerID, putchunkMsg.getFileID());
         new File(fileDir).mkdirs();
 
         storeChunk();
@@ -55,7 +55,7 @@ public class StoreAction extends Action {
     private void storeChunk() {
         try {
             FileOutputStream out = new FileOutputStream (fileDir + "/" + putchunkMsg.getChunkNum());
-            out.write(putchunkMsg.getChunk(), 0, putchunkMsg.getChunk().length);
+            out.write(putchunkMsg.getChunk());
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());
         }

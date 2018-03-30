@@ -50,7 +50,7 @@ public class ChunkMsg extends Message implements msgGenerator {
 
     @Override
     public byte[] genMsg() {
-        byte[] header = ("PUTCHUNK" + " " +
+        byte[] header = ("CHUNK" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

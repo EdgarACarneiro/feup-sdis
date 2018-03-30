@@ -119,7 +119,7 @@ public final class FileManager {
      *
      * @return the File's directory name
      */
-    public static String geFileDirectory(int peerID, String fileID) {
+    public static String getFileDirectory(int peerID, String fileID) {
         return BASE_DIRECTORY_NAME + peerID + "/" + fileID;
     }
 
