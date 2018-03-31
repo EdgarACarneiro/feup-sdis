@@ -13,11 +13,6 @@ import java.util.Arrays;
 
 public class MessageHandler implements Runnable {
 
-    /**
-     * The maximum length of a possible message type
-     */
-    private final static int MAXIMUM_TYPE_SIZE = 8;
-
     private ControlChannel controlChannel;
 
     private RestoreChannel restoreChannel;
@@ -70,12 +65,10 @@ public class MessageHandler implements Runnable {
         String header = new String(byteHeader, 0, byteHeader.length);
         byte[] chunk = Arrays.copyOfRange(readMsg, byteHeader.length, msgLength);
 
-        // Get header type
-        String[] temp = header.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
-        System.out.println(temp[0]); // TODO - Delete
+        System.out.println(findType(header)); // TODO - Delete
 
         try {
-            switch (temp[0].trim()) {
+            switch (findType(header)) {
                 case "PUTCHUNK":
                     return new PutchunkMsg(header, chunk);
                 case "STORED":
@@ -107,5 +100,9 @@ public class MessageHandler implements Runnable {
                 return Arrays.copyOfRange(readMsg, 0, (i+4));
         }
         return null;
+    }
+
+    private static String findType(String header) {
+        return header.substring(0, header.indexOf(" "));
     }
 }
