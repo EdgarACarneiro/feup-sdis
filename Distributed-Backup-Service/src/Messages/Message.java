@@ -39,12 +39,12 @@ public class Message {
     /**
      * The entry in the ASCII table for the carriage return char
      */
-    protected static final int ASCII_CR = 13;
+    public static final int ASCII_CR = 13;
 
     /**
      * The entry in the ASCII table for the line feed char
      */
-    protected static final int ASCII_LF = 10;
+    public static final int ASCII_LF = 10;
 
     /**
      * The application protocol version

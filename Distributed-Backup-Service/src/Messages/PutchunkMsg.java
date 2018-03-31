@@ -29,22 +29,21 @@ public class PutchunkMsg extends Message implements msgGenerator {
      */
     private int repDegree;
 
-    public PutchunkMsg(String receivedMsg) {
+    public PutchunkMsg(String header, byte[] chunk) {
         super(REGEX_STRING);
-        Matcher protocolMatch = msgRegex.matcher(receivedMsg);
+        Matcher protocolMatch = msgRegex.matcher(header);
 
-        if (! protocolMatch.find()) {
+        if (! protocolMatch.matches()) {
             Utils.showError("Failed to get a Regex match in received message", this.getClass());
             throw new ExceptionInInitializerError();
         }
-        String header = protocolMatch.group();
 
         protocolVersion = Float.parseFloat(protocolMatch.group(VERSION_GROUP));
         senderID = Integer.parseInt(protocolMatch.group(SENDER_ID_GROUP));
         fileID = protocolMatch.group(FIELD_ID_GROUP);
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
         repDegree = Integer.parseInt(protocolMatch.group(REP_DEGREE_GROUP));
-        chunk = receivedMsg.substring(header.length(), receivedMsg.length()).getBytes();
+        this.chunk = chunk;
     }
 
     public PutchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree, byte[] chunk) {

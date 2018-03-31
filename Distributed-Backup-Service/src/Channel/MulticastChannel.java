@@ -108,10 +108,9 @@ public abstract class MulticastChannel implements Runnable{
                 DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
                 socket.receive(msgPacket);
 
-                String msg = new String(buf, 0, msgPacket.getLength());
                 peer.getThreadPool().executeThread(
                         new MessageHandler(peer.getControlChannel(), peer.getRestoreChannel(), peer.getPeerID(),
-                                subscribedActions, MessageHandler.messageInterpreter(msg))
+                                subscribedActions, MessageHandler.messageInterpreter(buf, msgPacket.getLength()))
                 );
             }
         } catch (IOException ex) {
@@ -131,7 +130,6 @@ public abstract class MulticastChannel implements Runnable{
 
         } catch (IOException  ex) {
             Utils.showError("Failed to send message through multicast channel", this.getClass());
-            ex.printStackTrace();
         }
     }
 

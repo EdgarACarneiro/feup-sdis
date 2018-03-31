@@ -9,6 +9,7 @@ import Channel.RestoreChannel;
 import Utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MessageHandler implements Runnable {
 
@@ -59,25 +60,34 @@ public class MessageHandler implements Runnable {
         }
     }
 
-    public static Message messageInterpreter(String receivedMsg) {
-        String[] temp = receivedMsg.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
+    public static Message messageInterpreter(byte[] readMsg, int msgLength) {
+        byte[] byteHeader = getMessageHeader(readMsg);
+        if (byteHeader == null) {
+            Utils.showWarning("Unable to parse message header. Discarding it.", MessageHandler.class);
+            return null;
+        }
 
+        String header = new String(byteHeader, 0, byteHeader.length);
+        byte[] chunk = Arrays.copyOfRange(readMsg, byteHeader.length, msgLength);
+
+        // Get header type
+        String[] temp = header.substring(0, MAXIMUM_TYPE_SIZE).split(" ");
         System.out.println(temp[0]); // TODO - Delete
 
         try {
             switch (temp[0].trim()) {
                 case "PUTCHUNK":
-                    return new PutchunkMsg(receivedMsg);
+                    return new PutchunkMsg(header, chunk);
                 case "STORED":
-                    return new StoredMsg(receivedMsg);
+                    return new StoredMsg(header);
                 case "GETCHUNK":
-                    return new GetchunkMsg(receivedMsg);
+                    return new GetchunkMsg(header);
                 case "CHUNK":
-                    return new ChunkMsg(receivedMsg);
+                    return new ChunkMsg(header, chunk);
                 case "DELETE":
-                    return new DeleteMsg(receivedMsg);
+                    return new DeleteMsg(header);
                 case "REMOVED":
-                    return new RemovedMsg(receivedMsg);
+                    return new RemovedMsg(header);
                 default:
                     Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
                     return null;
@@ -86,5 +96,16 @@ public class MessageHandler implements Runnable {
             Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
             return null;
         }
+    }
+
+    private static byte[] getMessageHeader(byte[] readMsg) {
+        for (int i = 0; i < readMsg.length; ++i) {
+            if ((readMsg[i] == (byte) Message.ASCII_CR) &&
+                (readMsg[i+1] == (byte) Message.ASCII_LF) &&
+                (readMsg[i+2] == (byte) Message.ASCII_CR) &&
+                (readMsg[i+3] == (byte) Message.ASCII_LF))
+                return Arrays.copyOfRange(readMsg, 0, (i+4));
+        }
+        return null;
     }
 }
