@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Main.Peer;
 import Messages.Message;
 import Messages.RemovedMsg;
 import Utils.*;
@@ -74,8 +75,6 @@ public class TriggerReclaimAction extends Action {
         else {
             Utils.showError("Not enough space!", TriggerReclaimAction.class);
         }
-
-        sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
     }
 
     /**
@@ -95,56 +94,41 @@ public class TriggerReclaimAction extends Action {
 
     @Override
     public void run() {
-        System.out.println("Reclaim redifined max disk usage to " + this.maxKBytes + " and occupied space was " + getCurrentUsage());
+            long currentUsage = getCurrentUsage();
+            System.out.println("Reclaim redifined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + currentUsage + " KBytes.");
+            
+            if (currentUsage > this.maxKBytes) {
+                shrinkSize = currentUsage - this.maxKBytes;
+                System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
+
+                File dir = new File(System.getProperty("user.dir"));
+                File[] directoryListing = dir.listFiles();
         
-		if (getCurrentUsage() > this.maxKBytes) {
-            shrinkSize = getCurrentUsage() - this.maxKBytes;
-			System.out.println("Storage space will be shrunk down by " + shrinkSize);
-        }
-        
-        File dir = new File(System.getProperty("user.dir"));
-        File[] directoryListing = dir.listFiles();
+                if (directoryListing != null) {
+                    for (File child : directoryListing) {
+                        if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
 
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
-                    File newDir = new File(dir, child.getName());
+                            File newDir = new File(dir, child.getName());
+                            File[] files = newDir.listFiles();
 
-                    File newchild = newDir.listFiles()[0];
-                    
-                    if (newchild.isDirectory()){
-                        shrinkSize -= findSize(newchild)/1000;
-                        Utils.log("DELETING " + newchild.getName() + "...");
-
-                        if (deleteFolder(newchild)){
-                            Utils.log("DELETED " + newchild.getName() + "!");
+                            for (File newchild : files) {                         
+                                if (newchild.isDirectory() && shrinkSize > 0){
+                                    shrinkSize -= Utils.findSize(newchild);
+                                    Utils.log("DELETING " + newchild.getName() + "...");
+            
+                                    if (Utils.deleteFolder(newchild)){
+                                        Utils.log("DELETED " + newchild.getName() + "!");
+                                    }
+                                    else
+                                        Utils.showError("FAILED TO DELETE " + newchild.getName(), DeleteAction.class);
+                                }
+                            } 
                         }
-                        else
-                            Utils.showError("FAILED TO DELETE " + newchild.getName(), DeleteAction.class);
                     }
                 }
+            } else {
+                System.out.println("There was no need to shrink down disk usage!");
             }
-        }
-
-        sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Class used to implement the Check loop for the action.
-     * A class was used instead of a method, in order to implement it with ScheduledThreadPoolExecutor
-     */
-    private class Repeater implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(waitCheckTime);
-            } catch (java.lang.InterruptedException e) {
-                Utils.showError("Unable to wait " + waitCheckTime + "mili seconds to proceed. Proceeding now.", this.getClass());
-            }
-
-            sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
-        }
     }
 
     /**
@@ -158,7 +142,7 @@ public class TriggerReclaimAction extends Action {
             for (File child : directoryListing) {
                 if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
                     File newDir = new File(dir, child.getName());
-                    return findSize(newDir);
+                    return Utils.findSize(newDir);
                 }
             }
         }
@@ -173,56 +157,4 @@ public class TriggerReclaimAction extends Action {
         
         return dir.getFreeSpace();
     }
-
-    /**
-	 * Deletes a Folder with files in it
-	 *
-	 * @param folder folder to be deleted
-	 * @return Boolean with success or not 
-	 */
-    public boolean deleteFolder(File folder){
-        File[] directoryListing = folder.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                child.delete();
-                requestRemoved(Integer.parseInt(child.getName()), folder.getName());
-            }
-        }
-        return folder.delete();
-    }
-
-    /**
-	 * Get directory size
-	 *
-	 * @param folder folder to be deleted
-	 * @return Boolean with success or not 
-	 */
-    public long findSize(File file) { 
-        long totalSize = 0;
-        ArrayList<String> directory = new ArrayList<String>();
-        
-        if(file.isDirectory()) { 
-           directory.add(file.getAbsolutePath());
-           while (directory.size() > 0) {
-              String folderPath = directory.get(0);
-              directory.remove(0);
-              File folder = new File(folderPath);
-              File[] filesInFolder = folder.listFiles();
-              int noOfFiles = filesInFolder.length;
-              
-              for(int i = 0 ; i < noOfFiles ; i++) { 
-                 File f = filesInFolder[i];
-                 if(f.isDirectory()) { 
-                    directory.add(f.getAbsolutePath());
-                 } else { 
-                    totalSize+=f.length();
-                 } 
-              } 
-           } 
-        } else { 
-           totalSize = file.length();
-        } 
-        System.out.print("DELETED " + totalSize + " BYTES");
-        return totalSize;
-     }
 }

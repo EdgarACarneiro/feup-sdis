@@ -29,21 +29,11 @@ public class DeleteAction extends Action {
             if (backupFile.isDirectory() && backupFile.getName().equals(fileID)) {
                 System.out.println("DELETING " + backupFile.getName() + "...");
 
-                if (deleteFolder(backupFile))
-                    System.out.println("DELETING " + backupFile.getName() + "...");
+                if (Utils.deleteFolder(backupFile))
+                    System.out.println("SUCCESSFULLY DELETED " + backupFile.getName() + "!");
                 else
                     System.out.println("FAILED");
             }
         }
-    }
-
-    private boolean deleteFolder(File folder){
-        File[] directoryListing = folder.listFiles();
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                child.delete();
-            }
-        }
-        return folder.delete();
     }
 }

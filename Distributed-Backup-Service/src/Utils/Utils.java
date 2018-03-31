@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -92,5 +93,39 @@ public final class Utils {
             }
         }
         return folder.delete();
+    }
+
+        /**
+	 * Get directory size
+	 *
+	 * @param folder folder to be deleted
+	 * @return Boolean with success or not 
+	 */
+    public static long findSize(File file) { 
+        long totalSize = 0;
+        ArrayList<String> directory = new ArrayList<String>();
+        
+        if(file.isDirectory()) { 
+           directory.add(file.getAbsolutePath());
+           while (directory.size() > 0) {
+              String folderPath = directory.get(0);
+              directory.remove(0);
+              File folder = new File(folderPath);
+              File[] filesInFolder = folder.listFiles();
+              int noOfFiles = filesInFolder.length;
+              
+              for(int i = 0 ; i < noOfFiles ; i++) { 
+                 File f = filesInFolder[i];
+                 if(f.isDirectory()) { 
+                    directory.add(f.getAbsolutePath());
+                 } else { 
+                    totalSize+=f.length();
+                 } 
+              } 
+           } 
+        } else { 
+           totalSize = file.length();
+        } 
+        return totalSize/1000;
     }
 }
