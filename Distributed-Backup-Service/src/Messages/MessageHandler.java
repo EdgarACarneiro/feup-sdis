@@ -6,6 +6,7 @@ import Action.RetrieveChunkAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
+import Main.ChunksRecorder;
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -23,12 +24,16 @@ public class MessageHandler implements Runnable {
 
     private Message message;
 
-    public MessageHandler(ControlChannel controlChannel, RestoreChannel restoreChannel, int peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+    private ChunksRecorder record;
+
+
+    public MessageHandler(ControlChannel controlChannel, RestoreChannel restoreChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
         this.controlChannel = controlChannel;
         this.restoreChannel = restoreChannel;
         this.peerID = peerID;
         this.subscribedActions = subscribedActions;
         this.message = message;
+        this.record = record;
     }
 
     @Override
@@ -37,14 +42,14 @@ public class MessageHandler implements Runnable {
             return;
 
         if (message instanceof PutchunkMsg) {
-            (new StoreAction(controlChannel, peerID, (PutchunkMsg) message)).run();
+            (new StoreAction(controlChannel, record, peerID, (PutchunkMsg) message)).run();
         }
         else if (message instanceof  StoredMsg) {
             for (ActionHasReply action : subscribedActions)
                 action.parseResponse(message);
         }
         else if (message instanceof GetchunkMsg) {
-            (new RetrieveChunkAction(restoreChannel, peerID, (GetchunkMsg) message)).run();
+            (new RetrieveChunkAction(restoreChannel, record, peerID, (GetchunkMsg) message)).run();
         }
         else if (message instanceof ChunkMsg) {
             for (ActionHasReply action : subscribedActions)

@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Main.ChunksRecorder;
 import Messages.PutchunkMsg;
 import Messages.StoredMsg;
 import Utils.Utils;
@@ -18,7 +19,7 @@ public class StoreAction extends Action {
     /**
      * Maximum time waited to trigger the Store Action, exclusively.
      */
-    private final static int MAX_TIME_TO_SEND = 4001;
+    private final static int MAX_TIME_TO_SEND = 4000;
 
     /**
      * The putchunk message that triggered this action
@@ -31,9 +32,19 @@ public class StoreAction extends Action {
     private String fileDir;
 
     /**
+     * Boolean indicating if the chunk was successfully stored
+     */
+    private boolean wasStored;
+
+    /**
      * The channel used to communicate with other peers, regarding control information
      */
     private ControlChannel controlChannel;
+
+    /**
+     * Data Structure to be updated by this action, referent to the Peer stored files' chunks
+     */
+    private ChunksRecorder peerStoredChunks;
 
     /**
      * The identifier of the Peer associated to this action
@@ -41,30 +52,44 @@ public class StoreAction extends Action {
     private int peerID;
 
 
-    public StoreAction (ControlChannel controlChannel, int peerID, PutchunkMsg requestMsg) {
+    public StoreAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, int peerID, PutchunkMsg requestMsg) {
         this.controlChannel = controlChannel;
         this.peerID = peerID;
         putchunkMsg = requestMsg;
+        this.peerStoredChunks = peerStoredChunks;
 
         this.fileDir = getFileDirectory(peerID, putchunkMsg.getFileID());
         new File(fileDir).mkdirs();
 
-        storeChunk();
+        this.wasStored = storeChunk();
     }
 
-    private void storeChunk() {
+    private boolean storeChunk() {
         try {
-            FileOutputStream out = new FileOutputStream (fileDir + "/" + putchunkMsg.getChunkNum());
+            String fileID = putchunkMsg.getFileID();
+            int chunkNum = putchunkMsg.getChunkNum();
+
+            FileOutputStream out = new FileOutputStream (fileDir + "/" + chunkNum);
             out.write(putchunkMsg.getChunk());
+
+            if (! peerStoredChunks.hasChunk(fileID, chunkNum) ) {
+                peerStoredChunks.updateChunks(fileID, chunkNum);
+                return true;
+            } else
+                return false;
+
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());
+            return false;
         }
     }
 
     @Override
     public void run() {
-        ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
-        scheduledThread.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+        if (wasStored) {
+            ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
+            scheduledThread.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+        }
     }
 
     /**

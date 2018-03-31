@@ -164,7 +164,16 @@ public final class FileManager {
      * @return the File's directory name
      */
     public static String getFileDirectory(int peerID, String fileID) {
-        return BASE_DIRECTORY_NAME + peerID + "/" + fileID;
+        return getPeerDirectory(peerID) + "/" + fileID;
+    }
+
+    /**
+     * Gets the standard directory name for a given chunk, from a given file, in a given Main.Peer
+     *
+     * @return the Chunk's directory name
+     */
+    public static Path getChunkFile(int peerID, String fileID, int chunkNum) {
+        return Paths.get(getFileDirectory(peerID, fileID) + "/" + chunkNum);
     }
 
     /**

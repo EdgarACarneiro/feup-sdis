@@ -14,6 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import static Utils.FileManager.getPeerDirectory;
@@ -64,9 +65,14 @@ public class Peer implements RMI.RMIInterface {
     private ThreadPool threadPool;
 
     /**
-     * The ArrayList used for keeping information about the files that were backed up
+     * The hashMap used for keeping information about the files that were backed up
      */
     private HashMap<String, BackedupFile> backedupFiles = new HashMap<>();
+
+    /**
+     * Class used to save records of what chunks are stored in this Peer disk
+     */
+    public ChunksRecorder chunksRecord = new ChunksRecorder();
 
     /**
      * Regex used to validate the program args for initiating a peer
