@@ -105,22 +105,32 @@ public class TriggerReclaimAction extends Action {
                 File[] directoryListing = dir.listFiles();
         
                 if (directoryListing != null) {
-                    for (File child : directoryListing) {
-                        if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
+                    for (File backups : directoryListing) {
+                        if (backups.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
 
-                            File newDir = new File(dir, child.getName());
-                            File[] files = newDir.listFiles();
+                            File fileFolder = new File(dir, backups.getName());
+                            File[] files = fileFolder.listFiles();
 
-                            for (File newchild : files) {                         
-                                if (newchild.isDirectory() && shrinkSize > 0){
-                                    shrinkSize -= Utils.findSize(newchild);
-                                    Utils.log("DELETING " + newchild.getName() + "...");
-            
-                                    if (Utils.deleteFolder(newchild)){
-                                        Utils.log("DELETED " + newchild.getName() + "!");
+                            for (File file : files) {                         
+                                if (file.isDirectory() && shrinkSize > 0){
+                                    Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
+                                    System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
+
+                                    File fileChunks = new File(fileFolder, file.getName());
+                                    File[] chunkList = fileChunks.listFiles();
+
+                                    if (chunkList != null) {
+                                        for (File chunk : chunkList) {
+                                            if (shrinkSize > 0){
+                                                Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                                System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                                shrinkSize -= Utils.findSize(chunk);
+                                                chunk.delete();
+                                                requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
+                                            } else 
+                                                break;
+                                        }
                                     }
-                                    else
-                                        Utils.showError("FAILED TO DELETE " + newchild.getName(), DeleteAction.class);
                                 }
                             } 
                         }
