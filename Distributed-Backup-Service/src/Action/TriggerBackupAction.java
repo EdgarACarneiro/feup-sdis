@@ -134,12 +134,6 @@ public class TriggerBackupAction extends ActionHasReply {
             if (numTimeCycles >= MAXIMUM_NUM_CYCLES)
                 return;
 
-            try {
-                Thread.sleep(waitCheckTime);
-            } catch (java.lang.InterruptedException e) {
-                Utils.showError("Unable to wait " + waitCheckTime + "mili seconds to proceed. Proceeding now.", this.getClass());
-            }
-
             // Get chunks whose RD isn't superior to repDegree
             ArrayList<Integer> missingRDChunks = new ArrayList<>();
             for (int i = 0; i < chunksRD.size(); ++i) {

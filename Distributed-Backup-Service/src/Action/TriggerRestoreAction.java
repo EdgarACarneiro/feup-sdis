@@ -6,6 +6,7 @@ import Messages.GetchunkMsg;
 import Messages.Message;
 import Utils.*;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
@@ -65,8 +66,12 @@ public class TriggerRestoreAction extends ActionHasReply {
 
         ChunkMsg realMsg = (ChunkMsg) msg;
         try {
-            FileOutputStream out = new FileOutputStream (FileManager.getFileDirectory(senderID, fileID) + "/" + realMsg.getChunkNum());
+            String fileDir = FileManager.getFileDirectory(senderID, fileID);
+            new File(fileDir).mkdirs();
+
+            FileOutputStream out = new FileOutputStream (fileDir + "/" + realMsg.getChunkNum());
             out.write(realMsg.getChunk(), 0, realMsg.getChunk().length);
+
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());
         }
