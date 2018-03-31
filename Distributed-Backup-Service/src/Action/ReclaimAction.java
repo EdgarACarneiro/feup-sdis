@@ -15,13 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class TriggerReclaimAction extends Action {
-
-    /**
-     * Maximum number of cycles the Action will execute in order to make all the chunks
-     * replication degree equivalent to the desired replication degree
-     */
-    private final static int MAXIMUM_NUM_CYCLES = 5;
+public class ReclaimAction extends Action {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
@@ -29,19 +23,9 @@ public class TriggerReclaimAction extends Action {
     private ControlChannel controlChannel;
 
     /**
-     * Thread Pool useful for running scheduled check loops
-     */
-    private ScheduledThreadPoolExecutor sleepThreadPool;
-
-    /**
      * Protocol Version in the communication
      */
     private float protocolVersion;
-
-    /**
-     * The thread waiting time for checking chunks RD, in mili seconds
-     */
-    private int waitCheckTime = 1000;
 
     /**
      * The sender peer ID
@@ -66,14 +50,14 @@ public class TriggerReclaimAction extends Action {
      * @param senderID The identifier of the sender peer
      * @param maxKBytes Max KBytes to be used
      */
-    public TriggerReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String maxKBytes) {
+    public ReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String maxKBytes) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         if ( Long.parseLong(maxKBytes) < getFreeSpace())
             this.maxKBytes = Long.parseLong(maxKBytes);
         else {
-            Utils.showError("Not enough space!", TriggerReclaimAction.class);
+            Utils.showError("Not enough space!", ReclaimAction.class);
         }
     }
 
