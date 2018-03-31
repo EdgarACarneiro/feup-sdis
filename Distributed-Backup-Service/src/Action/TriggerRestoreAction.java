@@ -1,6 +1,8 @@
 package Action;
 
 import Channel.ControlChannel;
+import Main.BackedupFile;
+import Main.Peer;
 import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
 import Messages.Message;
@@ -16,6 +18,11 @@ public class TriggerRestoreAction extends ActionHasReply {
      * The channel used to communicate with other peers, regarding control messages
      */
     private ControlChannel controlChannel;
+
+    /**
+     * Important information regarding the file that is going to be restored
+     */
+    private BackedupFile fileToBeRestored;
 
     /**
      * Protocol Version in the communication
@@ -37,17 +44,20 @@ public class TriggerRestoreAction extends ActionHasReply {
      */
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
-    public TriggerRestoreAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
-        this.controlChannel = controlChannel;
+    public TriggerRestoreAction(Peer peer, float protocolVersion, int senderID, String file) {
+        this.controlChannel = peer.getControlChannel();
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
+
         this.fileID = FileManager.genFileID(file);
-        chunks = FileManager.splitFile(file); // TODO - mudar isto para ele passar a ir buscar antes quais os chunks que tem guardado de um file, que estara na PEer
+        fileToBeRestored = peer.getBackedUpFile(fileID);
+        if (fileToBeRestored == null)
+            throw new ExceptionInInitializerError();
     }
 
     @Override
     public void run() {
-        for (int i = 0; i < chunks.size(); ++i) {
+        for (int i = 0; i < fileToBeRestored.getNumChunks(); ++i) {
             try {
                 controlChannel.sendMessage(
                     new GetchunkMsg(protocolVersion, senderID, fileID, i+1).genMsg()

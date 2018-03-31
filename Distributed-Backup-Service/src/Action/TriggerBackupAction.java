@@ -1,6 +1,8 @@
 package Action;
 
 import Channel.BackupChannel;
+import Main.BackedupFile;
+import Main.Peer;
 import Messages.Message;
 import Messages.PutchunkMsg;
 import Messages.StoredMsg;
@@ -23,6 +25,11 @@ public class TriggerBackupAction extends ActionHasReply {
     private final static int MAXIMUM_NUM_CYCLES = 5;
 
     /**
+     * The starting  waiting time for checking chunks RD, in mili seconds
+     */
+    private final static int STARTING_WAIT_TIME = 1000;
+
+    /**
      * The channel used to communicate with other peers, regarding backup files
      */
     private BackupChannel backupChannel;
@@ -35,7 +42,18 @@ public class TriggerBackupAction extends ActionHasReply {
     /**
      * The thread waiting time for checking chunks RD, in mili seconds
      */
-    private int waitCheckTime = 1000;
+    private int waitCheckTime = STARTING_WAIT_TIME;
+
+    /**
+     * The peer associated to this action
+     * It is important to store the peer, for later indicating to the peer if the file was successfully backed up
+     */
+    private Peer peer;
+
+    /**
+     * The resultant backedupFile of a well succeeded back up implementation
+     */
+    private BackedupFile backedUpFile;
 
     /**
      * The number of round trips already completed.
@@ -68,7 +86,7 @@ public class TriggerBackupAction extends ActionHasReply {
     private ArrayList<Integer> chunksRD = new ArrayList<>();
 
     /**
-     * An hashmap containing the chunks associated to each Peer, telling whether they were already received or not
+     * An hashMap containing the chunks associated to each Peer, telling whether they were already received or not
      */
     private HashMap <Integer, ArrayList<Boolean> > peersChunks = new HashMap<>();
 
@@ -80,19 +98,22 @@ public class TriggerBackupAction extends ActionHasReply {
     /**
      * Trigger Backup Action Constructor
      *
-     * @param backupChannel The channel used to communicate the desired course of action
+     * @param peer The peer associated to this action
      * @param protocolVersion The protocol version used
      * @param senderID The identifier of the sender peer
      * @param file The File to be backed up
      * @param repDegree The desired replication degree of the file
      */
-    public TriggerBackupAction(BackupChannel backupChannel, float protocolVersion, int senderID, String file, String repDegree) {
-        this.backupChannel = backupChannel;
+    public TriggerBackupAction(Peer peer, float protocolVersion, int senderID, String file, String repDegree) {
+        this.peer = peer;
+        this.backupChannel = peer.getBackupChannel();
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         this.fileID = FileManager.genFileID(file);
         this.repDegree = Integer.parseInt(repDegree);
         chunks = FileManager.splitFile(file);
+
+        backedUpFile = new BackedupFile(chunks.size(), FileManager.getFileName(file));
 
         sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
         initRDCounter();
@@ -142,8 +163,11 @@ public class TriggerBackupAction extends ActionHasReply {
             }
 
             // If size is bigger than 0, all chunks have the desired repDegree
-            if (missingRDChunks.size() == 0)
+            if (missingRDChunks.size() == 0) {
+                peer.backedFile(fileID, backedUpFile);
                 return;
+            }
+
 
             for (int chunkIdx : missingRDChunks)
                 requestBackUp(chunkIdx);

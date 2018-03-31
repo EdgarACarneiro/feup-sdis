@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import static Utils.FileManager.getPeerDirectory;
@@ -53,7 +54,7 @@ public class Peer implements RMI.RMIInterface {
     private int peerID;
 
     /**
-     * Name of the access point to be accessed by the Client or Main.TestApp using RMI
+     * Name of the access point to be accessed by the Main.TestApp using RMI
      */
     private String accessPoint;
 
@@ -61,6 +62,11 @@ public class Peer implements RMI.RMIInterface {
      * The thread pool for running different action at the same time
      */
     private ThreadPool threadPool;
+
+    /**
+     * The ArrayList used for keeping information about the files that were backed up
+     */
+    private HashMap<String, BackedupFile> backedupFiles = new HashMap<>();
 
     /**
      * Regex used to validate the program args for initiating a peer
@@ -152,6 +158,14 @@ public class Peer implements RMI.RMIInterface {
         return threadPool;
     }
 
+    public void backedFile (String fileID, BackedupFile file) {
+        backedupFiles.put(fileID, file);
+    }
+
+    public BackedupFile getBackedUpFile (String fileID) {
+        return backedupFiles.get(fileID);
+    }
+
     /* INTERFACE FUNCTIONS */
     // TODO - below functions
 
@@ -161,7 +175,7 @@ public class Peer implements RMI.RMIInterface {
         else if (args.size() > 2)
             Utils.showWarning("Too many arguments given for backup action", this.getClass());
 
-        TriggerBackupAction action = new TriggerBackupAction(backupChannel, protocolVersion, peerID, args.get(0), args.get(1));
+        TriggerBackupAction action = new TriggerBackupAction(this, protocolVersion, peerID, args.get(0), args.get(1));
         controlChannel.subscribeAction(action);
         threadPool.executeThread(action);
     }
@@ -172,9 +186,15 @@ public class Peer implements RMI.RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for restore action", this.getClass());
 
-        TriggerRestoreAction action = new TriggerRestoreAction(controlChannel, protocolVersion, peerID, args.get(0));
-        restoreChannel.subscribeAction(action);
-        threadPool.executeThread(action);
+        try {
+            TriggerRestoreAction action = new TriggerRestoreAction(this, protocolVersion, peerID, args.get(0));
+            restoreChannel.subscribeAction(action);
+            threadPool.executeThread(action);
+
+        } catch (ExceptionInInitializerError e) {
+            Utils.showWarning("Unable to restore the given file. " +
+                    "You can only restore files that were previously backed up by this Peer.", this.getClass());
+        }
     }
 
     public void deleteAction(ArrayList<String> args) {

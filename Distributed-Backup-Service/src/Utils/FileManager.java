@@ -90,6 +90,15 @@ public final class FileManager {
         return "";
     }
 
+    public static String getFileName(String filePath) {
+
+        Path path = getPath(filePath);
+        if (path == null)
+            return "";
+
+        return path.toFile().getName();
+    }
+
     /**
      * Verifies if the file correspondent to a given fileName exists
      *
