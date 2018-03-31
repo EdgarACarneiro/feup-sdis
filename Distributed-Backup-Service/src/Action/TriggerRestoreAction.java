@@ -9,10 +9,14 @@ import Messages.Message;
 import Utils.*;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TriggerRestoreAction extends ActionHasReply {
+
+    /**
+     * directory were all the restore files will be
+     */
+    private static final String RESTORE_DIRECTORY = "Restored Files";
 
     /**
      * The channel used to communicate with other peers, regarding control messages
@@ -42,7 +46,8 @@ public class TriggerRestoreAction extends ActionHasReply {
     /**
      * ArrayList containing the file correspondent chunks
      */
-    private ArrayList<byte[]> chunks = new ArrayList<>();
+    private HashMap<Integer, byte[]> chunks = new HashMap<>();
+
 
     public TriggerRestoreAction(Peer peer, float protocolVersion, int senderID, String file) {
         this.controlChannel = peer.getControlChannel();
@@ -60,7 +65,7 @@ public class TriggerRestoreAction extends ActionHasReply {
         for (int i = 0; i < fileToBeRestored.getNumChunks(); ++i) {
             try {
                 controlChannel.sendMessage(
-                    new GetchunkMsg(protocolVersion, senderID, fileID, i+1).genMsg()
+                    new GetchunkMsg(protocolVersion, senderID, fileID, i).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping delete action", this.getClass());
@@ -75,15 +80,17 @@ public class TriggerRestoreAction extends ActionHasReply {
             return;
 
         ChunkMsg realMsg = (ChunkMsg) msg;
-        try {
-            String fileDir = FileManager.getFileDirectory(senderID, fileID);
-            new File(fileDir).mkdirs();
+        chunks.put(realMsg.getChunkNum(), realMsg.getChunk());
 
-            FileOutputStream out = new FileOutputStream (fileDir + "/" + realMsg.getChunkNum());
-            out.write(realMsg.getChunk(), 0, realMsg.getChunk().length);
+        if (chunks.size() == fileToBeRestored.getNumChunks()) {
+            String restoreDir = FileManager.getFileDirectory(senderID, RESTORE_DIRECTORY);
+            new File(restoreDir).mkdirs();
 
-        } catch (java.io.IOException e) {
-            Utils.showError("Failed to save chunk in disk", this.getClass());
+            if (FileManager.createFile(chunks, restoreDir, fileToBeRestored.getFileName()) ) {
+                System.out.print("Succesfully restored file: " + fileToBeRestored.getFileName());
+                return;
+            } else
+                Utils.showError("Failed to restore file, due to errors on file outputing.", this.getClass());
         }
     }
 }

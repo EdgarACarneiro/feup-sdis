@@ -1,12 +1,15 @@
 package Utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.logging.FileHandler;
 
 /**
  * Class responsible for splitting a file in chunks
@@ -57,6 +60,32 @@ public final class FileManager {
         return chunks;
     }
 
+    public static boolean createFile (HashMap<Integer, byte[]> chunks, String filePath, String fileName) {
+
+        Path path = getPath(filePath);
+        if (path == null)
+            return false;
+
+        try {
+            FileOutputStream out = new FileOutputStream(filePath + "/" + fileName);
+
+            for (int i = 0; i < chunks.size(); ++i) {
+                byte[] chunk = chunks.get(i);
+                out.write(chunk, 0, chunk.length);
+            }
+            out.close();
+
+        } catch (java.io.FileNotFoundException e ) {
+            Utils.showError("Unable to find to create output file.", FileHandler.class);
+            return false;
+        } catch (java.io.IOException e) {
+            Utils.showError("Unable to output to created file.", FileHandler.class);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Generates the fileId of a given file, using sha256 over some file peculiarity
      *
@@ -90,6 +119,12 @@ public final class FileManager {
         return "";
     }
 
+    /**
+     * Get the file name from a existing given file path
+     *
+     * @param filePath The file path representing the file
+     * @return The file's name
+     */
     public static String getFileName(String filePath) {
 
         Path path = getPath(filePath);
