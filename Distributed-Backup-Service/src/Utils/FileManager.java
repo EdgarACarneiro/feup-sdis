@@ -31,6 +31,12 @@ public final class FileManager {
      */
     private static final int CHUNKS_SIZE = 64000;
 
+    /**
+     * Split the the file (if present in the given filepath) into chunks of maximum size of FileManager.CHUNKS_SIZE Kb
+     *
+     * @param filePath The file path of the file
+     * @return List with the chunks created
+     */
     public static ArrayList<byte[]> splitFile(String filePath) {
 
         Path path = getPath(filePath);
@@ -60,6 +66,14 @@ public final class FileManager {
         return chunks;
     }
 
+    /**
+     * Creates a file from the given chunks, naming it with given fileName and creating it a the given file path
+     *
+     * @param chunks The chunks that will form the file
+     * @param filePath The file's path
+     * @param fileName The file's name
+     * @return True if the file was successfully created, false otherwise
+     */
     public static boolean createFile (HashMap<Integer, byte[]> chunks, String filePath, String fileName) {
 
         Path path = getPath(filePath);

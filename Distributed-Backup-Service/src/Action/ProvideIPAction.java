@@ -1,5 +1,8 @@
 package Action;
 
+import Messages.Message;
+import Messages.SetTCPIP;
+
 public class ProvideIPAction extends Action {
     
     /**

@@ -165,7 +165,7 @@ public class TriggerBackupAction extends ActionHasReply {
 
             // If size is bigger than 0, all chunks have the desired repDegree
             if (missingRDChunks.size() == 0) {
-                backedUpFiles.backedFile(fileID, fileName, chunksRD);
+                backedUpFiles.backedFile(fileID, fileName, repDegree, chunksRD);
                 return;
             }
 
