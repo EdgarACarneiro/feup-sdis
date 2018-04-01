@@ -71,6 +71,7 @@ public class StoreAction extends Action {
 
             FileOutputStream out = new FileOutputStream (fileDir + "/" + chunkNum);
             out.write(putchunkMsg.getChunk());
+            out.close();
 
             if (! peerStoredChunks.hasChunk(fileID, chunkNum) ) {
                 peerStoredChunks.updateChunks(fileID, chunkNum);

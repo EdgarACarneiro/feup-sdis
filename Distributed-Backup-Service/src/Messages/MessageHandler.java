@@ -56,7 +56,7 @@ public class MessageHandler implements Runnable {
                 action.parseResponse(message);
         }
         else if (message instanceof DeleteMsg) {
-            (new DeleteAction(message, peerID)).run();
+            (new DeleteAction(message, record, peerID)).run();
         }
     }
 

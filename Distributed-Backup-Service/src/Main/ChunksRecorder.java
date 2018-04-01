@@ -1,14 +1,14 @@
 package Main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChunksRecorder {
 
     /**
      * The hashMap used for keeping information about the chunks that were saved for each file (fileID)
      */
-    private HashMap<String, ArrayList<Integer>> chunksRecord = new HashMap<>();
+    private ConcurrentHashMap<String, ArrayList<Integer>> chunksRecord = new ConcurrentHashMap<>();
 
     public ChunksRecorder() {}
 
@@ -28,10 +28,19 @@ public class ChunksRecorder {
         chunksRecord.put(fileID, chunks);
     }
 
+    public ArrayList<Integer> getChunks(String fileID) {
+        return chunksRecord.get(fileID);
+    }
+
     public boolean hasChunk(String fileID, Integer chunkNum) {
         ArrayList<Integer> storedChunks = chunksRecord.get(fileID);
 
         return (storedChunks != null && (storedChunks.contains(chunkNum)) );
+    }
+
+    public void removeFile(String fileID) {
+        if (chunksRecord.containsKey(fileID))
+            chunksRecord.remove(fileID);
     }
 
 

@@ -13,8 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import static Utils.FileManager.getPeerDirectory;
@@ -67,7 +66,7 @@ public class Peer implements RMI.RMIInterface {
     /**
      * The hashMap used for keeping information about the files that were backed up
      */
-    private HashMap<String, BackedupFile> backedupFiles = new HashMap<>();
+    private ConcurrentHashMap<String, BackedupFile> backedupFiles = new ConcurrentHashMap<>();
 
     /**
      * Class used to save records of what chunks are stored in this Peer disk
