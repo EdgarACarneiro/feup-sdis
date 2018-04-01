@@ -58,6 +58,9 @@ public class MessageHandler implements Runnable {
         else if (message instanceof DeleteMsg) {
             (new DeleteAction(message, record, peerID)).run();
         }
+        else if (message instanceof RemovedMsg) {
+            (new TriggerRemovedAction(controlChannel, record, peerID, (RemovedMsg) message)).run();
+        }
     }
 
     public static Message messageInterpreter(byte[] readMsg, int msgLength) {

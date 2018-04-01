@@ -1,6 +1,6 @@
 ./RMI/RMIInterface.java
 ./RMI/RMIClient.java
-./Action/TriggerReclaimAction.java
+./Action/ReclaimAction.java
 ./Action/TriggerRestoreAction.java
 ./Action/StoreAction.java
 ./Action/DeleteAction.java
