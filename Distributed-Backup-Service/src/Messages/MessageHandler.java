@@ -6,6 +6,8 @@ import Action.RetrieveChunkAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
+import Action.TriggerRemovedAction;
+import Channel.BackupChannel;
 import Main.ChunksRecorder;
 import Utils.Utils;
 
@@ -17,6 +19,8 @@ public class MessageHandler implements Runnable {
     private ControlChannel controlChannel;
 
     private RestoreChannel restoreChannel;
+
+    private BackupChannel backupChannel;
 
     private int peerID;
 
@@ -59,7 +63,7 @@ public class MessageHandler implements Runnable {
             (new DeleteAction(message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new TriggerRemovedAction(controlChannel, record, peerID, (RemovedMsg) message)).run();
+            (new TriggerRemovedAction(backupChannel, record, peerID, (RemovedMsg) message)).run();
         }
     }
 

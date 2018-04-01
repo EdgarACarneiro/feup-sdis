@@ -1,12 +1,14 @@
 package Action;
 
-import Channel.ControlChannel;
+import Channel.BackupChannel;
+import Main.ChunksRecorder;
 import Main.Peer;
 import Messages.Message;
 import Messages.PutchunkMsg;
 import Messages.RemovedMsg;
 import Utils.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -15,23 +17,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class TriggerRemovedAction extends ActionHasReply {
-
-    /**
-     * Maximum number of cycles the Action will execute in order to make all the chunks
-     * replication degree equivalent to the desired replication degree
-     */
-    private final static int MAXIMUM_NUM_CYCLES = 5;
+public class TriggerRemovedAction extends Action {
 
     /**
      * The starting  waiting time for checking chunks RD, in mili seconds
      */
-    private final static int STARTING_WAIT_TIME = 1000;
+    private final static int STARTING_WAIT_TIME = 400;
 
     /**
      * The channel used to communicate with other peers, regarding backup files
      */
-    private ControlChannel controlChannel;
+    private BackupChannel backupChannel;
 
     /**
      * Thread Pool useful for running scheduled check loops
@@ -47,17 +43,12 @@ public class TriggerRemovedAction extends ActionHasReply {
      * The peer associated to this action
      * It is important to store the peer, for later indicating to the peer if the file was successfully backed up
      */
-    private Peer peer;
+    private RemovedMsg message;
 
     /**
-     * The resultant backedupFile of a well succeeded back up implementation
+     * Data Structure to get information from, referent to the Peer stored files' chunks
      */
-    private BackedupFile backedUpFile;
-
-    /**
-     * The number of round trips already completed.
-     */
-    private int numTimeCycles = 0;
+    private ChunksRecorder peerStoredChunks;
 
     /**
      * Protocol Version in the communication
@@ -67,7 +58,7 @@ public class TriggerRemovedAction extends ActionHasReply {
     /**
      * The sender peer ID
      */
-    private int senderID;
+    private int peerID;
 
     /**
      * The file identifier for the file to be backed up
@@ -75,19 +66,9 @@ public class TriggerRemovedAction extends ActionHasReply {
     private String fileID;
 
     /**
-     * ArrayList containing the file correspondent chunks
+     * The chunk number
      */
-    private ArrayList<byte[]> chunks = new ArrayList<>();
-
-    /**
-     * ArrayList containing the replication degree of each chunk
-     */
-    private ArrayList<Integer> chunksRD = new ArrayList<>();
-
-    /**
-     * An hashMap containing the chunks associated to each Peer, telling whether they were already received or not
-     */
-    private HashMap <Integer, ArrayList<Boolean> > peersChunks = new HashMap<>();
+    private int chunkNum;
 
     /**
      * The desired replication degree of the file
@@ -95,26 +76,21 @@ public class TriggerRemovedAction extends ActionHasReply {
     private int repDegree;
 
     /**
-     * Trigger Backup Action Constructor
+     * Trigger Remove Action Constructor
      *
-     * @param peer The peer associated to this action
-     * @param protocolVersion The protocol version used
-     * @param senderID The identifier of the sender peer
-     * @param file The File to be backed up
-     * @param repDegree The desired replication degree of the file
+     * @param backupChannel The channel associated to this action
+     * @param record The protocol version used
+     * @param peerID The identifier of the sender peer
+     * @param removedMsg The chunk number that was deleted
      */
-    public TriggerRemovedAction(Peer peer, float protocolVersion, int senderID, String file, String repDegree) {
-        this.peer = peer;
-        this.controlChannel = peer.getControlChannel();
-        this.protocolVersion = protocolVersion;
-        this.senderID = senderID;
-        this.fileID = FileManager.genFileID(file);
-        this.repDegree = Integer.parseInt(repDegree);
-        chunks = FileManager.splitFile(file);
-
-        backedUpFile = new BackedupFile(chunks.size(), FileManager.getFileName(file));
-
-        sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
+    public TriggerRemovedAction(BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
+        this.backupChannel = backupChannel;
+        this.peerStoredChunks = record;
+        this.peerID = peerID;
+        this.message = removedMsg;
+        this.protocolVersion = removedMsg.getProtocolVersion();
+        this.fileID = removedMsg.getFileID();
+        this.chunkNum = removedMsg.getChunkNum();
     }
 
     /**
@@ -122,10 +98,10 @@ public class TriggerRemovedAction extends ActionHasReply {
      *
      * @param chunkNum Number of the chunk to be backed up
      */
-    private void requestBackUp(int chunkNum) {
+    private void requestBackUp() {
         try {
             backupChannel.sendMessage(
-                    new PutchunkMsg(protocolVersion, senderID, fileID, chunkNum, repDegree, chunks.get(chunkNum)).genMsg()
+                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, repDegree, new byte[0]).genMsg()//Get chunk?
             );
         } catch (ExceptionInInitializerError e) {
             Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
@@ -139,8 +115,7 @@ public class TriggerRemovedAction extends ActionHasReply {
     private class Repeater implements Runnable {
 
         @Override
-        public void run() {
-            
+        public void run() { 
             sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
         }
     }
@@ -148,19 +123,27 @@ public class TriggerRemovedAction extends ActionHasReply {
 
     @Override
     public void run() {
-        //IF something
-        for (int i = 0; i < chunks.size(); ++i)
-            requestBackUp(i);
+        File[] files = FileManager.getPeerBackups(peerID);
 
-        sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
-    }
+        for (File file : files) {                         
+            if (file.isDirectory() && file.getName().equals(fileID)){
+                System.out.println("Hmm, you deleted a file from something I have...");
 
-    @Override
-    public void parseResponse(Message msg) {
-        if (! msg.getFileID().equals(fileID))
-            return;
+                File fileChunks = new File(file.getPath(), file.getName());
+                File[] chunkList = fileChunks.listFiles();
 
-            RemovedMsg realMsg = (RemovedMsg) msg;
-        int chunkNum = realMsg.getChunkNum();
+                if (chunkList != null) {
+                    for (File chunk : chunkList) {
+                        if(Integer.valueOf(chunk.getName()).equals(chunkNum)){
+                            System.out.println("IT WAS " + chunkNum);
+                            if(true){ //Check if RD is over the minimum
+                                sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
+                                requestBackUp();
+                            }
+                        }
+                    }
+                }
+            }
+        } 
     }
 }
