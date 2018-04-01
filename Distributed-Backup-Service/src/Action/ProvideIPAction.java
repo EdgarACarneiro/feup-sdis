@@ -1,10 +1,17 @@
 package Action;
 
+import Channel.ControlChannel;
 import Messages.Message;
 import Messages.SetTCPIP;
+import Utils.Utils;
 
 public class ProvideIPAction extends Action {
     
+    /**
+     * The channel used to communicate with other peers, regarding restore information
+     */
+    private ControlChannel controlChannel;
+
     /**
      * The sender peer ID
      */
@@ -15,10 +22,16 @@ public class ProvideIPAction extends Action {
      */
     private String fileID;
 
+    /**
+     * Protocol Version in the communication
+     */
+    private float protocolVersion;
     
-    public ProvideIPAction(Message message, int peerID) {
-        this.fileID = message.getFileID();
+    public ProvideIPAction(ControlChannel controlChannel, int peerID, Message message) {
+        this.controlChannel = controlChannel;
         this.peerID = peerID;
+        this.protocolVersion = message.getProtocolVersion();
+        this.fileID = message.getFileID();
     }
 
     @Override

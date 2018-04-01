@@ -170,6 +170,21 @@ public class BackedUpFiles {
     }
 
     /**
+     * Getter for the Files Information
+     *
+     * @param fileID The file identifier
+     * @return The file information
+     */
+    public FilesInfo getFileInfo(String fileID) {
+        FilesInfo info = filesInfo.get(fileID);
+
+        if (info == null)
+            return null;
+
+        return info;
+    }
+
+    /**
      * Check if the given file has chunks backed up
      *
      * @param fileID The file identifier

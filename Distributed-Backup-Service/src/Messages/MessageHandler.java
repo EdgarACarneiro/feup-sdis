@@ -2,6 +2,7 @@ package Messages;
 
 import Action.ActionHasReply;
 import Action.DeleteAction;
+import Action.ProvideIPAction;
 import Action.RetrieveChunkAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
@@ -9,6 +10,7 @@ import Channel.RestoreChannel;
 import Action.TriggerRemovedAction;
 import Channel.BackupChannel;
 import Main.ChunksRecorder;
+import Main.Peer;
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ public class MessageHandler implements Runnable {
 
     private int peerID;
 
+    private Peer peer;
+
     private ArrayList<ActionHasReply> subscribedActions;
 
     private Message message;
@@ -31,9 +35,11 @@ public class MessageHandler implements Runnable {
     private ChunksRecorder record;
 
 
-    public MessageHandler(ControlChannel controlChannel, RestoreChannel restoreChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+    public MessageHandler(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+        this.peer = peer;
         this.controlChannel = controlChannel;
         this.restoreChannel = restoreChannel;
+        this.backupChannel= backupChannel;
         this.peerID = peerID;
         this.subscribedActions = subscribedActions;
         this.message = message;
@@ -63,7 +69,10 @@ public class MessageHandler implements Runnable {
             (new DeleteAction(message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new TriggerRemovedAction(backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new TriggerRemovedAction(peer, backupChannel, record, peerID, (RemovedMsg) message)).run();
+        }
+        else if (message instanceof GetTCPIP) {
+            (new ProvideIPAction(controlChannel, peerID, (GetTCPIP) message)).run();
         }
     }
 

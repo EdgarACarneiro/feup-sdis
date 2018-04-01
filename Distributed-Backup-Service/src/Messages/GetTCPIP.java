@@ -35,6 +35,9 @@ public class GetTCPIP extends Message implements msgGenerator {
     @Override
     public byte[] genMsg() {
         return ("GetTCPIP" +
+                protocolVersion + " " +
+                senderID + " " +
+                fileID + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
                 (char) ASCII_CR + (char) ASCII_LF).getBytes();
     }

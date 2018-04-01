@@ -54,7 +54,10 @@ public class SetTCPIP extends Message implements msgGenerator {
     @Override
     public byte[] genMsg() {
         return ("SetTCPIP" + 
-                ipAddress + 
+                ipAddress + " " +
+                protocolVersion + " " +
+                senderID + " " +
+                fileID + " " +
                 (char) ASCII_CR + (char) ASCII_LF +
                 (char) ASCII_CR + (char) ASCII_LF).getBytes();
     }

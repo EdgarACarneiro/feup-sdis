@@ -13,39 +13,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class TriggerRemovedAction extends Action {
+public class TriggerRemovedAction extends ActionHasReply {
 
     /**
-     * The starting  waiting time for checking chunks RD, in mili seconds
+     * Maximum time waited to trigger the Retrieve Action, exclusively.
      */
-    private final static int STARTING_WAIT_TIME = 400;
+    private final static int MAX_TIME_TO_SEND = 4000;
 
     /**
      * The channel used to communicate with other peers, regarding backup files
      */
     private BackupChannel backupChannel;
-
-    /**
-     * Thread Pool useful for running scheduled check loops
-     */
-    private ScheduledThreadPoolExecutor sleepThreadPool;
-
-    /**
-     * The thread waiting time for checking chunks RD, in mili seconds
-     */
-    private int waitCheckTime = STARTING_WAIT_TIME;
-
-
-    /**
-     * Data Structure to get information from, referent to the Peer stored files' chunks
-     */
-    private ChunksRecorder peerStoredChunks;
 
     /**
      * Protocol Version in the communication
@@ -56,6 +44,11 @@ public class TriggerRemovedAction extends Action {
      * The sender peer ID
      */
     private int peerID;
+
+     /**
+     * The Peer
+     */
+    private Peer peer;
 
     /**
      * The file identifier for the file to be backed up
@@ -68,9 +61,18 @@ public class TriggerRemovedAction extends Action {
     private int chunkNum;
 
     /**
+     * The chunk number
+     */
+    private File removedChunk;
+
+    /**
      * The desired replication degree of the file
      */
     private int repDegree;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private ScheduledFuture test;
 
     /**
      * Trigger Remove Action Constructor
@@ -80,9 +82,9 @@ public class TriggerRemovedAction extends Action {
      * @param peerID The identifier of the sender peer
      * @param removedMsg The chunk number that was deleted
      */
-    public TriggerRemovedAction(BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
+    public TriggerRemovedAction(Peer peer,BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
+        this.peer = peer;
         this.backupChannel = backupChannel;
-        this.peerStoredChunks = record;
         this.peerID = peerID;
         this.protocolVersion = removedMsg.getProtocolVersion();
         this.fileID = removedMsg.getFileID();
@@ -110,17 +112,21 @@ public class TriggerRemovedAction extends Action {
      * Class used to implement the Check loop for the action.
      * A class was used instead of a method, in order to implement it with ScheduledThreadPoolExecutor
      */
-    private class Repeater implements Runnable {
+    private class Sender implements Runnable {
 
         @Override
         public void run() { 
-            sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
+            peer.getBackedUpFiles().incRepDegree(fileID, chunkNum);
+            requestBackUp(removedChunk);
         }
+
     }
 
 
     @Override
     public void run() {
+        peer.getBackedUpFiles().decRepDegree(fileID, chunkNum);
+
         File[] files = FileManager.getPeerBackups(peerID);
 
         for (File file : files) {                         
@@ -134,15 +140,27 @@ public class TriggerRemovedAction extends Action {
                 if (chunkList != null) {
                     for (File chunk : chunkList) {
                         if(Integer.valueOf(chunk.getName()).equals(chunkNum)){
+                            this.removedChunk = chunk;
                             System.out.println("IT WAS " + chunkNum);
                             if(true){ //Check if RD is over the minimum
-                                //sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
-                                requestBackUp(chunk);
+                                    test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
                             }
                         }
                     }
                 }
             }
         } 
+    }
+
+    @Override
+    public void parseResponse(Message msg) {
+        if (! (msg instanceof PutchunkMsg))
+            return;
+
+        PutchunkMsg realMsg = (PutchunkMsg) msg;
+        if ((realMsg.getFileID().equals(fileID)) &&
+            (realMsg.getChunkNum() == chunkNum)) {
+            test.cancel(true);
+        }
     }
 }
