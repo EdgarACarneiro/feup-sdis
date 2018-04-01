@@ -4,16 +4,16 @@ import Channel.RestoreChannel;
 import Main.ChunksRecorder;
 import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
+import Messages.Message;
 import Utils.*;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-public class RetrieveChunkAction extends Action {
+public class RetrieveChunkAction extends ActionHasReply {
 
     /**
      * Maximum time waited to trigger the Retrieve Action, exclusively.
@@ -50,6 +50,10 @@ public class RetrieveChunkAction extends Action {
      */
     private byte[] chunk;
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+    private ScheduledFuture test;
+
 
     public RetrieveChunkAction (RestoreChannel restoreChannel, ChunksRecorder peerStoredChunks, int peerID, GetchunkMsg requestMsg) {
         this.restoreChannel = restoreChannel;
@@ -81,8 +85,7 @@ public class RetrieveChunkAction extends Action {
     @Override
     public void run() {
         if (isStored) {
-            ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
-            scheduledThread.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+            test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -104,4 +107,15 @@ public class RetrieveChunkAction extends Action {
         }
     }
 
+    @Override
+    public void parseResponse(Message msg) {
+        if (! (msg instanceof ChunkMsg))
+            return;
+
+        ChunkMsg realMsg = (ChunkMsg) msg;
+        if ((realMsg.getFileID().equals(getchunkMsg.getFileID())) &&
+            (realMsg.getChunkNum() == getchunkMsg.getChunkNum())) {
+            test.cancel(true);
+        }
+    }
 }
