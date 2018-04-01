@@ -84,7 +84,6 @@ public class TriggerRemovedAction extends Action {
         this.backupChannel = backupChannel;
         this.peerStoredChunks = record;
         this.peerID = peerID;
-        this.message = removedMsg;
         this.protocolVersion = removedMsg.getProtocolVersion();
         this.fileID = removedMsg.getFileID();
         this.chunkNum = removedMsg.getChunkNum();

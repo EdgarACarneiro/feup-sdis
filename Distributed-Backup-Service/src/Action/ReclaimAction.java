@@ -85,41 +85,30 @@ public class ReclaimAction extends Action {
                 shrinkSize = currentUsage - this.maxKBytes;
                 System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
 
-                File dir = new File(System.getProperty("user.dir"));
-                File[] directoryListing = dir.listFiles();
-        
-                if (directoryListing != null) {
-                    for (File backups : directoryListing) {
-                        if (backups.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
+                File[] files = FileManager.getPeerBackups(senderID);
 
-                            File fileFolder = new File(dir, backups.getName());
-                            File[] files = fileFolder.listFiles();
+                for (File file : files) {                         
+                    if (file.isDirectory() && shrinkSize > 0){
+                        Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
+                        System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
 
-                            for (File file : files) {                         
-                                if (file.isDirectory() && shrinkSize > 0){
-                                    Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
-                                    System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
+                        File fileChunks = new File(file.getParentFile(), file.getName());
+                        File[] chunkList = fileChunks.listFiles();
 
-                                    File fileChunks = new File(fileFolder, file.getName());
-                                    File[] chunkList = fileChunks.listFiles();
-
-                                    if (chunkList != null) {
-                                        for (File chunk : chunkList) {
-                                            if (shrinkSize > 0){
-                                                Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                                                System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                                                shrinkSize -= Utils.findSize(chunk);
-                                                chunk.delete();
-                                                requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
-                                            } else 
-                                                break;
-                                        }
-                                    }
-                                }
-                            } 
+                        if (chunkList != null) {
+                            for (File chunk : chunkList) {
+                                if (shrinkSize > 0){
+                                    Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                    System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                    shrinkSize -= Utils.findSize(chunk);
+                                    chunk.delete();
+                                    requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
+                                } else 
+                                    break;
+                            }
                         }
                     }
-                }
+                } 
             } else {
                 System.out.println("There was no need to shrink down disk usage!");
             }
