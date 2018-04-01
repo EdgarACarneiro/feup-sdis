@@ -1,0 +1,5 @@
+component_depth: 4
+languages:
+- java
+exclude:
+- /Client-ServerUDP/.*
