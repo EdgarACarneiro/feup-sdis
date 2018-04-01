@@ -90,7 +90,7 @@ public class RetrieveChunkAction extends ActionHasReply {
     }
 
     /**
-     * Class used to Send the Chunk correspondent message to the channel, using ScheduledThreadPoolExecutor
+     * Class used to Send the Chunk correspondent message to the channel, using ScheduledExecutorService
      */
     private class Sender implements Runnable {
 

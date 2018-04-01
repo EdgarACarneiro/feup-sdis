@@ -9,6 +9,8 @@
 ./Action/ActionHasReply.java
 ./Action/StateAction.java
 ./Action/TriggerBackupAction.java
+./Action/TriggerRemovedAction.java
+./Action/RetrieveChunkAction.java
 ./Channel/ControlChannel.java
 ./Channel/BackupChannel.java
 ./Channel/MulticastChannel.java
@@ -24,7 +26,9 @@
 ./Messages/CommonMsg.java
 ./Messages/PutchunkMsg.java
 ./ThreadPool/ThreadPool.java
+./Main/ChunksRecorder.java
 ./Main/TestApp.java
+./Main/BackedupFile.java
 ./Main/Peer.java
 ./Utils/Utils.java
 ./Utils/FileManager.java

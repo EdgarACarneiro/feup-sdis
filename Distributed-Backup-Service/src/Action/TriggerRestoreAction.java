@@ -1,7 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
-import Main.BackedupFile;
+import Main.BackedUpFiles;
 import Main.Peer;
 import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
@@ -24,9 +24,10 @@ public class TriggerRestoreAction extends ActionHasReply {
     private ControlChannel controlChannel;
 
     /**
-     * Important information regarding the file that is going to be restored
+     * The backed up files container associated to the peer triggering this action
+     * It is important to store this, for later indicating if the file was successfully backed up
      */
-    private BackedupFile fileToBeRestored;
+    private BackedUpFiles backedUpFiles;
 
     /**
      * Protocol Version in the communication
@@ -55,14 +56,14 @@ public class TriggerRestoreAction extends ActionHasReply {
         this.senderID = senderID;
 
         this.fileID = FileManager.genFileID(file);
-        fileToBeRestored = peer.getBackedUpFile(fileID);
-        if (fileToBeRestored == null)
+        backedUpFiles = peer.getBackedUpFiles();
+        if (! backedUpFiles.hasFileBackedUp(fileID))
             throw new ExceptionInInitializerError();
     }
 
     @Override
     public void run() {
-        for (int i = 0; i < fileToBeRestored.getNumChunks(); ++i) {
+        for (int i = 0; i < backedUpFiles.getNumChunks(fileID); ++i) {
             try {
                 controlChannel.sendMessage(
                     new GetchunkMsg(protocolVersion, senderID, fileID, i).genMsg()
@@ -82,12 +83,12 @@ public class TriggerRestoreAction extends ActionHasReply {
         ChunkMsg realMsg = (ChunkMsg) msg;
         chunks.put(realMsg.getChunkNum(), realMsg.getChunk());
 
-        if (chunks.size() == fileToBeRestored.getNumChunks()) {
+        if (chunks.size() == backedUpFiles.getNumChunks(fileID)) {
             String restoreDir = FileManager.getFileDirectory(senderID, RESTORE_DIRECTORY);
             new File(restoreDir).mkdirs();
 
-            if (FileManager.createFile(chunks, restoreDir, fileToBeRestored.getFileName()) ) {
-                System.out.print("Succesfully restored file: " + fileToBeRestored.getFileName());
+            if (FileManager.createFile(chunks, restoreDir, backedUpFiles.getFileName(fileID)) ) {
+                System.out.print("Succesfully restored file: " + backedUpFiles.getFileName(fileID));
                 return;
             } else
                 Utils.showError("Failed to restore file, due to errors on file outputing.", this.getClass());

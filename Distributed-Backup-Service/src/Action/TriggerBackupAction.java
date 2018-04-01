@@ -1,7 +1,7 @@
 package Action;
 
 import Channel.BackupChannel;
-import Main.BackedupFile;
+import Main.BackedUpFiles;
 import Main.Peer;
 import Messages.Message;
 import Messages.PutchunkMsg;
@@ -45,15 +45,10 @@ public class TriggerBackupAction extends ActionHasReply {
     private int waitCheckTime = STARTING_WAIT_TIME;
 
     /**
-     * The peer associated to this action
-     * It is important to store the peer, for later indicating to the peer if the file was successfully backed up
+     * The backed up files container associated to the peer triggering this action
+     * It is important to store this, for later indicating if the file was successfully backed up
      */
-    private Peer peer;
-
-    /**
-     * The resultant backedupFile of a well succeeded back up implementation
-     */
-    private BackedupFile backedUpFile;
+    private BackedUpFiles backedUpFiles;
 
     /**
      * The number of round trips already completed.
@@ -96,6 +91,11 @@ public class TriggerBackupAction extends ActionHasReply {
     private int repDegree;
 
     /**
+     * The name of the file being backed up
+     */
+    private String fileName;
+
+    /**
      * Trigger Backup Action Constructor
      *
      * @param peer The peer associated to this action
@@ -105,15 +105,16 @@ public class TriggerBackupAction extends ActionHasReply {
      * @param repDegree The desired replication degree of the file
      */
     public TriggerBackupAction(Peer peer, float protocolVersion, int senderID, String file, String repDegree) {
-        this.peer = peer;
+        this.backedUpFiles = peer.getBackedUpFiles();
         this.backupChannel = peer.getBackupChannel();
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
+
+        fileName = FileManager.getFileName(file);
         this.fileID = FileManager.genFileID(file);
         this.repDegree = Integer.parseInt(repDegree);
         chunks = FileManager.splitFile(file);
 
-        backedUpFile = new BackedupFile(chunks.size(), FileManager.getFileName(file));
 
         sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
         initRDCounter();
@@ -164,7 +165,7 @@ public class TriggerBackupAction extends ActionHasReply {
 
             // If size is bigger than 0, all chunks have the desired repDegree
             if (missingRDChunks.size() == 0) {
-                peer.backedFile(fileID, backedUpFile);
+                backedUpFiles.backedFile(fileID, fileName, chunksRD);
                 return;
             }
 
