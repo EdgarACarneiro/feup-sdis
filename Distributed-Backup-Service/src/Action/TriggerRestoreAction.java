@@ -4,6 +4,7 @@ import Channel.ControlChannel;
 import Main.BackedUpFiles;
 import Main.Peer;
 import Messages.ChunkMsg;
+import Messages.GetTCPIP;
 import Messages.GetchunkMsg;
 import Messages.Message;
 import Utils.*;
@@ -63,13 +64,24 @@ public class TriggerRestoreAction extends ActionHasReply {
 
     @Override
     public void run() {
-        for (int i = 0; i < backedUpFiles.getNumChunks(fileID); ++i) {
+        if (protocolVersion == 1.0){
+            for (int i = 0; i < backedUpFiles.getNumChunks(fileID); ++i) {
+                try {
+                    controlChannel.sendMessage(
+                        new GetchunkMsg(protocolVersion, senderID, fileID, i).genMsg()
+                    );
+                } catch (ExceptionInInitializerError e) {
+                    Utils.showError("Failed to build message, stopping delete action", this.getClass());
+                    return;
+                }
+            }
+        } else if (protocolVersion == 2.0) {
             try {
                 controlChannel.sendMessage(
-                    new GetchunkMsg(protocolVersion, senderID, fileID, i).genMsg()
+                    new GetTCPIP(protocolVersion, senderID, fileID).genMsg()
                 );
             } catch (ExceptionInInitializerError e) {
-                Utils.showError("Failed to build message, stopping delete action", this.getClass());
+                Utils.showError("Failed to build message, stopping restore action", this.getClass());
                 return;
             }
         }
