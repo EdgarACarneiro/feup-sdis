@@ -69,7 +69,7 @@ public class MessageHandler implements Runnable {
             (new DeleteAction(message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new TriggerRemovedAction(peer, backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new TriggerRemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
             (new ProvideIPAction(controlChannel, peerID, (GetTCPIP) message)).run();

@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.BackupChannel;
+import Main.BackedUpFiles;
 import Main.ChunksRecorder;
 import Main.Peer;
 import Messages.Message;
@@ -48,7 +49,7 @@ public class TriggerRemovedAction extends ActionHasReply {
      /**
      * The Peer
      */
-    private Peer peer;
+    private BackedUpFiles backedUpFiles;
 
     /**
      * The file identifier for the file to be backed up
@@ -82,8 +83,8 @@ public class TriggerRemovedAction extends ActionHasReply {
      * @param peerID The identifier of the sender peer
      * @param removedMsg The chunk number that was deleted
      */
-    public TriggerRemovedAction(Peer peer,BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
-        this.peer = peer;
+    public TriggerRemovedAction(BackedUpFiles backedUpFiles, BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
+        this.backedUpFiles = backedUpFiles;
         this.backupChannel = backupChannel;
         this.peerID = peerID;
         this.protocolVersion = removedMsg.getProtocolVersion();
@@ -94,7 +95,7 @@ public class TriggerRemovedAction extends ActionHasReply {
     /**
      * Send the request to backup the given file chunk
      *
-     * @param chunkNum Number of the chunk to be backed up
+     * @param chunk Number of the chunk to be backed up
      */
     private void requestBackUp(File chunk) {
         try {
@@ -115,8 +116,8 @@ public class TriggerRemovedAction extends ActionHasReply {
     private class Sender implements Runnable {
 
         @Override
-        public void run() { 
-            peer.getBackedUpFiles().incRepDegree(fileID, chunkNum);
+        public void run() {
+            backedUpFiles.incRepDegree(fileID, chunkNum);
             requestBackUp(removedChunk);
         }
 
@@ -125,7 +126,7 @@ public class TriggerRemovedAction extends ActionHasReply {
 
     @Override
     public void run() {
-        peer.getBackedUpFiles().decRepDegree(fileID, chunkNum);
+        backedUpFiles.decRepDegree(fileID, chunkNum);
 
         File[] files = FileManager.getPeerBackups(peerID);
 
@@ -139,10 +140,10 @@ public class TriggerRemovedAction extends ActionHasReply {
                 
                 if (chunkList != null) {
                     for (File chunk : chunkList) {
-                        if(Integer.valueOf(chunk.getName()).equals(chunkNum)){
+                        if (Integer.valueOf(chunk.getName()).equals(chunkNum)) {
                             this.removedChunk = chunk;
                             System.out.println("IT WAS " + chunkNum);
-                            if(true){ //Check if RD is over the minimum
+                            if (! backedUpFiles.isRDBalanced(fileID, chunkNum)) {
                                     test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
                             }
                         }

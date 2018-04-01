@@ -119,6 +119,19 @@ public class BackedUpFiles {
     }
 
     /**
+     * Indicates if the replication degree balance of a given chunk is positive (balanced)
+     *
+     * @param fileID The file identifier of the chunks
+     * @param chunkNum The chunk that is desired to know the replication degree balance
+     * @return Concurrent Hash map were the key is the chunk number and the object is the count of how much the chunk's replication degree s below the desired RD
+     */
+    public boolean isRDBalanced(String fileID, Integer chunkNum) {
+        FilesInfo info = filesInfo.get(fileID);
+
+        return info != null && info.chunksRD.get(chunkNum) >= info.desiredRD;
+    }
+
+    /**
      * Getter for the chunks whose replication degree is below the desired replication degree
      *
      * @param fileID The file identifier of the chunks
@@ -133,7 +146,7 @@ public class BackedUpFiles {
         ConcurrentHashMap<Integer, Integer> result = new ConcurrentHashMap<>();
         for (int i = 0; i < info.chunksRD.size(); ++i) {
             if (info.chunksRD.get(i) < info.desiredRD)
-                result.put(i, info.desiredRD - info.chunksRD.get(i));
+                result.put(i, info.chunksRD.get(i) - info.desiredRD);
         }
 
         return result;
