@@ -9,6 +9,8 @@ import Messages.RemovedMsg;
 import Utils.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -39,11 +41,6 @@ public class TriggerRemovedAction extends Action {
      */
     private int waitCheckTime = STARTING_WAIT_TIME;
 
-    /**
-     * The peer associated to this action
-     * It is important to store the peer, for later indicating to the peer if the file was successfully backed up
-     */
-    private RemovedMsg message;
 
     /**
      * Data Structure to get information from, referent to the Peer stored files' chunks
@@ -87,7 +84,6 @@ public class TriggerRemovedAction extends Action {
         this.backupChannel = backupChannel;
         this.peerStoredChunks = record;
         this.peerID = peerID;
-        this.message = removedMsg;
         this.protocolVersion = removedMsg.getProtocolVersion();
         this.fileID = removedMsg.getFileID();
         this.chunkNum = removedMsg.getChunkNum();
@@ -98,12 +94,14 @@ public class TriggerRemovedAction extends Action {
      *
      * @param chunkNum Number of the chunk to be backed up
      */
-    private void requestBackUp() {
+    private void requestBackUp(File chunk) {
         try {
             backupChannel.sendMessage(
-                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, repDegree, new byte[0]).genMsg()//Get chunk?
+                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, repDegree, Files.readAllBytes(chunk.toPath())).genMsg()
             );
         } catch (ExceptionInInitializerError e) {
+            Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
+        } catch (IOException e) {
             Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
         }
     }
@@ -128,17 +126,18 @@ public class TriggerRemovedAction extends Action {
         for (File file : files) {                         
             if (file.isDirectory() && file.getName().equals(fileID)){
                 System.out.println("Hmm, you deleted a file from something I have...");
-
-                File fileChunks = new File(file.getPath(), file.getName());
+                
+                File fileChunks = new File(file.getParentFile(), file.getName());
                 File[] chunkList = fileChunks.listFiles();
-
+                System.out.println("fileChunks " + fileChunks.getName());
+                
                 if (chunkList != null) {
                     for (File chunk : chunkList) {
                         if(Integer.valueOf(chunk.getName()).equals(chunkNum)){
                             System.out.println("IT WAS " + chunkNum);
                             if(true){ //Check if RD is over the minimum
-                                sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
-                                requestBackUp();
+                                //sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
+                                requestBackUp(chunk);
                             }
                         }
                     }
