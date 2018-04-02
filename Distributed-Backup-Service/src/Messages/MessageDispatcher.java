@@ -77,6 +77,9 @@ public class MessageDispatcher implements Runnable {
         else if (message instanceof SetTCPIP) {
             (new SetTCPClient(peerStoredFiles, peerID, (SetTCPIP) message)).run();
         }
+        else if (message instanceof CheckDeleteMsg && message.getProtocolVersion()==2) {
+            (new DeleteAfterCheckAction(record, controlChannel, peerID, (CheckDeleteMsg) message)).run();
+        } 
     }
 
     public static Message messageInterpreter(byte[] readMsg, int msgLength) {
@@ -109,6 +112,8 @@ public class MessageDispatcher implements Runnable {
                     return new GetTCPIP(header);
                 case "SETTCPIP":
                     return new SetTCPIP(header); 
+                case "CHECKDELETE":
+                    return new CheckDeleteMsg(header); 
 
                 default:
                     Utils.showWarning("Unrecognizable message type. Discarding it.", MessageDispatcher.class);

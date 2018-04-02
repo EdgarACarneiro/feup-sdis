@@ -108,6 +108,10 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(restoreChannel);
 
         initializeRMI();
+
+        if (this.protocolVersion == 2)
+            threadPool.executeThread(new CheckDeleteAction(controlChannel, this.protocolVersion, peerID));
+            
     }
 
     /**

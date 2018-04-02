@@ -71,7 +71,7 @@ public class TriggerRestoreAction extends ActionHasReply {
 
     @Override
     public void run() {
-        if (protocolVersion == 1.0){
+        if (protocolVersion == 1.0) {
             for (int i = 0; i < backedUpFiles.getNumChunks(fileID); ++i) {
                 try {
                     controlChannel.sendMessage(
