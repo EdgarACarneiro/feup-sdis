@@ -50,6 +50,10 @@ public class MessageDispatcher implements Runnable {
 
         if (message instanceof PutchunkMsg) {
             (new StoreAction(controlChannel, record, peerID, (PutchunkMsg) message)).run();
+
+            // For reclaim actions
+            for (ActionHasReply action : subscribedActions)
+                action.parseResponse(message);
         }
         else if (message instanceof StoredMsg) {
             (new AckStoreAction(peerStoredFiles, record, (StoredMsg) message)).run();
@@ -65,7 +69,7 @@ public class MessageDispatcher implements Runnable {
             (new DeleteAction((DeleteMsg) message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new RemovedAction(peerStoredFiles, backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new RemovedAction(record, backupChannel, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
             (new SetTCPServer(controlChannel, peerID, (GetTCPIP) message)).run();

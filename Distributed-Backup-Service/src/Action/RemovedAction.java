@@ -42,10 +42,15 @@ public class RemovedAction extends ActionHasReply {
      */
     private int peerID;
 
-     /**
-     * The Peer
+    /**
+     * The peer ID of th received msg
      */
-    private BackedUpFiles backedUpFiles;
+    private int receivedPeerID;
+
+    /**
+     *
+     */
+    private ChunksRecorder record;
 
     /**
      * The file identifier for the file to be backed up
@@ -62,11 +67,6 @@ public class RemovedAction extends ActionHasReply {
      */
     private File removedChunk;
 
-    /**
-     * The desired replication degree of the file
-     */
-    private int repDegree;
-
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     private ScheduledFuture test;
@@ -74,18 +74,62 @@ public class RemovedAction extends ActionHasReply {
     /**
      * Remove Action Constructor
      *
+     * @param record The peer locally stored files
      * @param backupChannel The channel associated to this action
-     * @param record The protocol version used
      * @param peerID The identifier of the sender peer
      * @param removedMsg The chunk number that was deleted
      */
-    public RemovedAction(BackedUpFiles backedUpFiles, BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
-        this.backedUpFiles = backedUpFiles;
+    public RemovedAction(ChunksRecorder record, BackupChannel backupChannel, int peerID, RemovedMsg removedMsg) {
+        this.record = record;
         this.backupChannel = backupChannel;
         this.peerID = peerID;
+        this.receivedPeerID = removedMsg.getSenderID();
         this.protocolVersion = removedMsg.getProtocolVersion();
         this.fileID = removedMsg.getFileID();
         this.chunkNum = removedMsg.getChunkNum();
+    }
+
+    @Override
+    public void run() {
+
+        boolean hasChunkStored = false;
+        if (record.hasChunk(fileID, chunkNum))
+            hasChunkStored = record.decChunkRecord(fileID, chunkNum, receivedPeerID);
+
+        if (hasChunkStored) {
+            System.out.println("Hmm, you deleted a file from something I have...\n" +
+                                "It was file:" + fileID + ", chunk: " + chunkNum);
+
+            if (! record.isRDBalanced(fileID, chunkNum)) {
+                backupChannel.subscribeAction(this);
+                test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+            }
+        }
+/*
+        File[] files = FileManager.getPeerBackups(peerID);
+
+        for (File file : files) {
+            if (file.isDirectory() && file.getName().equals(fileID)) {
+                System.out.println("Hmm, you deleted a file from something I have...");
+
+                File fileChunks = new File(file.getParentFile(), file.getName());
+                File[] chunkList = fileChunks.listFiles();
+                System.out.println("fileChunks " + fileChunks.getName());
+
+                if (chunkList != null) {
+                    for (File chunk : chunkList) {
+                        if (Integer.valueOf(chunk.getName()).equals(chunkNum)) {
+                            this.removedChunk = chunk;
+                            System.out.println("IT WAS " + chunkNum);
+                            if (! backedUpFiles.isRDBalanced(fileID, chunkNum)) {
+                                test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
     }
 
     /**
@@ -96,11 +140,10 @@ public class RemovedAction extends ActionHasReply {
     private void requestBackUp(File chunk) {
         try {
             backupChannel.sendMessage(
-                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, repDegree, Files.readAllBytes(chunk.toPath())).genMsg()
+                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, record.getFileDesiredRD(fileID), Files.readAllBytes(chunk.toPath())).genMsg()
             );
-        } catch (ExceptionInInitializerError e) {
-            Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
-        } catch (IOException e) {
+            backupChannel.unsubscribeAction(this);
+        } catch (ExceptionInInitializerError | IOException e) {
             Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
         }
     }
@@ -113,41 +156,8 @@ public class RemovedAction extends ActionHasReply {
 
         @Override
         public void run() {
-            backedUpFiles.incRepDegree(fileID, chunkNum);
             requestBackUp(removedChunk);
         }
-
-    }
-
-
-    @Override
-    public void run() {
-        if (backedUpFiles.hasFileBackedUp(fileID))
-            backedUpFiles.decRepDegree(fileID, chunkNum);
-
-        File[] files = FileManager.getPeerBackups(peerID);
-
-        for (File file : files) {                         
-            if (file.isDirectory() && file.getName().equals(fileID)) {
-                System.out.println("Hmm, you deleted a file from something I have...");
-                
-                File fileChunks = new File(file.getParentFile(), file.getName());
-                File[] chunkList = fileChunks.listFiles();
-                System.out.println("fileChunks " + fileChunks.getName());
-                
-                if (chunkList != null) {
-                    for (File chunk : chunkList) {
-                        if (Integer.valueOf(chunk.getName()).equals(chunkNum)) {
-                            this.removedChunk = chunk;
-                            System.out.println("IT WAS " + chunkNum);
-                            if (! backedUpFiles.isRDBalanced(fileID, chunkNum)) {
-                                    test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
-                            }
-                        }
-                    }
-                }
-            }
-        } 
     }
 
     @Override
@@ -159,6 +169,7 @@ public class RemovedAction extends ActionHasReply {
         if ((realMsg.getFileID().equals(fileID)) &&
             (realMsg.getChunkNum() == chunkNum)) {
             test.cancel(true);
+            backupChannel.unsubscribeAction(this);
         }
     }
 }

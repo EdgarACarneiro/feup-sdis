@@ -37,7 +37,7 @@ public class ChunksRecorder {
     /**
      * Disk Space being used so far to store all the peers
      */
-    private static AtomicLong usedDiskSpace = new AtomicLong();
+    private AtomicLong usedDiskSpace = new AtomicLong();
 
     /**
      * The hashMap used for keeping information about the chunks that were saved for each file (fileID).
@@ -47,6 +47,8 @@ public class ChunksRecorder {
 
     private CopyOnWriteArrayList<String> deletedFiles = new CopyOnWriteArrayList<>();
 
+    private ConcurrentHashMap<String, Integer> filesDesiredRD = new ConcurrentHashMap<>();
+
     /**
      * Default ChunksRecorder Constructor
      */
@@ -55,9 +57,8 @@ public class ChunksRecorder {
         usedDiskSpace.set(0);
     }
 
-    public boolean addChunkRecord(String fileID, Integer chunkNum, Integer chunkSize) {
+    public boolean addChunkRecord(String fileID, Integer chunkNum, Integer chunkSize, Integer desiredRD) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
-
         ChunkInfo chunk = new ChunkInfo(chunkSize);
 
         if (record == null) {
@@ -66,30 +67,63 @@ public class ChunksRecorder {
             if (maxDiskSpace.longValue() != INFINITE_SPACE && (usedDiskSpace.get() + chunkSize) > maxDiskSpace.longValue())
                 return false;
 
-            usedDiskSpace.addAndGet(chunkSize);
+            usedDiskSpace.set(usedDiskSpace.longValue() + chunkSize);
 
             ConcurrentHashMap<Integer, ChunkInfo> newEntry = new ConcurrentHashMap<>();
             newEntry.put(chunkNum, chunk);
             chunksRecord.put(fileID, newEntry);
+
+            filesDesiredRD.put(fileID, desiredRD);
         }
-        else
+        else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);
+            System.out.println(usedDiskSpace.longValue() + "  " + chunkSize + "  " + chunkNum);
+            usedDiskSpace.set(usedDiskSpace.longValue() + chunkSize);
+        }
 
         return true;
     }
 
-    public void updateChunkRecord(String fileID, Integer chunkNum, Integer senderID) {
+    public boolean incChunkRecord(String fileID, Integer chunkNum, Integer senderID) {
+        return updateChunkRecord(fileID, chunkNum, senderID, 1);
+    }
+
+    public boolean decChunkRecord(String fileID, Integer chunkNum, Integer senderID) {
+        return updateChunkRecord(fileID, chunkNum, senderID, -1);
+    }
+
+    private boolean updateChunkRecord(String fileID, Integer chunkNum, Integer senderID, Integer change) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
 
         if (record != null && record.containsKey(chunkNum)) {
-
             ChunkInfo chunk = record.get(chunkNum);
+
             if (! chunk.peersStored.contains(senderID)) {
-                chunk.repDegree += 1;
-                chunk.peersStored.add(senderID);
+                chunk.repDegree += change;
+
+                if (change > 0)
+                    chunk.peersStored.add(senderID);
+                else
+                    chunk.peersStored.remove(senderID);
+
+                return true;
             }
-            //record.replace(chunkNum, oldValue + 1);
         }
+        return false;
+    }
+
+    public boolean isRDBalanced(String fileID, int chunkNum) {
+        ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
+
+        if (record != null && record.containsKey(chunkNum)) {
+            if (record.get(chunkNum).repDegree < filesDesiredRD.get(fileID))
+                return false;
+        }
+        return true;
+    }
+
+    public Integer getFileDesiredRD(String fileID) {
+        return filesDesiredRD.get(fileID);
     }
 
     /**
@@ -139,11 +173,29 @@ public class ChunksRecorder {
     }
 
     /**
-     * Update the maximum disk space to the given value
+     * Update the maximum disk space to the given values
      *
      * @param maxDiskSpace maximum disk space
      */
-    public void updateMaxSpace(int maxDiskSpace) {
+    public void updateMaxSpace(long maxDiskSpace) {
         this.maxDiskSpace.set(maxDiskSpace);
+    }
+
+    public void removeChunk(String fileID, String chunkNum) {
+        ConcurrentHashMap<Integer, ChunkInfo> storedChunks = chunksRecord.get(fileID);
+
+        if (storedChunks == null)
+            return;
+
+        storedChunks.remove(Integer.parseInt(chunkNum));
+    }
+
+    /**
+     * Getter for the used disk space by the chunks / file storage
+     *
+     * @return The space used
+     */
+    public long getUsedDiskSpace() {
+        return usedDiskSpace.longValue();
     }
 }
