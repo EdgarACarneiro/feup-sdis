@@ -12,7 +12,7 @@ public class GetTCPIP extends Message implements msgGenerator {
      * Regex used to parse a String containing a 'chunk' message
      */
     private final static String REGEX_STRING =
-            "\\s*?TCPIP\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+((\\d){1,6})\\s+?\\r\\n\\r\\n";
+                    "\\s*?GETTCPIP\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+?\\r\\n\\r\\n";
 
     public GetTCPIP(String header) {
         super(REGEX_STRING);
@@ -34,7 +34,7 @@ public class GetTCPIP extends Message implements msgGenerator {
 
     @Override
     public byte[] genMsg() {
-        return ("GetTCPIP" +
+        return ("GETTCPIP" + " " +
                 protocolVersion + " " +
                 senderID + " " +
                 fileID + " " +

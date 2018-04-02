@@ -1,6 +1,7 @@
 package Messages;
 
 import Action.*;
+
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Channel.BackupChannel;
@@ -68,7 +69,10 @@ public class MessageDispatcher implements Runnable {
             (new RemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
-            (new ProvideIPAction(controlChannel, peerID, (GetTCPIP) message)).run();
+            (new SetTCPServer(controlChannel, peerID, (GetTCPIP) message)).run();
+        }
+        else if (message instanceof SetTCPIP) {
+            (new SetTCPClient(peer.getBackedUpFiles(), peerID, (SetTCPIP) message)).run();
         }
     }
 
@@ -98,6 +102,11 @@ public class MessageDispatcher implements Runnable {
                     return new DeleteMsg(header);
                 case "REMOVED":
                     return new RemovedMsg(header);
+                case "GETTCPIP":
+                    return new GetTCPIP(header);
+                case "SETTCPIP":
+                    return new SetTCPIP(header); 
+
                 default:
                     Utils.showWarning("Unrecognizable message type. Discarding it.", MessageDispatcher.class);
                     return null;
