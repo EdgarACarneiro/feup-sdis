@@ -2,6 +2,7 @@ package Database;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -43,6 +44,8 @@ public class ChunksRecorder {
      * Maps a file identifier into a chunk number, that than is mapped into a perceived replication degree.
      */
     private ConcurrentHashMap<String, ConcurrentHashMap<Integer, ChunkInfo> > chunksRecord = new ConcurrentHashMap<>();
+
+    private CopyOnWriteArrayList<String> deletedFiles = new CopyOnWriteArrayList<>();
 
     /**
      * Default ChunksRecorder Constructor
@@ -125,8 +128,14 @@ public class ChunksRecorder {
      * @param fileID The file identifier
      */
     public void removeFile(String fileID) {
-        if (chunksRecord.containsKey(fileID))
+        if (chunksRecord.containsKey(fileID)) {
             chunksRecord.remove(fileID);
+            deletedFiles.add(fileID);
+        }
+    }
+
+    public boolean wasDeleted(String fileID) {
+        return deletedFiles.contains(fileID);
     }
 
     /**
