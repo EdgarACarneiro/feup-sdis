@@ -17,6 +17,6 @@ public class AckStoreAction extends Action {
 
     @Override
     public void run() {
-        peerStoredChunks.backedChunk(msg.getFileID(), msg.getChunkNum());
+        peerStoredChunks.backedChunk(msg.getFileID(), msg.getChunkNum(), msg.getSenderID());
     }
 }

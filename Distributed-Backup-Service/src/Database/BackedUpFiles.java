@@ -32,9 +32,14 @@ public class BackedUpFiles {
         public int numChunks;
 
         /**
-         * List containing the replication degree associated to each file's' chunk
+         * HashMap containing the replication degree associated to each file's' chunk. Key - file chunk, Value - replication degree
          */
         public ConcurrentHashMap<Integer, Integer> chunksRD = new ConcurrentHashMap<>();
+
+        /**
+         * HashMap containing the list of peers that have replicated each file's' chunk. Key - file chunk, Value - list of files
+         */
+        public ConcurrentHashMap<Integer, ArrayList<Integer> > chunksRDPeers = new ConcurrentHashMap<>();
 
         /**
          * The FilesInfo constructor.
@@ -65,21 +70,35 @@ public class BackedUpFiles {
      *
      * @param fileID The file identifier
      * @param chunkNum The file associated
+     * @param peerID The peer executing the replication
      */
-    public void backedChunk(String fileID, Integer chunkNum) {
+    public void backedChunk(String fileID, Integer chunkNum, Integer peerID) {
         FilesInfo file = filesInfo.get(fileID);
 
         if (file == null)
             return;
-        else {
-            ConcurrentHashMap<Integer, Integer> chunksRD = file.chunksRD;
 
-            if (chunksRD.containsKey(chunkNum)) {
+        ConcurrentHashMap<Integer, Integer> chunksRD = file.chunksRD;
+        ConcurrentHashMap<Integer, ArrayList<Integer> > chunksRDPeers = file.chunksRDPeers;
+        ArrayList<Integer> peersList;
+
+        if (chunksRD.containsKey(chunkNum)) {
+
+            peersList = chunksRDPeers.get(chunkNum);
+            if (! peersList.contains(peerID)) {
                 int oldValue = chunksRD.get(chunkNum);
                 chunksRD.replace(chunkNum, oldValue + 1);
+
+                peersList.add(peerID);
+                chunksRDPeers.replace(chunkNum, peersList);
             }
-            else
-                chunksRD.put(chunkNum, 1);
+        }
+        else {
+            chunksRD.put(chunkNum, 1);
+
+            peersList = new ArrayList<>();
+            peersList.add(peerID);
+            chunksRDPeers.put(chunkNum, peersList);
         }
     }
 
