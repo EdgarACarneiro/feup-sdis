@@ -67,7 +67,7 @@ public class RemovedAction extends ActionHasReply {
      */
     private File removedChunk;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(30);
 
     private ScheduledFuture test;
 
@@ -102,49 +102,20 @@ public class RemovedAction extends ActionHasReply {
 
             if (! record.isRDBalanced(fileID, chunkNum)) {
                 backupChannel.subscribeAction(this);
-                test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
-            }
-        }
-/*
-        File[] files = FileManager.getPeerBackups(peerID);
-
-        for (File file : files) {
-            if (file.isDirectory() && file.getName().equals(fileID)) {
-                System.out.println("Hmm, you deleted a file from something I have...");
-
-                File fileChunks = new File(file.getParentFile(), file.getName());
-                File[] chunkList = fileChunks.listFiles();
-                System.out.println("fileChunks " + fileChunks.getName());
-
-                if (chunkList != null) {
-                    for (File chunk : chunkList) {
-                        if (Integer.valueOf(chunk.getName()).equals(chunkNum)) {
-                            this.removedChunk = chunk;
-                            System.out.println("IT WAS " + chunkNum);
-                            if (! backedUpFiles.isRDBalanced(fileID, chunkNum)) {
-                                test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
-                            }
-                        }
+                //test = scheduler.schedule(new Sender(this), new Random().nextInt(4000), TimeUnit.MILLISECONDS);
+                scheduler.submit( () -> {
+                    try {
+                        backupChannel.sendMessage(
+                                new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, record.getFileDesiredRD(fileID), Files.readAllBytes(removedChunk.toPath())).genMsg()
+                        );
+                        System.out.println("I GOT IN MA MANNNN");
+                        backupChannel.unsubscribeAction(this);
+                    } catch (ExceptionInInitializerError | IOException e) {
+                        Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
                     }
-                }
-            }
-        }
-        */
-    }
 
-    /**
-     * Send the request to backup the given file chunk
-     *
-     * @param chunk Number of the chunk to be backed up
-     */
-    private void requestBackUp(File chunk) {
-        try {
-            backupChannel.sendMessage(
-                    new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, record.getFileDesiredRD(fileID), Files.readAllBytes(chunk.toPath())).genMsg()
-            );
-            backupChannel.unsubscribeAction(this);
-        } catch (ExceptionInInitializerError | IOException e) {
-            Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
+                });
+            }
         }
     }
 
@@ -154,10 +125,17 @@ public class RemovedAction extends ActionHasReply {
      */
     private class Sender implements Runnable {
 
-        @Override
-        public void run() {
-            requestBackUp(removedChunk);
+        /**
+         * The action that called this 'sub class'. Important to unsubscribe the channel.
+         */
+        public RemovedAction parentAction;
+
+        public Sender(RemovedAction parentAction) {
+            this.parentAction = parentAction;
         }
+
+        @Override
+        public void run() {}
     }
 
     @Override

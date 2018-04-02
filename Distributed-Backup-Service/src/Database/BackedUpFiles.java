@@ -251,11 +251,12 @@ public class BackedUpFiles {
         return filesInfo.containsKey(fileID);
     }
 
-    public void backedFile (String fileID, String realName, Integer desiredRD, Integer numChunks) {
+    public boolean backedFile (String fileID, String realName, Integer desiredRD, Integer numChunks) {
         if (filesInfo.containsKey(fileID)) {
             Utils.showError("Trying to back up a file already backed up.", this.getClass());
-            return;
+            return false;
         }
         filesInfo.put(fileID, new FilesInfo(realName, desiredRD, numChunks));
+        return true;
     }
 }

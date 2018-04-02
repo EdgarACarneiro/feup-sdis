@@ -94,17 +94,20 @@ public class ChunksRecorder {
 
         if (record != null && record.containsKey(chunkNum)) {
             ChunkInfo chunk = record.get(chunkNum);
+            boolean hasPeer = chunk.peersStored.contains(senderID);
 
-            if (! chunk.peersStored.contains(senderID)) {
+            if (! hasPeer && (change > 0)) {
                 chunk.repDegree += change;
-
-                if (change > 0)
-                    chunk.peersStored.add(senderID);
-                else
-                    chunk.peersStored.remove(senderID);
-
-                return true;
+                chunk.peersStored.add(senderID);
             }
+
+            if (hasPeer && (change < 0)) {
+                chunk.repDegree += change;
+                chunk.peersStored.remove(senderID);
+            }
+
+
+            return true;
         }
         return false;
     }

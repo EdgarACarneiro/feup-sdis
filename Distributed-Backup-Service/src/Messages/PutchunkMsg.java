@@ -70,6 +70,10 @@ public class PutchunkMsg extends Message implements msgGenerator {
         return chunkNum;
     }
 
+    public int getRepDegree() {
+        return repDegree;
+    }
+
     public byte[] getChunk() {
         return chunk;
     }

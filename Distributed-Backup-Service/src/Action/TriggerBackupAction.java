@@ -3,7 +3,6 @@ package Action;
 import Channel.BackupChannel;
 import Database.BackedUpFiles;
 import Main.Peer;
-import Messages.Message;
 import Messages.PutchunkMsg;
 import Utils.*;
 
@@ -83,6 +82,8 @@ public class TriggerBackupAction extends Action {
      */
     private String fileName;
 
+    private boolean alreadyBackedUp;
+
     /**
      * Trigger Backup Action Constructor
      *
@@ -103,7 +104,7 @@ public class TriggerBackupAction extends Action {
         this.repDegree = Integer.parseInt(repDegree);
         chunks = FileManager.splitFile(file);
 
-        backedUpFiles.backedFile(fileID, fileName, this.repDegree, chunks.size());
+        alreadyBackedUp = !backedUpFiles.backedFile(fileID, fileName, this.repDegree, chunks.size());
 
         sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
     }
@@ -125,6 +126,9 @@ public class TriggerBackupAction extends Action {
 
     @Override
     public void run() {
+        if (alreadyBackedUp)
+            return;
+
         for (int i = 0; i < chunks.size(); ++i)
             requestBackUp(i);
 
