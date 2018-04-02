@@ -27,22 +27,26 @@ public class BackedUpFiles {
         public int desiredRD;
 
         /**
-         * List containing the replication degree associated to each file's' chunk
+         * The number of chunks that make this file
          */
-        public ArrayList<Integer> chunksRD;
+        public int numChunks;
 
         /**
-         * The FilesInfo backed up.
+         * List containing the replication degree associated to each file's' chunk
+         */
+        public ConcurrentHashMap<Integer, Integer> chunksRD = new ConcurrentHashMap<>();
+
+        /**
+         * The FilesInfo constructor.
          * It initializes all of the files related information
          *
          * @param fileName The file's real name
          * @param desiredRD The desired replication degree for each of the chunks
-         * @param chunksRD A list containing the replication degree associated to each chunk
          */
-        public FilesInfo(String fileName, int desiredRD, ArrayList<Integer> chunksRD) {
+        public FilesInfo(String fileName, int desiredRD, int numChunks) {
             this.fileName = fileName;
             this.desiredRD = desiredRD;
-            this.chunksRD = chunksRD;
+            this.numChunks = numChunks;
         }
     }
 
@@ -57,21 +61,26 @@ public class BackedUpFiles {
     public BackedUpFiles() {}
 
     /**
-     * Indicate that a file was successfully backed up and therefore add its information to the records
+     * Indicate that a chunk was successfully backed up and therefore add its information to the records
      *
      * @param fileID The file identifier
-     * @param fileName The file real name
-     * @param desiredRD  The desired replication degree for each of the chunks
-     * @param chunksRD The file associated
+     * @param chunkNum The file associated
      */
-    public void backedFile (String fileID, String fileName, int desiredRD, ArrayList<Integer> chunksRD) {
+    public void backedChunk(String fileID, Integer chunkNum) {
+        FilesInfo file = filesInfo.get(fileID);
 
-        if (filesInfo.containsKey(fileID)) {
-            Utils.showWarning("File is already backed up.", this.getClass());
+        if (file == null)
             return;
-        }
+        else {
+            ConcurrentHashMap<Integer, Integer> chunksRD = file.chunksRD;
 
-        filesInfo.put(fileID, new FilesInfo(fileName, desiredRD, chunksRD));
+            if (chunksRD.containsKey(chunkNum)) {
+                int oldValue = chunksRD.get(chunkNum);
+                chunksRD.replace(chunkNum, oldValue + 1);
+            }
+            else
+                chunksRD.put(chunkNum, 1);
+        }
     }
 
     /**
@@ -109,13 +118,14 @@ public class BackedUpFiles {
             return;
         }
 
-        ArrayList<Integer> chunks = filesInfo.get(fileID).chunksRD;
-        if (chunks.size() <= chunkNum) {
+        ConcurrentHashMap<Integer, Integer> chunksRD = filesInfo.get(fileID).chunksRD;
+        if (! chunksRD.containsKey(chunkNum)) {
             Utils.showError("Non-existent chunk requested.", this.getClass());
             return;
         }
 
-        chunks.set(chunkNum, chunks.get(chunkNum) + change);
+        int oldValue = chunksRD.get(chunkNum);
+        chunksRD.replace(chunkNum, oldValue + change);
     }
 
     /**
@@ -128,7 +138,7 @@ public class BackedUpFiles {
     public boolean isRDBalanced(String fileID, Integer chunkNum) {
         FilesInfo info = filesInfo.get(fileID);
 
-        return info != null && info.chunksRD.get(chunkNum) >= info.desiredRD;
+        return info != null && info.chunksRD.containsKey(chunkNum) && (info.chunksRD.get(chunkNum) >= info.desiredRD);
     }
 
     /**
@@ -143,13 +153,43 @@ public class BackedUpFiles {
         if (info == null)
             return null;
 
+        ConcurrentHashMap<Integer, Integer> chunksRD = info.chunksRD;
         ConcurrentHashMap<Integer, Integer> result = new ConcurrentHashMap<>();
-        for (int i = 0; i < info.chunksRD.size(); ++i) {
-            if (info.chunksRD.get(i) < info.desiredRD)
-                result.put(i, info.chunksRD.get(i) - info.desiredRD);
+
+        ArrayList<Integer> keys = new ArrayList<>();
+        keys.addAll(info.chunksRD.keySet());
+
+        for (int key : keys) {
+            if (chunksRD.get(key) < info.desiredRD)
+                result.put(key, chunksRD.get(key) - info.desiredRD);
         }
 
         return result;
+    }
+
+    /**
+     * Getter for the chunks who still have not replication degree bigger than the desired, or do not yet exist
+     *
+     * @param fileID The file identifier
+     * @return List containing the number of the chunks that still do not meet the replication degree condition
+     */
+    public ArrayList<Integer> checkAllRD(String fileID) {
+        FilesInfo info = filesInfo.get(fileID);
+
+        if (info == null) {
+            Utils.showWarning("checkAllRD function: File has not been backed up.", this.getClass());
+            return null;
+        }
+
+        ConcurrentHashMap<Integer, Integer> chunksRD = info.chunksRD;
+        ArrayList<Integer> values = new ArrayList<>();
+
+        for (int i = 0; i < info.numChunks; ++i) {
+            if (chunksRD.get(i) == null || chunksRD.get(i) < info.desiredRD)
+                values.add(i);
+        }
+
+        return values;
     }
 
     /**
@@ -190,5 +230,13 @@ public class BackedUpFiles {
      */
     public boolean hasFileBackedUp(String fileID) {
         return filesInfo.containsKey(fileID);
+    }
+
+    public void backedFile (String fileID, String realName, Integer desiredRD, Integer numChunks) {
+        if (filesInfo.containsKey(fileID)) {
+            Utils.showError("Trying to back up a file already backed up.", this.getClass());
+            return;
+        }
+        filesInfo.put(fileID, new FilesInfo(realName, desiredRD, numChunks));
     }
 }

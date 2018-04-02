@@ -1,13 +1,8 @@
 package Messages;
 
-import Action.ActionHasReply;
-import Action.DeleteAction;
-import Action.ProvideIPAction;
-import Action.RetrieveChunkAction;
-import Action.StoreAction;
+import Action.*;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
-import Action.RemovedAction;
 import Channel.BackupChannel;
 import Database.ChunksRecorder;
 import Main.Peer;
@@ -54,9 +49,10 @@ public class MessageDispatcher implements Runnable {
         if (message instanceof PutchunkMsg) {
             (new StoreAction(controlChannel, record, peerID, (PutchunkMsg) message)).run();
         }
-        else if (message instanceof  StoredMsg) {
-            for (ActionHasReply action : subscribedActions)
-                action.parseResponse(message);
+        else if (message instanceof StoredMsg) {
+            (new AckStoreAction(peer.getBackedUpFiles(), (StoredMsg) message)).run();
+            /*for (ActionHasReply action : subscribedActions)
+                action.parseResponse(message);*/
         }
         else if (message instanceof GetchunkMsg) {
             (new RetrieveChunkAction(restoreChannel, record, peerID, (GetchunkMsg) message)).run();
@@ -66,7 +62,7 @@ public class MessageDispatcher implements Runnable {
                 action.parseResponse(message);
         }
         else if (message instanceof DeleteMsg) {
-            (new DeleteAction(message, record, peerID)).run();
+            (new DeleteAction((DeleteMsg) message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
             (new RemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();

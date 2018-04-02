@@ -5,11 +5,9 @@ import Database.BackedUpFiles;
 import Main.Peer;
 import Messages.Message;
 import Messages.PutchunkMsg;
-import Messages.StoredMsg;
 import Utils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -76,16 +74,6 @@ public class TriggerBackupAction extends ActionHasReply {
     private ArrayList<byte[]> chunks = new ArrayList<>();
 
     /**
-     * ArrayList containing the replication degree of each chunk
-     */
-    private ArrayList<Integer> chunksRD = new ArrayList<>();
-
-    /**
-     * An hashMap containing the chunks associated to each Peer, telling whether they were already received or not
-     */
-    private HashMap <Integer, ArrayList<Boolean> > peersChunks = new HashMap<>();
-
-    /**
      * The desired replication degree of the file
      */
     private int repDegree;
@@ -115,9 +103,9 @@ public class TriggerBackupAction extends ActionHasReply {
         this.repDegree = Integer.parseInt(repDegree);
         chunks = FileManager.splitFile(file);
 
+        backedUpFiles.backedFile(fileID, fileName, this.repDegree, chunks.size());
 
         sleepThreadPool = new ScheduledThreadPoolExecutor(MAXIMUM_NUM_CYCLES);
-        initRDCounter();
     }
 
     /**
@@ -156,21 +144,11 @@ public class TriggerBackupAction extends ActionHasReply {
             if (numTimeCycles >= MAXIMUM_NUM_CYCLES)
                 return;
 
-            // Get chunks whose RD isn't superior to repDegree
-            ArrayList<Integer> missingRDChunks = new ArrayList<>();
-            for (int i = 0; i < chunksRD.size(); ++i) {
-                if (chunksRD.get(i) < repDegree)
-                    missingRDChunks.add(i);
-            }
-
-            // If size is bigger than 0, all chunks have the desired repDegree
-            if (missingRDChunks.size() == 0) {
-                backedUpFiles.backedFile(fileID, fileName, repDegree, chunksRD);
+            ArrayList<Integer> missingChunks = backedUpFiles.checkAllRD(fileID);
+            if (missingChunks.size() == 0)
                 return;
-            }
 
-
-            for (int chunkIdx : missingRDChunks)
+            for (int chunkIdx : missingChunks)
                 requestBackUp(chunkIdx);
 
             numTimeCycles += 1;
@@ -180,44 +158,5 @@ public class TriggerBackupAction extends ActionHasReply {
     }
 
     @Override
-    public void parseResponse(Message msg) {
-        if (! msg.getFileID().equals(fileID))
-            return;
-
-        StoredMsg realMsg = (StoredMsg) msg;
-        int chunkNum = realMsg.getChunkNum();
-
-        if (peersChunks.containsKey(realMsg.getSenderID())) {
-
-            ArrayList<Boolean> peerChunks = peersChunks.get(realMsg.getSenderID());
-            if (peerChunks.get(chunkNum))
-                return;
-            else peerChunks.set(chunkNum, true);
-
-        } else {
-            peersChunks.put(realMsg.getSenderID(), initCheckArray(new ArrayList<>(), chunkNum) );
-        }
-
-        chunksRD.set(chunkNum, chunksRD.get(chunkNum) + 1);
-    }
-
-    /**
-     * Initialize the counter for the replication degree for each chunk
-     */
-    private void initRDCounter() {
-        for (int i = 0; i < chunks.size(); ++i)
-            chunksRD.add(0);
-    }
-
-    /**
-     * Initialize the chunks array while also marking the given chunk as received
-     *
-     * @param array The received chunks array to be initialized
-     * @param chunkNum The chunk that was already received
-     */
-    private ArrayList<Boolean> initCheckArray(ArrayList<Boolean> array, int chunkNum) {
-        for (int i = 0; i < chunks.size(); ++i)
-            array.add(i == chunkNum);
-        return array;
-    }
+    public void parseResponse(Message msg) {}
 }
