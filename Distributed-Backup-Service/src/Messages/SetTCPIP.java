@@ -29,10 +29,10 @@ public class SetTCPIP extends Message implements msgGenerator {
         System.out.println(header);
         Matcher protocolMatch = msgRegex.matcher(header);
 
-       /*  if (!protocolMatch.matches()) {
+        if (!protocolMatch.matches()) {
             Utils.showError("Failed to get a Regex match in received message", this.getClass());
             throw new ExceptionInInitializerError();
-        } */
+        }
 
         protocolVersion = Float.parseFloat(protocolMatch.group(VERSION_GROUP));
         senderID = Integer.parseInt(protocolMatch.group(SENDER_ID_GROUP));
