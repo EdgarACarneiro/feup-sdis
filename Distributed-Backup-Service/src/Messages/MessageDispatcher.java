@@ -9,7 +9,7 @@ import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Action.RemovedAction;
 import Channel.BackupChannel;
-import Main.ChunksRecorder;
+import Database.ChunksRecorder;
 import Main.Peer;
 import Utils.Utils;
 

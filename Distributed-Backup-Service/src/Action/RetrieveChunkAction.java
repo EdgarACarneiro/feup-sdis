@@ -1,15 +1,13 @@
 package Action;
 
 import Channel.RestoreChannel;
-import Main.ChunksRecorder;
+import Database.ChunksRecorder;
 import Messages.ChunkMsg;
 import Messages.GetchunkMsg;
 import Messages.Message;
 import Utils.*;
 
-import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.*;
 

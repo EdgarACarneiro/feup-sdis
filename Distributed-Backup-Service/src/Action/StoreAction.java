@@ -1,7 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
-import Main.ChunksRecorder;
+import Database.ChunksRecorder;
 import Messages.PutchunkMsg;
 import Messages.StoredMsg;
 import Utils.Utils;
@@ -73,11 +73,7 @@ public class StoreAction extends Action {
             out.write(putchunkMsg.getChunk());
             out.close();
 
-            if (! peerStoredChunks.hasChunk(fileID, chunkNum) ) {
-                peerStoredChunks.updateChunks(fileID, chunkNum);
-                return true;
-            } else
-                return false;
+            return peerStoredChunks.updateChunkRecord(fileID, chunkNum);
 
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());

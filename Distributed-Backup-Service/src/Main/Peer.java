@@ -4,6 +4,8 @@ import Action.*;
 import Channel.BackupChannel;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
+import Database.BackedUpFiles;
+import Database.ChunksRecorder;
 import Utils.Utils;
 import ThreadPool.ThreadPool;
 

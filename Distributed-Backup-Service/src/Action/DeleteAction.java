@@ -1,6 +1,6 @@
 package Action;
 
-import Main.ChunksRecorder;
+import Database.ChunksRecorder;
 import Messages.Message;
 import Utils.FileManager;
 import Utils.Utils;
@@ -22,11 +22,12 @@ public class DeleteAction extends Action {
     public DeleteAction(Message message, ChunksRecorder peerStoredChunks, int peerID) {
         fileID = message.getFileID();
         this.peerID = peerID;
+        this.peerStoredChunks = peerStoredChunks;
     }
 
     @Override
     public void run() {
-        ArrayList<Integer> chunks = peerStoredChunks.getChunks(fileID);
+        ArrayList<Integer> chunks = peerStoredChunks.getChunksList(fileID);
 
         if (chunks == null)
             return;

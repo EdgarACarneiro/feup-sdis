@@ -1,7 +1,7 @@
 package Action;
 
 import Channel.BackupChannel;
-import Main.BackedUpFiles;
+import Database.BackedUpFiles;
 import Main.Peer;
 import Messages.Message;
 import Messages.PutchunkMsg;

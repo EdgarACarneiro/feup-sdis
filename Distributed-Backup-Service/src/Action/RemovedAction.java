@@ -1,9 +1,8 @@
 package Action;
 
 import Channel.BackupChannel;
-import Main.BackedUpFiles;
-import Main.ChunksRecorder;
-import Main.Peer;
+import Database.BackedUpFiles;
+import Database.ChunksRecorder;
 import Messages.Message;
 import Messages.PutchunkMsg;
 import Messages.RemovedMsg;
@@ -12,13 +11,10 @@ import Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**

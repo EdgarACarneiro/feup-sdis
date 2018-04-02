@@ -1,7 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
-import Main.BackedUpFiles;
+import Database.BackedUpFiles;
 import Main.Peer;
 import Messages.ChunkMsg;
 import Messages.GetTCPIP;
