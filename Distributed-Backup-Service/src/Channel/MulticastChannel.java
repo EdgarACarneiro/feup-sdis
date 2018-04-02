@@ -2,7 +2,7 @@ package Channel;
 
 import Action.ActionHasReply;
 import Main.Peer;
-import Messages.MessageHandler;
+import Messages.MessageDispatcher;
 import Utils.Utils;
 
 import java.io.IOException;
@@ -109,8 +109,8 @@ public abstract class MulticastChannel implements Runnable{
                 socket.receive(msgPacket);
 
                 peer.getThreadPool().executeThread(
-                        new MessageHandler(peer, peer.getControlChannel(), peer.getRestoreChannel(), peer.getBackupChannel() ,peer.chunksRecord, peer.getPeerID(),
-                                subscribedActions, MessageHandler.messageInterpreter(buf, msgPacket.getLength()))
+                        new MessageDispatcher(peer, peer.getControlChannel(), peer.getRestoreChannel(), peer.getBackupChannel() ,peer.chunksRecord, peer.getPeerID(),
+                                subscribedActions, MessageDispatcher.messageInterpreter(buf, msgPacket.getLength()))
                 );
             }
         } catch (IOException ex) {

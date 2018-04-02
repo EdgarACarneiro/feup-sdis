@@ -7,7 +7,7 @@ import Action.RetrieveChunkAction;
 import Action.StoreAction;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
-import Action.TriggerRemovedAction;
+import Action.RemovedAction;
 import Channel.BackupChannel;
 import Main.ChunksRecorder;
 import Main.Peer;
@@ -16,7 +16,7 @@ import Utils.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MessageHandler implements Runnable {
+public class MessageDispatcher implements Runnable {
 
     private ControlChannel controlChannel;
 
@@ -35,7 +35,7 @@ public class MessageHandler implements Runnable {
     private ChunksRecorder record;
 
 
-    public MessageHandler(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+    public MessageDispatcher(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
         this.peer = peer;
         this.controlChannel = controlChannel;
         this.restoreChannel = restoreChannel;
@@ -69,7 +69,7 @@ public class MessageHandler implements Runnable {
             (new DeleteAction(message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new TriggerRemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new RemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
             (new ProvideIPAction(controlChannel, peerID, (GetTCPIP) message)).run();
@@ -79,7 +79,7 @@ public class MessageHandler implements Runnable {
     public static Message messageInterpreter(byte[] readMsg, int msgLength) {
         byte[] byteHeader = getMessageHeader(readMsg);
         if (byteHeader == null) {
-            Utils.showWarning("Unable to parse message header. Discarding it.", MessageHandler.class);
+            Utils.showWarning("Unable to parse message header. Discarding it.", MessageDispatcher.class);
             return null;
         }
 
@@ -103,11 +103,11 @@ public class MessageHandler implements Runnable {
                 case "REMOVED":
                     return new RemovedMsg(header);
                 default:
-                    Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
+                    Utils.showWarning("Unrecognizable message type. Discarding it.", MessageDispatcher.class);
                     return null;
             }
         } catch (ExceptionInInitializerError e) {
-            Utils.showWarning("Unrecognizable message type. Discarding it.", MessageHandler.class);
+            Utils.showWarning("Unrecognizable message type. Discarding it.", MessageDispatcher.class);
             return null;
         }
     }

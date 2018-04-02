@@ -95,10 +95,9 @@ public final class Utils {
         return folder.delete();
     }
 
-        /**
+    /**
 	 * Get directory size
 	 *
-	 * @param folder folder to be deleted
 	 * @return Boolean with success or not 
 	 */
     public static long findSize(File file) { 

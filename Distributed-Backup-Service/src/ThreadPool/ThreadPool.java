@@ -2,7 +2,7 @@ package ThreadPool;
 
 import Action.Action;
 import Channel.MulticastChannel;
-import Messages.MessageHandler;
+import Messages.MessageDispatcher;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,7 +52,7 @@ public class ThreadPool {
      *
      * @param handler handler to be executed
      */
-    public void executeThread(MessageHandler handler) {
+    public void executeThread(MessageDispatcher handler) {
         executor.execute(handler);
     }
 

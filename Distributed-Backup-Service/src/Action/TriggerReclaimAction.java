@@ -1,21 +1,15 @@
 package Action;
 
 import Channel.ControlChannel;
-import Main.Peer;
-import Messages.Message;
 import Messages.RemovedMsg;
 import Utils.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class ReclaimAction extends Action {
+public class TriggerReclaimAction extends Action {
 
     /**
      * The channel used to communicate with other peers, regarding backup files
@@ -50,14 +44,14 @@ public class ReclaimAction extends Action {
      * @param senderID The identifier of the sender peer
      * @param maxKBytes Max KBytes to be used
      */
-    public ReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String maxKBytes) {
+    public TriggerReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String maxKBytes) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         if ( Long.parseLong(maxKBytes) < getFreeSpace())
             this.maxKBytes = Long.parseLong(maxKBytes);
         else {
-            Utils.showError("Not enough space!", ReclaimAction.class);
+            Utils.showError("Not enough space!", TriggerReclaimAction.class);
         }
     }
 
@@ -88,7 +82,7 @@ public class ReclaimAction extends Action {
                 File[] files = FileManager.getPeerBackups(senderID);
 
                 for (File file : files) {                         
-                    if (file.isDirectory() && shrinkSize > 0){
+                    if (file.isDirectory() && shrinkSize > 0) {
                         Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
                         System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
 
@@ -97,7 +91,7 @@ public class ReclaimAction extends Action {
 
                         if (chunkList != null) {
                             for (File chunk : chunkList) {
-                                if (shrinkSize > 0){
+                                if (shrinkSize > 0) {
                                     Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
                                     System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
                                     shrinkSize -= Utils.findSize(chunk);

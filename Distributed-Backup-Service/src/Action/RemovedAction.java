@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class TriggerRemovedAction extends ActionHasReply {
+public class RemovedAction extends ActionHasReply {
 
     /**
      * Maximum time waited to trigger the Retrieve Action, exclusively.
@@ -83,7 +83,7 @@ public class TriggerRemovedAction extends ActionHasReply {
      * @param peerID The identifier of the sender peer
      * @param removedMsg The chunk number that was deleted
      */
-    public TriggerRemovedAction(BackedUpFiles backedUpFiles, BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
+    public RemovedAction(BackedUpFiles backedUpFiles, BackupChannel backupChannel, ChunksRecorder record, int peerID, RemovedMsg removedMsg) {
         this.backedUpFiles = backedUpFiles;
         this.backupChannel = backupChannel;
         this.peerID = peerID;
@@ -126,12 +126,13 @@ public class TriggerRemovedAction extends ActionHasReply {
 
     @Override
     public void run() {
-        backedUpFiles.decRepDegree(fileID, chunkNum);
+        if (backedUpFiles.hasFileBackedUp(fileID))
+            backedUpFiles.decRepDegree(fileID, chunkNum);
 
         File[] files = FileManager.getPeerBackups(peerID);
 
         for (File file : files) {                         
-            if (file.isDirectory() && file.getName().equals(fileID)){
+            if (file.isDirectory() && file.getName().equals(fileID)) {
                 System.out.println("Hmm, you deleted a file from something I have...");
                 
                 File fileChunks = new File(file.getParentFile(), file.getName());
