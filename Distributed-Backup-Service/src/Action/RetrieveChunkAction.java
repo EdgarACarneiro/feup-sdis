@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 public class RetrieveChunkAction extends ActionHasReply {
 
     /**
-     * Maximum time waited to trigger the Retrieve Action, exclusively.
+     * Maximum time waited to trigger the Retrieve Action.
      */
     private final static int MAX_TIME_TO_SEND = 4000;
 

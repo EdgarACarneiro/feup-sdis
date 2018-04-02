@@ -109,8 +109,8 @@ public abstract class MulticastChannel implements Runnable{
                 socket.receive(msgPacket);
 
                 peer.getThreadPool().executeThread(
-                        new MessageDispatcher(peer, peer.getControlChannel(), peer.getRestoreChannel(), peer.getBackupChannel() ,peer.chunksRecord, peer.getPeerID(),
-                                subscribedActions, MessageDispatcher.messageInterpreter(buf, msgPacket.getLength()))
+                        new MessageDispatcher(peer, peer.chunksRecord, peer.getBackedUpFiles(), subscribedActions,
+                                MessageDispatcher.messageInterpreter(buf, msgPacket.getLength()))
                 );
             }
         } catch (IOException ex) {

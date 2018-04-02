@@ -73,7 +73,7 @@ public class StoreAction extends Action {
             out.write(putchunkMsg.getChunk());
             out.close();
 
-            return peerStoredChunks.updateChunkRecord(fileID, chunkNum);
+            return peerStoredChunks.addChunkRecord(fileID, chunkNum, putchunkMsg.getChunk().length);
 
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());

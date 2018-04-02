@@ -5,11 +5,11 @@ import Action.*;
 import Channel.ControlChannel;
 import Channel.RestoreChannel;
 import Channel.BackupChannel;
+import Database.BackedUpFiles;
 import Database.ChunksRecorder;
 import Main.Peer;
 import Utils.Utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,24 +23,24 @@ public class MessageDispatcher implements Runnable {
 
     private int peerID;
 
-    private Peer peer;
-
     private CopyOnWriteArrayList<ActionHasReply> subscribedActions;
 
     private Message message;
 
     private ChunksRecorder record;
 
+    private BackedUpFiles peerStoredFiles;
 
-    public MessageDispatcher(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, CopyOnWriteArrayList<ActionHasReply> subscribedActions, Message message) {
-        this.peer = peer;
-        this.controlChannel = controlChannel;
-        this.restoreChannel = restoreChannel;
-        this.backupChannel= backupChannel;
-        this.peerID = peerID;
+
+    public MessageDispatcher(Peer peer, ChunksRecorder record, BackedUpFiles peerStoredFiles, CopyOnWriteArrayList<ActionHasReply> subscribedActions, Message message) {
+        this.controlChannel = peer.getControlChannel();
+        this.restoreChannel = peer.getRestoreChannel();
+        this.backupChannel= peer.getBackupChannel();
+        this.peerID = peer.getPeerID();
         this.subscribedActions = subscribedActions;
         this.message = message;
         this.record = record;
+        this.peerStoredFiles = peerStoredFiles;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MessageDispatcher implements Runnable {
             (new StoreAction(controlChannel, record, peerID, (PutchunkMsg) message)).run();
         }
         else if (message instanceof StoredMsg) {
-            (new AckStoreAction(peer.getBackedUpFiles(), (StoredMsg) message)).run();
+            (new AckStoreAction(peerStoredFiles, record, (StoredMsg) message)).run();
         }
         else if (message instanceof GetchunkMsg) {
             (new RetrieveChunkAction(restoreChannel, record, peerID, (GetchunkMsg) message)).run();
@@ -65,13 +65,13 @@ public class MessageDispatcher implements Runnable {
             (new DeleteAction((DeleteMsg) message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new RemovedAction(peer.getBackedUpFiles(), backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new RemovedAction(peerStoredFiles, backupChannel, record, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
             (new SetTCPServer(controlChannel, peerID, (GetTCPIP) message)).run();
         }
         else if (message instanceof SetTCPIP) {
-            (new SetTCPClient(peer.getBackedUpFiles(), peerID, (SetTCPIP) message)).run();
+            (new SetTCPClient(peerStoredFiles, peerID, (SetTCPIP) message)).run();
         }
     }
 

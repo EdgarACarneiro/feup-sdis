@@ -18,12 +18,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Action used to begin a back up. It also handles the other Peer's answers.
+ * Action used to begin a reclaim of disk space. It also handles the other Peer's answers.
  */
 public class RemovedAction extends ActionHasReply {
 
     /**
-     * Maximum time waited to trigger the Retrieve Action, exclusively.
+     * Maximum time waited to trigger the Back up action associated.
      */
     private final static int MAX_TIME_TO_SEND = 4000;
 
@@ -72,7 +72,7 @@ public class RemovedAction extends ActionHasReply {
     private ScheduledFuture test;
 
     /**
-     * Trigger Remove Action Constructor
+     * Remove Action Constructor
      *
      * @param backupChannel The channel associated to this action
      * @param record The protocol version used
