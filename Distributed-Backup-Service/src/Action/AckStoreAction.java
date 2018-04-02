@@ -21,6 +21,6 @@ public class AckStoreAction extends Action {
     @Override
     public void run() {
         peerStoredChunks.backedChunk(msg.getFileID(), msg.getChunkNum(), msg.getSenderID());
-        chunksRecord.updateChunkRecord(msg.getFileID(), msg.getChunkNum(), msg.getSenderID());
+        chunksRecord.incChunkRecord(msg.getFileID(), msg.getChunkNum(), msg.getSenderID());
     }
 }

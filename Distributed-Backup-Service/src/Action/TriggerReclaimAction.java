@@ -80,15 +80,11 @@ public class TriggerReclaimAction extends Action {
 
     @Override
     public void run() {
+        record.updateMaxSpace(maxKBytes);
+        System.out.println("Reclaim redefined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + record.getUsedDiskSpace() + " KBytes.");
 
-        record.getUsedDiskSpace();
-        record.updateMaxSpace(maxKBytes); //Desencadeado internamente
-         long currentUsage = getCurrentUsage();
-
-        System.out.println("Reclaim redifined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + currentUsage + " KBytes.");
-
-        if (currentUsage > this.maxKBytes) {
-            shrinkSize = currentUsage - this.maxKBytes;
+        if (record.getUsedDiskSpace() > this.maxKBytes) {
+            shrinkSize = record.getUsedDiskSpace() - this.maxKBytes;
             System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
 
             File[] files = FileManager.getPeerBackups(senderID);
@@ -106,11 +102,14 @@ public class TriggerReclaimAction extends Action {
                             if (shrinkSize > 0) {
                                 Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
                                 System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+
                                 shrinkSize -= Utils.findSize(chunk);
+                                record.removeChunk(FileManager.genFileID(file.getAbsolutePath()), chunk.getName());
                                 chunk.delete();
+
                                 requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
                             } else
-                                break;
+                                return;
                         }
                     }
                 }
@@ -136,8 +135,6 @@ public class TriggerReclaimAction extends Action {
             }
         }
         return -1;
-
-
     }
 
     /**
