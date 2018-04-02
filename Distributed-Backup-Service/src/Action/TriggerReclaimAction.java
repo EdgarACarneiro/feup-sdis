@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Database.ChunksRecorder;
 import Messages.RemovedMsg;
 import Utils.*;
 
@@ -17,6 +18,11 @@ public class TriggerReclaimAction extends Action {
     private ControlChannel controlChannel;
 
     /**
+     * The record about the files / chunks stored
+     */
+    private ChunksRecorder record;
+
+    /**
      * Protocol Version in the communication
      */
     private float protocolVersion;
@@ -27,7 +33,7 @@ public class TriggerReclaimAction extends Action {
     private int senderID;
 
     /**
-     * Max File ocupation size
+     * Max File occupation size
      */
     private long maxKBytes;
 
@@ -40,12 +46,14 @@ public class TriggerReclaimAction extends Action {
      * Trigger Reclaim Action Constructor
      * 
      * @param controlChannel The channel used to communicate the desired course of action
+     * @param record The peer's record fo stored files / chunks
      * @param protocolVersion The protocol version used
      * @param senderID The identifier of the sender peer
      * @param maxKBytes Max KBytes to be used
      */
-    public TriggerReclaimAction(ControlChannel controlChannel, float protocolVersion, int senderID, String maxKBytes) {
+    public TriggerReclaimAction(ControlChannel controlChannel, ChunksRecorder record, float protocolVersion, int senderID, String maxKBytes) {
         this.controlChannel = controlChannel;
+        this.record = record;
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
         if ( Long.parseLong(maxKBytes) < getFreeSpace())
@@ -72,40 +80,44 @@ public class TriggerReclaimAction extends Action {
 
     @Override
     public void run() {
-            long currentUsage = getCurrentUsage();
-            System.out.println("Reclaim redifined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + currentUsage + " KBytes.");
-            
-            if (currentUsage > this.maxKBytes) {
-                shrinkSize = currentUsage - this.maxKBytes;
-                System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
 
-                File[] files = FileManager.getPeerBackups(senderID);
+        record.getUsedDiskSpace();
+        record.updateMaxSpace(maxKBytes); //Desencadeado internamente
+         long currentUsage = getCurrentUsage();
 
-                for (File file : files) {                         
-                    if (file.isDirectory() && shrinkSize > 0) {
-                        Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
-                        System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
+        System.out.println("Reclaim redifined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + currentUsage + " KBytes.");
 
-                        File fileChunks = new File(file.getParentFile(), file.getName());
-                        File[] chunkList = fileChunks.listFiles();
+        if (currentUsage > this.maxKBytes) {
+            shrinkSize = currentUsage - this.maxKBytes;
+            System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
 
-                        if (chunkList != null) {
-                            for (File chunk : chunkList) {
-                                if (shrinkSize > 0) {
-                                    Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                                    System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                                    shrinkSize -= Utils.findSize(chunk);
-                                    chunk.delete();
-                                    requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
-                                } else 
-                                    break;
-                            }
+            File[] files = FileManager.getPeerBackups(senderID);
+
+            for (File file : files) {
+                if (file.isDirectory() && shrinkSize > 0) {
+                    Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
+                    System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
+
+                    File fileChunks = new File(file.getParentFile(), file.getName());
+                    File[] chunkList = fileChunks.listFiles();
+
+                    if (chunkList != null) {
+                        for (File chunk : chunkList) {
+                            if (shrinkSize > 0) {
+                                Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                                shrinkSize -= Utils.findSize(chunk);
+                                chunk.delete();
+                                requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
+                            } else
+                                break;
                         }
                     }
-                } 
-            } else {
-                System.out.println("There was no need to shrink down disk usage!");
+                }
             }
+        } else {
+            System.out.println("There was no need to shrink down disk usage!");
+        }
     }
 
     /**
@@ -124,6 +136,8 @@ public class TriggerReclaimAction extends Action {
             }
         }
         return -1;
+
+
     }
 
     /**

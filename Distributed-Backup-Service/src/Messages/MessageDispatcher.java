@@ -65,7 +65,7 @@ public class MessageDispatcher implements Runnable {
             (new DeleteAction((DeleteMsg) message, record, peerID)).run();
         }
         else if (message instanceof RemovedMsg) {
-            (new RemovedAction(peerStoredFiles, backupChannel, record, peerID, (RemovedMsg) message)).run();
+            (new RemovedAction(peerStoredFiles, backupChannel, peerID, (RemovedMsg) message)).run();
         }
         else if (message instanceof GetTCPIP) {
             (new SetTCPServer(controlChannel, peerID, (GetTCPIP) message)).run();

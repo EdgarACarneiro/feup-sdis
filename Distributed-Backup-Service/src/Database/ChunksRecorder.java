@@ -36,7 +36,7 @@ public class ChunksRecorder {
     /**
      * Disk Space being used so far to store all the peers
      */
-    private static AtomicLong usedDiskSpace = new AtomicLong();
+    private AtomicLong usedDiskSpace = new AtomicLong();
 
     /**
      * The hashMap used for keeping information about the chunks that were saved for each file (fileID).
@@ -63,14 +63,18 @@ public class ChunksRecorder {
             if (maxDiskSpace.longValue() != INFINITE_SPACE && (usedDiskSpace.get() + chunkSize) > maxDiskSpace.longValue())
                 return false;
 
-            usedDiskSpace.addAndGet(chunkSize);
+            System.out.println(usedDiskSpace.longValue() + "  " + chunkSize + "  " + chunkNum);
+            usedDiskSpace.set(usedDiskSpace.longValue() + chunkSize);
 
             ConcurrentHashMap<Integer, ChunkInfo> newEntry = new ConcurrentHashMap<>();
             newEntry.put(chunkNum, chunk);
             chunksRecord.put(fileID, newEntry);
         }
-        else
+        else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);
+            System.out.println(usedDiskSpace.longValue() + "  " + chunkSize + "  " + chunkNum);
+            usedDiskSpace.set(usedDiskSpace.longValue() + chunkSize);
+        }
 
         return true;
     }
@@ -85,7 +89,6 @@ public class ChunksRecorder {
                 chunk.repDegree += 1;
                 chunk.peersStored.add(senderID);
             }
-            //record.replace(chunkNum, oldValue + 1);
         }
     }
 
@@ -134,7 +137,16 @@ public class ChunksRecorder {
      *
      * @param maxDiskSpace maximum disk space
      */
-    public void updateMaxSpace(int maxDiskSpace) {
+    public void updateMaxSpace(long maxDiskSpace) {
         this.maxDiskSpace.set(maxDiskSpace);
+    }
+
+    /**
+     * Getter for the used disk space by the chunks / file storage
+     *
+     * @return The space used
+     */
+    public long getUsedDiskSpace() {
+        return usedDiskSpace.longValue();
     }
 }
