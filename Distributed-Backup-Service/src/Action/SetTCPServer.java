@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import Channel.ControlChannel;
 import Messages.GetTCPIP;
@@ -50,32 +52,28 @@ public class SetTCPServer extends Action {
 
     @Override
     public void run() {
-        URL whatismyip; 
-        BufferedReader in;
         try {
-            whatismyip = new URL("http://checkip.amazonaws.com");
-            in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-            ipAddress = in.readLine(); 
-        } catch (MalformedURLException e) {
-            Utils.showError("Failed to get IP Address", SetTCPIP.class);
-        } catch (IOException e) {
-            Utils.showError("Failed to get IP Address", SetTCPIP.class);
+            ipAddress = InetAddress.getLocalHost().getHostAddress();            
+        } catch (UnknownHostException e) {
+            Utils.showError("Invalid IP Address", SetTCPServer.class);
         }
 
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
 
-        try {
-            controlChannel.sendMessage(
-                    new SetTCPIP(protocolVersion, peerID, fileID, ipAddress).genMsg()
-            );
-        } catch (ExceptionInInitializerError e) {
-            Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
-        }
- 
-        int port = 9090;
+            int port = serverSocket.getLocalPort();
+            
+            System.out.println("Server is on IP " + ipAddress);
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
- 
             System.out.println("Server is listening on port " + port);
+
+            try {
+                controlChannel.sendMessage(
+                        new SetTCPIP(protocolVersion, peerID, fileID, ipAddress, port).genMsg()
+                );
+            } catch (ExceptionInInitializerError e) {
+                Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
+            }
+ 
  
             while (true) {
                 Socket socket = serverSocket.accept();

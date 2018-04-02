@@ -47,6 +47,11 @@ public class SetTCPClient extends Action {
      */
     private InetAddress ipAddress;
 
+    /**
+     * The destination IP
+     */
+    private int port;
+
 
     public SetTCPClient (BackedUpFiles backedUpFiles, int peerID, SetTCPIP message) {
         this.peerID = peerID;
@@ -57,13 +62,14 @@ public class SetTCPClient extends Action {
         } catch (UnknownHostException e) {
             Utils.showError("Error parsing IP Address", SetTCPClient.class);
         }
+        this.port = message.getPort();
     }
 
     @Override
     public void run() {
- 
-        int port = 9090;
- 
+
+        System.out.println("Gonna send to " + ipAddress + ":" + port);
+  
         try (Socket socket = new Socket(ipAddress, port)) {
  
             OutputStream output = socket.getOutputStream();
