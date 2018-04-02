@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Generic class representing a multicast network address, used for communication between peers
@@ -24,7 +24,7 @@ public abstract class MulticastChannel implements Runnable{
     /**
      * ArrayList containing the subscribed Actions to the channel
      */
-    private ArrayList<ActionHasReply> subscribedActions = new ArrayList<>();
+    private CopyOnWriteArrayList<ActionHasReply> subscribedActions = new CopyOnWriteArrayList<>();
 
     /**
      * The associated Peer to this multicast channel
@@ -77,7 +77,7 @@ public abstract class MulticastChannel implements Runnable{
     }
 
     /**
-     * Extract the adress for a channel, from a given String
+     * Extract the address for a channel, from a given String
      *
      * @param channelName The String to be parsed
      * @return The resultant adress
@@ -135,5 +135,12 @@ public abstract class MulticastChannel implements Runnable{
 
     public void subscribeAction(ActionHasReply action) {
         subscribedActions.add(action);
+    }
+
+    public void unsubscribeAction(ActionHasReply action) {
+        for (ActionHasReply runningAction : subscribedActions) {
+            if (action.equals(runningAction))
+                subscribedActions.remove(runningAction);
+        }
     }
 }

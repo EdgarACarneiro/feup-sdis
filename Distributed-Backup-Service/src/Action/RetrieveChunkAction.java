@@ -83,7 +83,8 @@ public class RetrieveChunkAction extends ActionHasReply {
     @Override
     public void run() {
         if (isStored) {
-            test = scheduler.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+            restoreChannel.subscribeAction(this);
+            test = scheduler.schedule(new Sender(this), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -92,6 +93,15 @@ public class RetrieveChunkAction extends ActionHasReply {
      */
     private class Sender implements Runnable {
 
+        /**
+         * The action that called this 'sub class'. Important to unsubscribe the channel.
+         */
+        public RetrieveChunkAction parentAction;
+
+        public Sender(RetrieveChunkAction parentAction) {
+            this.parentAction = parentAction;
+        }
+
         @Override
         public void run() {
             try {
@@ -99,6 +109,7 @@ public class RetrieveChunkAction extends ActionHasReply {
                     new ChunkMsg(getchunkMsg.getProtocolVersion(), peerID,
                             getchunkMsg.getFileID(), getchunkMsg.getChunkNum(), chunk).genMsg()
                 );
+                restoreChannel.unsubscribeAction(this.parentAction);
             } catch (ExceptionInInitializerError e) {
                 Utils.showError("Failed to build message, stopping Store action", this.getClass());
             }
@@ -114,6 +125,7 @@ public class RetrieveChunkAction extends ActionHasReply {
         if ((realMsg.getFileID().equals(getchunkMsg.getFileID())) &&
             (realMsg.getChunkNum() == getchunkMsg.getChunkNum())) {
             test.cancel(true);
+            restoreChannel.unsubscribeAction(this);
         }
     }
 }

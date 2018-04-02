@@ -11,6 +11,7 @@ import Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MessageDispatcher implements Runnable {
 
@@ -24,14 +25,14 @@ public class MessageDispatcher implements Runnable {
 
     private Peer peer;
 
-    private ArrayList<ActionHasReply> subscribedActions;
+    private CopyOnWriteArrayList<ActionHasReply> subscribedActions;
 
     private Message message;
 
     private ChunksRecorder record;
 
 
-    public MessageDispatcher(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, ArrayList<ActionHasReply> subscribedActions, Message message) {
+    public MessageDispatcher(Peer peer, ControlChannel controlChannel, RestoreChannel restoreChannel, BackupChannel backupChannel, ChunksRecorder record, int  peerID, CopyOnWriteArrayList<ActionHasReply> subscribedActions, Message message) {
         this.peer = peer;
         this.controlChannel = controlChannel;
         this.restoreChannel = restoreChannel;
@@ -52,8 +53,6 @@ public class MessageDispatcher implements Runnable {
         }
         else if (message instanceof StoredMsg) {
             (new AckStoreAction(peer.getBackedUpFiles(), (StoredMsg) message)).run();
-            /*for (ActionHasReply action : subscribedActions)
-                action.parseResponse(message);*/
         }
         else if (message instanceof GetchunkMsg) {
             (new RetrieveChunkAction(restoreChannel, record, peerID, (GetchunkMsg) message)).run();

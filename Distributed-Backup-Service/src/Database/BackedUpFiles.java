@@ -223,7 +223,7 @@ public class BackedUpFiles {
         if (info == null)
             return -1;
 
-        return info.chunksRD.size();
+        return info.numChunks;
     }
 
     /**

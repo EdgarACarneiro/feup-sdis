@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Channel.RestoreChannel;
 import Database.BackedUpFiles;
 import Main.Peer;
 import Messages.ChunkMsg;
@@ -23,6 +24,11 @@ public class TriggerRestoreAction extends ActionHasReply {
      * The channel used to communicate with other peers, regarding control messages
      */
     private ControlChannel controlChannel;
+
+    /**
+     * The channel used to communicate with other peers, regarding restore messages
+     */
+    private RestoreChannel restoreChannel;
 
     /**
      * The backed up files container associated to the peer triggering this action
@@ -53,6 +59,7 @@ public class TriggerRestoreAction extends ActionHasReply {
 
     public TriggerRestoreAction(Peer peer, float protocolVersion, int senderID, String file) {
         this.controlChannel = peer.getControlChannel();
+        this.restoreChannel = peer.getRestoreChannel();
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
 
@@ -101,7 +108,7 @@ public class TriggerRestoreAction extends ActionHasReply {
 
             if (FileManager.createFile(chunks, restoreDir, backedUpFiles.getFileName(fileID)) ) {
                 System.out.print("Succesfully restored file: " + backedUpFiles.getFileName(fileID));
-                return;
+                restoreChannel.unsubscribeAction(this);
             } else
                 Utils.showError("Failed to restore file, due to errors on file outputing.", this.getClass());
         }

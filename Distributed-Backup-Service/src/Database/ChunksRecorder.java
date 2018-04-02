@@ -38,18 +38,6 @@ public class ChunksRecorder {
         }
 
         return true;
-
-        /*if (chunks != null) {
-            if (chunks.contains(chunkNum))
-                return;
-            else
-                chunksRecord.remove(fileID);
-        }
-        else
-            chunks = new ArrayList<>();
-
-        chunks.add(chunkNum);
-        chunksRecord.put(fileID, chunks);*/
     }
 
     /**

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Action used to begin a back up. It also handles the other Peer's answers.
  */
-public class TriggerBackupAction extends ActionHasReply {
+public class TriggerBackupAction extends Action {
 
     /**
      * Maximum number of cycles the Action will execute in order to make all the chunks
@@ -156,7 +156,4 @@ public class TriggerBackupAction extends ActionHasReply {
             sleepThreadPool.schedule(new Repeater(), waitCheckTime, TimeUnit.MILLISECONDS);
         }
     }
-
-    @Override
-    public void parseResponse(Message msg) {}
 }

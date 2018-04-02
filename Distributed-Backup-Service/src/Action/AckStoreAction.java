@@ -12,7 +12,6 @@ public class AckStoreAction extends Action {
     public AckStoreAction(BackedUpFiles peerStoredChunks, StoredMsg msg) {
         this.peerStoredChunks = peerStoredChunks;
         this.msg = msg;
-        System.out.println(new String(msg.genMsg()));
     }
 
     @Override
