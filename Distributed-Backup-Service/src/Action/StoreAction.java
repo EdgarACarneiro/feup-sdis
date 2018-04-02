@@ -1,6 +1,7 @@
 package Action;
 
 import Channel.ControlChannel;
+import Database.BackedUpFiles;
 import Database.ChunksRecorder;
 import Messages.PutchunkMsg;
 import Messages.StoredMsg;
@@ -52,59 +53,53 @@ public class StoreAction extends Action {
     private int peerID;
 
 
-    public StoreAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, int peerID, PutchunkMsg requestMsg) {
+    public StoreAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, BackedUpFiles ownBackedFiles, int peerID, PutchunkMsg requestMsg) {
         this.controlChannel = controlChannel;
         this.peerID = peerID;
         putchunkMsg = requestMsg;
         this.peerStoredChunks = peerStoredChunks;
 
         this.fileDir = getFileDirectory(peerID, putchunkMsg.getFileID());
-        new File(fileDir).mkdirs();
 
-        this.wasStored = storeChunk();
+        this.wasStored = storeChunk(ownBackedFiles);
     }
 
-    private boolean storeChunk() {
+    private boolean storeChunk(BackedUpFiles ownBackedFiles) {
         try {
             String fileID = putchunkMsg.getFileID();
             int chunkNum = putchunkMsg.getChunkNum();
 
-            FileOutputStream out = new FileOutputStream (fileDir + "/" + chunkNum);
-            out.write(putchunkMsg.getChunk());
-            out.close();
+            if (ownBackedFiles.hasFileBackedUp(fileID))
+                return false;
 
-            return peerStoredChunks.addChunkRecord(fileID, chunkNum, putchunkMsg.getChunk().length, putchunkMsg.getRepDegree());
+            if (peerStoredChunks.addChunkRecord(fileID, chunkNum, putchunkMsg.getChunk().length, putchunkMsg.getRepDegree())) {
+                new File(fileDir).mkdirs();
+                FileOutputStream out = new FileOutputStream (fileDir + "/" + chunkNum);
+                out.write(putchunkMsg.getChunk());
+                out.close();
 
+                return true;
+            }
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());
-            return false;
         }
+        return false;
     }
 
     @Override
     public void run() {
         if (wasStored) {
             ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
-            scheduledThread.schedule(new Sender(), new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
+            scheduledThread.schedule(() ->{
+                try {
+                    controlChannel.sendMessage(
+                            new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
+                                    putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
+                    );
+                } catch (ExceptionInInitializerError e) {
+                    Utils.showError("Failed to build message, stopping Store action", this.getClass());
+                }
+            }, new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
         }
     }
-
-    /**
-     * Class used to Send the Action correspondent message to the channel, using ScheduledThreadPoolExecutor
-     */
-    private class Sender implements Runnable {
-
-        @Override
-        public void run() {
-            try {
-                controlChannel.sendMessage(
-                        new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
-                                putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
-                );
-            } catch (ExceptionInInitializerError e) {
-                Utils.showError("Failed to build message, stopping Store action", this.getClass());
-            }
-        }
-    }
-
 }

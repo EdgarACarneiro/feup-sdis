@@ -67,9 +67,9 @@ public class RemovedAction extends ActionHasReply {
      */
     private File removedChunk;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(30);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    private ScheduledFuture test;
+    private ScheduledFuture putchunkSender;
 
     /**
      * Remove Action Constructor
@@ -91,7 +91,6 @@ public class RemovedAction extends ActionHasReply {
 
     @Override
     public void run() {
-
         boolean hasChunkStored = false;
         if (record.hasChunk(fileID, chunkNum))
             hasChunkStored = record.decChunkRecord(fileID, chunkNum, receivedPeerID);
@@ -101,41 +100,22 @@ public class RemovedAction extends ActionHasReply {
                                 "It was file:" + fileID + ", chunk: " + chunkNum);
 
             if (! record.isRDBalanced(fileID, chunkNum)) {
+                removedChunk = FileManager.getChunkFile(peerID, fileID, chunkNum).toFile();
+
                 backupChannel.subscribeAction(this);
-                //test = scheduler.schedule(new Sender(this), new Random().nextInt(4000), TimeUnit.MILLISECONDS);
-                scheduler.submit( () -> {
+                putchunkSender = scheduler.schedule( () -> {
                     try {
                         backupChannel.sendMessage(
-                                new PutchunkMsg(protocolVersion, peerID, fileID, chunkNum, record.getFileDesiredRD(fileID), Files.readAllBytes(removedChunk.toPath())).genMsg()
+                                new PutchunkMsg(protocolVersion, receivedPeerID, fileID, chunkNum, record.getFileDesiredRD(fileID), Files.readAllBytes(removedChunk.toPath())).genMsg()
                         );
-                        System.out.println("I GOT IN MA MANNNN");
                         backupChannel.unsubscribeAction(this);
+
                     } catch (ExceptionInInitializerError | IOException e) {
                         Utils.showWarning("Failed to build message. Proceeding for other messages.", this.getClass());
                     }
-
-                });
+                }, new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
             }
         }
-    }
-
-    /**
-     * Class used to implement the Check loop for the action.
-     * A class was used instead of a method, in order to implement it with ScheduledThreadPoolExecutor
-     */
-    private class Sender implements Runnable {
-
-        /**
-         * The action that called this 'sub class'. Important to unsubscribe the channel.
-         */
-        public RemovedAction parentAction;
-
-        public Sender(RemovedAction parentAction) {
-            this.parentAction = parentAction;
-        }
-
-        @Override
-        public void run() {}
     }
 
     @Override
@@ -146,7 +126,7 @@ public class RemovedAction extends ActionHasReply {
         PutchunkMsg realMsg = (PutchunkMsg) msg;
         if ((realMsg.getFileID().equals(fileID)) &&
             (realMsg.getChunkNum() == chunkNum)) {
-            test.cancel(true);
+            putchunkSender.cancel(true);
             backupChannel.unsubscribeAction(this);
         }
     }

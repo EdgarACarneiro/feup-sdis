@@ -44,7 +44,7 @@ public class DeleteAction extends Action {
     public void run() {
         ArrayList<Integer> chunks = peerStoredChunks.getChunksList(fileID);
 
-        if (chunks == null && protocolVersion==1)
+        if (chunks == null && protocolVersion == 1)
             return;
 
         File[] backupFiles = FileManager.getPeerBackups(peerID);

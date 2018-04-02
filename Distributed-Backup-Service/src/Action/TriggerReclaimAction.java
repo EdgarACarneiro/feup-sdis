@@ -99,17 +99,19 @@ public class TriggerReclaimAction extends Action {
 
                     if (chunkList != null) {
                         for (File chunk : chunkList) {
-                            if (shrinkSize > 0) {
-                                Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                                System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-
-                                shrinkSize -= Utils.findSize(chunk);
-                                record.removeChunk(FileManager.genFileID(file.getAbsolutePath()), chunk.getName());
-                                chunk.delete();
-
-                                requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
-                            } else
+                            if (shrinkSize <= 0)
                                 return;
+
+                            Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                            System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                            System.out.println("SHRINKED SIZE " + shrinkSize);
+
+                            System.out.println("CHUNK SIZE: " + record.getChunkSize(file.getName(), Integer.parseInt(chunk.getName())) );
+                            shrinkSize -= record.getChunkSize(file.getName(), Integer.parseInt(chunk.getName()) );
+                            record.removeChunk(file.getName(), chunk.getName());
+                            chunk.delete();
+
+                            requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
                         }
                     }
                 }

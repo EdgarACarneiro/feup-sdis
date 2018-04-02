@@ -193,6 +193,18 @@ public class ChunksRecorder {
         storedChunks.remove(Integer.parseInt(chunkNum));
     }
 
+    public long getChunkSize(String fileID, Integer chunkNum) {
+        ConcurrentHashMap<Integer, ChunkInfo> storedChunks = chunksRecord.get(fileID);
+        if (storedChunks == null)
+            return -1;
+
+        ChunkInfo info = storedChunks.get(chunkNum);
+        if (info == null)
+            return -1;
+
+        return info.chunkSize;
+    }
+
     /**
      * Getter for the used disk space by the chunks / file storage
      *
