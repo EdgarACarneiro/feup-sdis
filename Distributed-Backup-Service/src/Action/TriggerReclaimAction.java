@@ -38,7 +38,7 @@ public class TriggerReclaimAction extends Action {
     private long maxKBytes;
 
     /**
-     * The file identifier for the file to be backed up
+     * The size that stills needed to be shrink
      */
     private long shrinkSize;
 

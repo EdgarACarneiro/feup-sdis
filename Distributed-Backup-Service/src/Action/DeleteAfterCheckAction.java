@@ -11,6 +11,9 @@ import java.io.File;
 import Channel.ControlChannel;
 import Database.ChunksRecorder;
 
+/**
+ * Class representing a Delete After Check Action
+ */
 public class DeleteAfterCheckAction extends Action {
 
     /**
@@ -38,6 +41,14 @@ public class DeleteAfterCheckAction extends Action {
      */
     private ChunksRecorder peerStoredChunks;
 
+    /**
+     * Delete Acter Check Constructor Action
+     *
+     * @param peerStoredChunks The database regarding chunk that were stored in this peer
+     * @param controlChannel The control channel used in the communication
+     * @param peerID The peer identifier
+     * @param message The message receveid
+     */
     public DeleteAfterCheckAction(ChunksRecorder peerStoredChunks, ControlChannel controlChannel, int peerID, CheckDeleteMsg message) {
         this.peerStoredChunks = peerStoredChunks;
         this.controlChannel = controlChannel;
@@ -48,8 +59,6 @@ public class DeleteAfterCheckAction extends Action {
 
     /**
      * Send the message to check if file has been deleted
-     *
-     * @param fileID Name of File to check
      */
     private void sendDelete() {
         try {

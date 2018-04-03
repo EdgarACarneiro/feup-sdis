@@ -7,6 +7,7 @@ import Channel.RestoreChannel;
 import Database.BackedUpFiles;
 import Database.ChunksRecorder;
 import Utils.Utils;
+import Utils.ProtocolVersions;
 import ThreadPool.ThreadPool;
 
 import java.io.*;
@@ -118,7 +119,7 @@ public class Peer implements RMI.RMIInterface {
         initializeRMI();
         initDatabase();
 
-        if (this.protocolVersion == 2)
+        if (this.protocolVersion == ProtocolVersions.ENHANCEMENTS_VERSION)
             threadPool.executeThread(new CheckDeleteAction(controlChannel, this.protocolVersion, peerID));
     }
 

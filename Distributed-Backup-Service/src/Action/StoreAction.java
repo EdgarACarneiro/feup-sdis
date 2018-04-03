@@ -53,6 +53,15 @@ public class StoreAction extends Action {
     private int peerID;
 
 
+    /**
+     * Store Action default constructor
+     *
+     * @param controlChannel The control channel used in communication
+     * @param peerStoredChunks The database regarding chunk that were stored in this peer
+     * @param ownBackedFiles The database regarding chunks that were backed up from this peer
+     * @param peerID The peer identifier
+     * @param requestMsg The message containing the request
+     */
     public StoreAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, BackedUpFiles ownBackedFiles, int peerID, PutchunkMsg requestMsg) {
         this.controlChannel = controlChannel;
         this.peerID = peerID;
@@ -64,6 +73,12 @@ public class StoreAction extends Action {
         this.wasStored = storeChunk(ownBackedFiles);
     }
 
+    /**
+     * Store a chunk in the database and in the disk
+     *
+     * @param ownBackedFiles The database regarding chunks that were backed up from this peer
+     * @return true if the file was successfully stored
+     */
     private boolean storeChunk(BackedUpFiles ownBackedFiles) {
         try {
             String fileID = putchunkMsg.getFileID();

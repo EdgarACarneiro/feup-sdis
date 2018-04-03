@@ -26,6 +26,14 @@ public class TriggerDeleteAction extends Action {
      */
     private String fileID;
 
+    /**
+     * Trigger Delete Action constructor
+     *
+     * @param controlChannel The control channel used for communication
+     * @param protocolVersion The protocol version being used
+     * @param senderID The sender peer identifier
+     * @param file The file to be deleted
+     */
     public TriggerDeleteAction(ControlChannel controlChannel, float protocolVersion, int senderID, String file) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;
@@ -33,6 +41,7 @@ public class TriggerDeleteAction extends Action {
         this.fileID = FileManager.genFileID(file);
     }
 
+    @Override
     public void run() {
         try {
             controlChannel.sendMessage(

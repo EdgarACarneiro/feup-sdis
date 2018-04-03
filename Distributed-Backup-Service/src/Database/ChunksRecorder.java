@@ -11,15 +11,31 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ChunksRecorder implements Serializable {
 
+    /**
+     * Class representing all the info stored regarding a chunk
+     */
     public class ChunkInfo implements Serializable {
 
+        /**
+         * The initial replication degree
+         */
         public int repDegree = 0;
 
+        /**
+         * The size of the chunk
+         */
         public int chunkSize;
 
-        // Size will always be inferior in 1 to the repDegree, because it does not count with the self
+        /**
+         * The peers that have this chunk also stored, not including the self
+         */
         private ArrayList<Integer> peersStored = new ArrayList<>();
 
+        /**
+         * Chunk Info constructor
+         *
+         * @param chunkSize the chunk's size, in bytes
+         */
         public ChunkInfo(Integer chunkSize) {
             this.chunkSize = chunkSize;
         }
@@ -46,8 +62,14 @@ public class ChunksRecorder implements Serializable {
      */
     private ConcurrentHashMap<String, ConcurrentHashMap<Integer, ChunkInfo> > chunksRecord = new ConcurrentHashMap<>();
 
+    /**
+     * The List used for keeping information about which files were deleted
+     */
     private CopyOnWriteArrayList<String> deletedFiles = new CopyOnWriteArrayList<>();
 
+    /**
+     * A hashMap indicating for each file its desired replication degree
+     */
     private ConcurrentHashMap<String, Integer> filesDesiredRD = new ConcurrentHashMap<>();
 
     /**
@@ -58,10 +80,28 @@ public class ChunksRecorder implements Serializable {
         usedDiskSpace.set(0);
     }
 
+    /**
+     * Add a chunk record (meaning a chunk was stored) to the database, with replication degree already as 1
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @param chunkSize The chunk size
+     * @param desiredRD The desired replication degree
+     * @return True if the file was successfully added
+     */
     public boolean addChunkRecord(String fileID, Integer chunkNum, Integer chunkSize, Integer desiredRD) {
         return (initChunkRecord(fileID, chunkNum, chunkSize, desiredRD) && setExistingChunk(fileID, chunkNum));
     }
 
+    /**
+     * Initialize a chunk record in the database, with replication degree as 0
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @param chunkSize The chunk size
+     * @param desiredRD The desired replication degree
+     * @return True if the file was successfully added
+     */
     public boolean initChunkRecord(String fileID, Integer chunkNum, Integer chunkSize, Integer desiredRD) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
         ChunkInfo chunk = new ChunkInfo(chunkSize);
@@ -86,6 +126,13 @@ public class ChunksRecorder implements Serializable {
         return true;
     }
 
+    /**
+     * Sets the value of the replication degree of an existing chunk to 1
+     *
+     * @param fileID The file identifier
+     * @param chunkNum the chunk numeration
+     * @return True if the operation succeeded
+     */
     private boolean setExistingChunk(String fileID, Integer chunkNum) {
         ChunkInfo chunk = chunksRecord.get(fileID).get(chunkNum);
 
@@ -96,14 +143,39 @@ public class ChunksRecorder implements Serializable {
         return true;
     }
 
+    /**
+     * Increment the replication degree of a given chunk
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @param senderID The identifier of the peer who stored the chunk
+     * @return True if the replication degree was updated correctly
+     */
     public boolean incChunkRecord(String fileID, Integer chunkNum, Integer senderID) {
         return updateChunkRecord(fileID, chunkNum, senderID, 1);
     }
 
+    /**
+     * Decrement the replication degree of a given chunk
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @param senderID The identifier of the peer who removed the the chunk
+     * @return True if the replication degree was updated correctly
+     */
     public boolean decChunkRecord(String fileID, Integer chunkNum, Integer senderID) {
         return updateChunkRecord(fileID, chunkNum, senderID, -1);
     }
 
+    /**
+     * Update the replication degree of a given chunk
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @param senderID The identifier of the peer who stored/removed the file
+     * @param change The change to be added to the replication degree tp update it
+     * @return True if the replication degree was updated correctly
+     */
     private boolean updateChunkRecord(String fileID, Integer chunkNum, Integer senderID, Integer change) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
 
@@ -125,6 +197,13 @@ public class ChunksRecorder implements Serializable {
         return false;
     }
 
+    /**
+     * Check whether the replication degree of a given chunk is acceptable (balanced)
+     *
+     * @param fileID the file identifier
+     * @param chunkNum The chunk numeration
+     * @return True if it is balanced
+     */
     public boolean isRDBalanced(String fileID, int chunkNum) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
 
@@ -135,6 +214,12 @@ public class ChunksRecorder implements Serializable {
         return true;
     }
 
+    /**
+     * Getter for the desired replication degree of a given file
+     *
+     * @param fileID The file identifier
+     * @return The desired replication degree
+     */
     public Integer getFileDesiredRD(String fileID) {
         return filesDesiredRD.get(fileID);
     }
@@ -197,6 +282,12 @@ public class ChunksRecorder implements Serializable {
         }
     }
 
+    /**
+     * Checks if a file was deleted from the database
+     *
+     * @param fileID The file identifier
+     * @return True if the file is no longer on the database
+     */
     public boolean wasDeleted(String fileID) {
         return deletedFiles.contains(fileID);
     }
@@ -210,6 +301,12 @@ public class ChunksRecorder implements Serializable {
         this.maxDiskSpace.set(maxDiskSpace);
     }
 
+    /**
+     * Remove the given chunk from the database
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     */
     public void removeChunk(String fileID, Integer chunkNum) {
         ConcurrentHashMap<Integer, ChunkInfo> storedChunks = chunksRecord.get(fileID);
 
@@ -219,6 +316,13 @@ public class ChunksRecorder implements Serializable {
         storedChunks.remove(chunkNum);
     }
 
+    /**
+     * Getter for the size of a given chunk
+     *
+     * @param fileID The file identifier
+     * @param chunkNum the chunk numeration
+     * @return The chunk's size
+     */
     public long getChunkSize(String fileID, Integer chunkNum) {
         ConcurrentHashMap<Integer, ChunkInfo> storedChunks = chunksRecord.get(fileID);
         if (storedChunks == null)

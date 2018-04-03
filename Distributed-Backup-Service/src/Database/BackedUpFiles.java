@@ -104,90 +104,6 @@ public class BackedUpFiles implements Serializable {
     }
 
     /**
-     * Decrement the perceived replication degree of a given chunk
-     *
-     * @param fileID The file identifier of the chunk
-     * @param chunkNum The number of the chunk to be updated
-     */
-    public void decRepDegree(String fileID, Integer chunkNum) {
-        updateRepDegree(fileID, chunkNum, -1);
-    }
-
-    /**
-     * Increment the perceived replication degree of a given chunk
-     *
-     * @param fileID The file identifier of the chunk
-     * @param chunkNum The number of the chunk to be updated
-     */
-    public void incRepDegree(String fileID, Integer chunkNum) {
-        updateRepDegree(fileID, chunkNum, 1);
-    }
-
-    /**
-     * Update the replication degree of a certain chunk, with the given change
-     *
-     * @param fileID The file identifier of the chunk
-     * @param chunkNum The number of the chunk to be updated
-     * @param change The value to be added to the previous replication degree
-     */
-    private void updateRepDegree(String fileID, Integer chunkNum, Integer change) {
-
-        if (! filesInfo.containsKey(fileID)) {
-            Utils.showError("Failed to update Replication Degree of chunk. " +
-                    "Given file is not backed up", this.getClass());
-            return;
-        }
-
-        ConcurrentHashMap<Integer, Integer> chunksRD = filesInfo.get(fileID).chunksRD;
-        if (! chunksRD.containsKey(chunkNum)) {
-            Utils.showError("Non-existent chunk requested.", this.getClass());
-            return;
-        }
-
-        int oldValue = chunksRD.get(chunkNum);
-        chunksRD.replace(chunkNum, oldValue + change);
-    }
-
-    /**
-     * Indicates if the replication degree balance of a given chunk is positive (balanced)
-     *
-     * @param fileID The file identifier of the chunks
-     * @param chunkNum The chunk that is desired to know the replication degree balance
-     * @return Concurrent Hash map were the key is the chunk number and the object is the count of how much the chunk's replication degree s below the desired RD
-     */
-    public boolean isRDBalanced(String fileID, Integer chunkNum) {
-        FilesInfo info = filesInfo.get(fileID);
-
-        return info != null && info.chunksRD.containsKey(chunkNum) && (info.chunksRD.get(chunkNum) >= info.desiredRD);
-    }
-
-    /**
-     * Getter for the chunks whose replication degree is below the desired replication degree
-     *
-     * @param fileID The file identifier of the chunks
-     * @return Concurrent Hash map were the key is the chunk number and the object is the count of how much the chunk's replication degree s below the desired RD
-     */
-    public ConcurrentHashMap<Integer, Integer> getRDBalance(String fileID) {
-        FilesInfo info = filesInfo.get(fileID);
-
-        if (info == null)
-            return null;
-
-        ConcurrentHashMap<Integer, Integer> chunksRD = info.chunksRD;
-        ConcurrentHashMap<Integer, Integer> result = new ConcurrentHashMap<>();
-
-        ArrayList<Integer> keys = new ArrayList<>();
-        keys.addAll(info.chunksRD.keySet());
-
-        for (int key : keys) {
-            if (chunksRD.get(key) < info.desiredRD)
-                result.put(key, chunksRD.get(key) - info.desiredRD);
-        }
-
-        return result;
-    }
-
-    /**
      * Getter for the chunks who still have not replication degree bigger than the desired, or do not yet exist
      *
      * @param fileID The file identifier
@@ -252,9 +168,18 @@ public class BackedUpFiles implements Serializable {
         return filesInfo.containsKey(fileID);
     }
 
+    /**
+     * Indicates that fail was successfully backed up, and therefore its information should be added to the database
+     *
+     * @param fileID The file identifier
+     * @param realName The real name of the file
+     * @param desiredRD The desired replication degree for all the chunks of that file
+     * @param numChunks The number of chunks of the file
+     * @return True if the false was successfully added to the database, false if the file already existed or could not be added
+     */
     public boolean backedFile (String fileID, String realName, Integer desiredRD, Integer numChunks) {
         if (filesInfo.containsKey(fileID)) {
-            Utils.showError("Trying to back up a file already backed up.", this.getClass());
+            Utils.showError("Trying to back up a file already backed up. Delete the back up to do another one.", this.getClass());
             return false;
         }
         filesInfo.put(fileID, new FilesInfo(realName, desiredRD, numChunks));

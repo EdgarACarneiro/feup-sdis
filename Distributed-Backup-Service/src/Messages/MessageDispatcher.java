@@ -9,6 +9,7 @@ import Database.BackedUpFiles;
 import Database.ChunksRecorder;
 import Main.Peer;
 import Utils.Utils;
+import Utils.ProtocolVersions;
 
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -93,7 +94,7 @@ public class MessageDispatcher implements Runnable {
             return;
 
         if (message instanceof PutchunkMsg) {
-            if (protocolVersion == 2.0)
+            if (protocolVersion == ProtocolVersions.ENHANCEMENTS_VERSION)
                 (new StoreEnhAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
             else
                 (new StoreAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
@@ -118,13 +119,14 @@ public class MessageDispatcher implements Runnable {
         else if (message instanceof RemovedMsg) {
             (new RemovedAction(record, backupChannel, peerID, (RemovedMsg) message)).run();
         }
-        else if (message instanceof GetTCPIP) {
-            (new SetTCPServer(record, controlChannel, peerID, (GetTCPIP) message)).run();
+        else if (protocolVersion == ProtocolVersions.ENHANCEMENTS_VERSION) {
+            if (message instanceof GetTCPIP) {
+                (new SetTCPServer(record, controlChannel, peerID, (GetTCPIP) message)).run();
+            } else if (message instanceof SetTCPIP) {
+                (new SetTCPClient(peerStoredFiles, peerID, (SetTCPIP) message)).run();
+            }
         }
-        else if (message instanceof SetTCPIP) {
-            (new SetTCPClient(peerStoredFiles, peerID, (SetTCPIP) message)).run();
-        }
-        else if (message instanceof CheckDeleteMsg && message.getProtocolVersion()==2) {
+        else if (message instanceof CheckDeleteMsg && message.getProtocolVersion() == ProtocolVersions.ENHANCEMENTS_VERSION) {
             (new DeleteAfterCheckAction(record, controlChannel, peerID, (CheckDeleteMsg) message)).run();
         } 
     }

@@ -57,6 +57,14 @@ public class TriggerRestoreAction extends ActionHasReply {
     private HashMap<Integer, byte[]> chunks = new HashMap<>();
 
 
+    /**
+     * Trigger Restore Action constructor
+     *
+     * @param peer The peer associated to the restore action
+     * @param protocolVersion The protocol version being used
+     * @param senderID The identifier of the sender peer
+     * @param file The file to be restored
+     */
     public TriggerRestoreAction(Peer peer, float protocolVersion, int senderID, String file) {
         this.controlChannel = peer.getControlChannel();
         this.restoreChannel = peer.getRestoreChannel();
@@ -107,7 +115,7 @@ public class TriggerRestoreAction extends ActionHasReply {
             new File(restoreDir).mkdirs();
 
             if (FileManager.createFile(chunks, restoreDir, backedUpFiles.getFileName(fileID)) ) {
-                System.out.print("Succesfully restored file: " + backedUpFiles.getFileName(fileID));
+                Utils.showSuccess("Succesfully restored file: " + backedUpFiles.getFileName(fileID));
                 restoreChannel.unsubscribeAction(this);
             } else
                 Utils.showError("Failed to restore file, due to errors on file outputing.", this.getClass());

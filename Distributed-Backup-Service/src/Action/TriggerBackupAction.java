@@ -149,8 +149,10 @@ public class TriggerBackupAction extends Action {
                 return;
 
             ArrayList<Integer> missingChunks = backedUpFiles.checkAllRD(fileID);
-            if (missingChunks.size() == 0)
+            if (missingChunks.size() == 0) {
+                Utils.showSuccess("Successfully backed up file");
                 return;
+            }
 
             for (int chunkIdx : missingChunks)
                 requestBackUp(chunkIdx);

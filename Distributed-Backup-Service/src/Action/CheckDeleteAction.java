@@ -9,6 +9,9 @@ import java.io.File;
 
 import Channel.ControlChannel;
 
+/**
+ * Class implementing the Check Delete Action
+ */
 public class CheckDeleteAction extends Action {
 
     /**
@@ -21,16 +24,18 @@ public class CheckDeleteAction extends Action {
      */
     private float protocolVersion;
 
-        /**
-     * The putchunk message that triggered this action
-     */
-    private CheckDeleteMsg message;
-
     /**
      * The identifier of the Peer associated to this action
      */
     private int peerID;
 
+    /**
+     * Check Delete Action constructor
+     *
+     * @param controlChannel The control channel used to communicate
+     * @param protocolVersion The protocol version used
+     * @param peerID The peer identifier
+     */
     public CheckDeleteAction(ControlChannel controlChannel, float protocolVersion, int peerID) {
         this.controlChannel = controlChannel;
         this.protocolVersion = protocolVersion;

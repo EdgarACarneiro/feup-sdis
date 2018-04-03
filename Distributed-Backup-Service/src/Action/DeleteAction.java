@@ -2,10 +2,9 @@ package Action;
 
 import Database.ChunksRecorder;
 import Messages.DeleteMsg;
-import Messages.Message;
 import Utils.FileManager;
 import Utils.Utils;
-import sun.security.ssl.ProtocolVersion;
+import Utils.ProtocolVersions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class DeleteAction extends Action {
     public void run() {
         ArrayList<Integer> chunks = peerStoredChunks.getChunksList(fileID);
 
-        if (chunks == null && protocolVersion == 1)
+        if (chunks == null && protocolVersion == ProtocolVersions.VANILLA_VERSION)
             return;
 
         File[] backupFiles = FileManager.getPeerBackups(peerID);
@@ -57,6 +56,7 @@ public class DeleteAction extends Action {
 
                 if (Utils.deleteFolder(backupFile)) {
                     Utils.log("SUCCESSFULLY DELETED " + backupFile.getName() + "!");
+                    Utils.showSuccess("Successfully deleted File!");
                     peerStoredChunks.removeFile(fileID);
                 }
                 else

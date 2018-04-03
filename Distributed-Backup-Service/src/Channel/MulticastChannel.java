@@ -118,6 +118,11 @@ public abstract class MulticastChannel implements Runnable{
         }
     }
 
+    /**
+     * Send the given message for the multicast channel
+     *
+     * @param msg The message to be sent
+     */
     public void sendMessage(byte[] msg) {
         try {
             // Create a packet that will contain the data
@@ -133,10 +138,20 @@ public abstract class MulticastChannel implements Runnable{
         }
     }
 
+    /**
+     * Subscribe an action to this channel, meaning when a message is received the Action will be notified
+     *
+     * @param action action to be subscribed
+     */
     public void subscribeAction(ActionHasReply action) {
         subscribedActions.add(action);
     }
 
+    /**
+     * Unsubscribe an action to this channel, meaning when a message is received the Action will no longer be notified
+     *
+     * @param action action to unsubscribed
+     */
     public void unsubscribeAction(ActionHasReply action) {
         for (ActionHasReply runningAction : subscribedActions) {
             if (action.equals(runningAction))

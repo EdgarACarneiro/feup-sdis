@@ -11,6 +11,9 @@ import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.*;
 
+/**
+ * Class representing the Retrieve ChunkAction
+ */
 public class RetrieveChunkAction extends ActionHasReply {
 
     /**
@@ -48,8 +51,14 @@ public class RetrieveChunkAction extends ActionHasReply {
      */
     private byte[] chunk;
 
+    /**
+     * Thread Executor to begin the Scheduled Future
+     */
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    /**
+     * Schedule Future used to begin the retrieve associated action after a given time
+     */
     private ScheduledFuture chunkSender;
 
 
@@ -62,6 +71,11 @@ public class RetrieveChunkAction extends ActionHasReply {
         isStored = getChunk();
     }
 
+    /**
+     * Get the chunk bytes to retrieved
+     *
+     * @return If the chunk wa successfully extracted
+     */
     private boolean getChunk() {
         String fileID = getchunkMsg.getFileID();
         int chunkNum = getchunkMsg.getChunkNum();
