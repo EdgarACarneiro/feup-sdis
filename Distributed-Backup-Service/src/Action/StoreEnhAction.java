@@ -15,12 +15,13 @@ import java.util.concurrent.TimeUnit;
 
 import static Utils.FileManager.getFileDirectory;
 
-public class StoreAction extends Action {
+public class StoreEnhAction extends Action {
 
     /**
      * Maximum time waited to trigger the Store Action, exclusively.
+     * It has time to received the normal protocol first.
      */
-    private final static int MAX_TIME_TO_SEND = 4000;
+    private final static int MAX_TIME_TO_SEND = 8000;
 
     /**
      * The putchunk message that triggered this action
@@ -33,11 +34,6 @@ public class StoreAction extends Action {
     private String fileDir;
 
     /**
-     * Boolean indicating if the chunk was successfully stored
-     */
-    private boolean wasStored;
-
-    /**
      * The channel used to communicate with other peers, regarding control information
      */
     private ControlChannel controlChannel;
@@ -48,58 +44,66 @@ public class StoreAction extends Action {
     private ChunksRecorder peerStoredChunks;
 
     /**
+     * Data structure that has information regarding the Peer running this action, own backed up files
+     */
+    private BackedUpFiles ownBackedFiles;
+
+    /**
      * The identifier of the Peer associated to this action
      */
     private int peerID;
 
 
-    public StoreAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, BackedUpFiles ownBackedFiles, int peerID, PutchunkMsg requestMsg) {
+    public StoreEnhAction (ControlChannel controlChannel, ChunksRecorder peerStoredChunks, BackedUpFiles ownBackedFiles, int peerID, PutchunkMsg requestMsg) {
         this.controlChannel = controlChannel;
         this.peerID = peerID;
         putchunkMsg = requestMsg;
         this.peerStoredChunks = peerStoredChunks;
+        this.ownBackedFiles = ownBackedFiles;
 
         this.fileDir = getFileDirectory(peerID, putchunkMsg.getFileID());
 
-        this.wasStored = storeChunk(ownBackedFiles);
+        peerStoredChunks.initChunkRecord(putchunkMsg.getFileID(), putchunkMsg.getChunkNum(), putchunkMsg.getChunk().length, putchunkMsg.getRepDegree());
     }
 
-    private boolean storeChunk(BackedUpFiles ownBackedFiles) {
+    private void storeChunk() {
         try {
             String fileID = putchunkMsg.getFileID();
             int chunkNum = putchunkMsg.getChunkNum();
 
-            if (ownBackedFiles.hasFileBackedUp(fileID))
-                return false;
-
-            if (peerStoredChunks.addChunkRecord(fileID, chunkNum, putchunkMsg.getChunk().length, putchunkMsg.getRepDegree())) {
+            if (peerStoredChunks.incChunkRecord(fileID, chunkNum, putchunkMsg.getSenderID())) {
                 new File(fileDir).mkdirs();
                 FileOutputStream out = new FileOutputStream (fileDir + "/" + chunkNum);
                 out.write(putchunkMsg.getChunk());
                 out.close();
             }
-            return true;
 
         } catch (java.io.IOException e) {
             Utils.showError("Failed to save chunk in disk", this.getClass());
         }
-        return false;
     }
 
     @Override
     public void run() {
-        if (wasStored) {
-            ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
-            scheduledThread.schedule(() ->{
+        if (ownBackedFiles.hasFileBackedUp(putchunkMsg.getFileID()))
+            return;
+
+        ScheduledThreadPoolExecutor scheduledThread = new ScheduledThreadPoolExecutor(1);
+        scheduledThread.schedule(() -> {
+            if (peerStoredChunks.getChunkRD(putchunkMsg.getFileID(), putchunkMsg.getChunkNum()) < putchunkMsg.getRepDegree()) {
                 try {
                     controlChannel.sendMessage(
                             new StoredMsg(putchunkMsg.getProtocolVersion(), peerID,
                                     putchunkMsg.getFileID(), putchunkMsg.getChunkNum()).genMsg()
                     );
+                    storeChunk();
+
                 } catch (ExceptionInInitializerError e) {
                     Utils.showError("Failed to build message, stopping Store action", this.getClass());
                 }
-            }, new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
-        }
+            } else {
+                peerStoredChunks.removeChunk(putchunkMsg.getFileID(), putchunkMsg.getChunkNum());
+            }
+        }, new Random().nextInt(MAX_TIME_TO_SEND), TimeUnit.MILLISECONDS);
     }
 }

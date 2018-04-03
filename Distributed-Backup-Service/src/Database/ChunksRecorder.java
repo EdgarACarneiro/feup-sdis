@@ -12,7 +12,7 @@ public class ChunksRecorder {
 
     public class ChunkInfo {
 
-        public int repDegree = 1;
+        public int repDegree = 0;
 
         public int chunkSize;
 
@@ -58,6 +58,10 @@ public class ChunksRecorder {
     }
 
     public boolean addChunkRecord(String fileID, Integer chunkNum, Integer chunkSize, Integer desiredRD) {
+        return (initChunkRecord(fileID, chunkNum, chunkSize, desiredRD) && setExistingChunk(fileID, chunkNum));
+    }
+
+    public boolean initChunkRecord(String fileID, Integer chunkNum, Integer chunkSize, Integer desiredRD) {
         ConcurrentHashMap<Integer, ChunkInfo> record = chunksRecord.get(fileID);
         ChunkInfo chunk = new ChunkInfo(chunkSize);
 
@@ -77,10 +81,19 @@ public class ChunksRecorder {
         }
         else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);
-            System.out.println(usedDiskSpace.longValue() + "  " + chunkSize + "  " + chunkNum);
             usedDiskSpace.set(usedDiskSpace.longValue() + chunkSize);
         }
 
+        return true;
+    }
+
+    private boolean setExistingChunk(String fileID, Integer chunkNum) {
+        ChunkInfo chunk = chunksRecord.get(fileID).get(chunkNum);
+
+        if (chunk == null)
+            return false;
+
+        chunk.repDegree = 1;
         return true;
     }
 
@@ -108,8 +121,6 @@ public class ChunksRecorder {
                 chunk.repDegree += change;
                 chunk.peersStored.remove(senderID);
             }
-
-
             return true;
         }
         return false;
@@ -127,6 +138,22 @@ public class ChunksRecorder {
 
     public Integer getFileDesiredRD(String fileID) {
         return filesDesiredRD.get(fileID);
+    }
+
+    /**
+     * Getter for the perceived replication degree of a given chunk in a given file
+     *
+     * @param fileID The file identifier
+     * @param chunkNum The chunk numeration
+     * @return Return the chunk replication degree if it exists, otherwise returns 0
+     */
+    public Integer getChunkRD(String fileID, int chunkNum) {
+        ConcurrentHashMap<Integer, ChunkInfo> storedChunks= chunksRecord.get(fileID);
+
+        if (storedChunks == null)
+            return 0;
+
+        return (storedChunks.containsKey(chunkNum) ? storedChunks.get(chunkNum).repDegree : 0);
     }
 
     /**
@@ -184,13 +211,13 @@ public class ChunksRecorder {
         this.maxDiskSpace.set(maxDiskSpace);
     }
 
-    public void removeChunk(String fileID, String chunkNum) {
+    public void removeChunk(String fileID, Integer chunkNum) {
         ConcurrentHashMap<Integer, ChunkInfo> storedChunks = chunksRecord.get(fileID);
 
         if (storedChunks == null)
             return;
 
-        storedChunks.remove(Integer.parseInt(chunkNum));
+        storedChunks.remove(chunkNum);
     }
 
     public long getChunkSize(String fileID, Integer chunkNum) {
@@ -212,5 +239,16 @@ public class ChunksRecorder {
      */
     public long getUsedDiskSpace() {
         return usedDiskSpace.longValue();
+    }
+
+    @Override
+    public String toString() {
+        return "ChunksRecorder{" +
+                " maxDiskSpace=" + maxDiskSpace +
+                ", usedDiskSpace=" + usedDiskSpace +
+                ", chunksRecord=" + chunksRecord +
+                ", deletedFiles=" + deletedFiles +
+                ", filesDesiredRD=" + filesDesiredRD +
+                '}' + '\n';
     }
 }

@@ -69,7 +69,7 @@ public class TestApp {
                     rmi.reclaimAction(actionArgs);
                     break;
                 case "STATE":
-                    rmi.stateAction(actionArgs);
+                    System.out.println(rmi.stateAction(actionArgs));
                     break;
                 default:
                     Utils.showError("Unknown test action requested\n" +

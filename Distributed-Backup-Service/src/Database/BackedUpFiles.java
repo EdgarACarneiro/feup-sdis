@@ -259,4 +259,11 @@ public class BackedUpFiles {
         filesInfo.put(fileID, new FilesInfo(realName, desiredRD, numChunks));
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "BackedUpFiles{" +
+                "filesInfo=" + filesInfo +
+                '}' + '\n';
+    }
 }

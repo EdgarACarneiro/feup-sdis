@@ -164,6 +164,10 @@ public class Peer implements RMI.RMIInterface {
         return peerID;
     }
 
+    public float getProtocolVersion() {
+        return protocolVersion;
+    }
+
     public ThreadPool getThreadPool() {
         return threadPool;
     }
@@ -219,10 +223,13 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(new TriggerReclaimAction(controlChannel, chunksRecord, protocolVersion, peerID, args.get(0)));
     }
 
-    public void stateAction(ArrayList<String> args) {
+    public String stateAction(ArrayList<String> args) {
         if (args.size() > 0)
             Utils.showWarning("Too many arguments given for state action", this.getClass());
 
-        threadPool.executeThread(new StateAction(controlChannel, protocolVersion, peerID, args.get(0)));
+        TriggerStateAction info =  new TriggerStateAction(chunksRecord, backedUpFiles);
+        threadPool.executeThread(info);
+
+        return "aedaedadeeaade";
     }
 }

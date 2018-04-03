@@ -13,5 +13,5 @@ public interface RMIInterface extends Remote {
     void restoreAction(ArrayList<String> args) throws RemoteException;
     void deleteAction(ArrayList<String> args) throws RemoteException;
     void reclaimAction(ArrayList<String> args) throws RemoteException;
-    void stateAction(ArrayList<String> args) throws RemoteException;
+    String stateAction(ArrayList<String> args) throws RemoteException;
 }

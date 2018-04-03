@@ -23,6 +23,8 @@ public class MessageDispatcher implements Runnable {
 
     private int peerID;
 
+    private float protocolVersion;
+
     private CopyOnWriteArrayList<ActionHasReply> subscribedActions;
 
     private Message message;
@@ -37,6 +39,7 @@ public class MessageDispatcher implements Runnable {
         this.restoreChannel = peer.getRestoreChannel();
         this.backupChannel= peer.getBackupChannel();
         this.peerID = peer.getPeerID();
+        this.protocolVersion = peer.getProtocolVersion();
         this.subscribedActions = subscribedActions;
         this.message = message;
         this.record = record;
@@ -49,7 +52,10 @@ public class MessageDispatcher implements Runnable {
             return;
 
         if (message instanceof PutchunkMsg) {
-            (new StoreAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
+            if (protocolVersion == 2.0)
+                (new StoreEnhAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
+            else
+                (new StoreAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
 
             // For reclaim actions
             for (ActionHasReply action : subscribedActions)

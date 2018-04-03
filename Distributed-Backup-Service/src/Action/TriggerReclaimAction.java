@@ -104,11 +104,9 @@ public class TriggerReclaimAction extends Action {
 
                             Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
                             System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                            System.out.println("SHRINKED SIZE " + shrinkSize);
 
-                            System.out.println("CHUNK SIZE: " + record.getChunkSize(file.getName(), Integer.parseInt(chunk.getName())) );
                             shrinkSize -= record.getChunkSize(file.getName(), Integer.parseInt(chunk.getName()) );
-                            record.removeChunk(file.getName(), chunk.getName());
+                            record.removeChunk(file.getName(), Integer.parseInt(chunk.getName()));
                             chunk.delete();
 
                             requestRemoved(Integer.parseInt(chunk.getName()), file.getName());
