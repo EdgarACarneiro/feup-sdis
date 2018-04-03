@@ -49,7 +49,7 @@ public class MessageDispatcher implements Runnable {
             return;
 
         if (message instanceof PutchunkMsg) {
-            (new StoreAction(controlChannel, record, peerID, (PutchunkMsg) message)).run();
+            (new StoreAction(controlChannel, record, peerStoredFiles, peerID, (PutchunkMsg) message)).run();
 
             // For reclaim actions
             for (ActionHasReply action : subscribedActions)
