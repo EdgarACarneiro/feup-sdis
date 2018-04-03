@@ -2,6 +2,7 @@ package Action;
 
 import Database.ChunksRecorder;
 import Messages.SetTCPIP;
+import Utils.FileManager;
 import Utils.Utils;
 
 import java.io.BufferedReader;
@@ -9,6 +10,9 @@ import java.io.Console;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -67,36 +71,41 @@ public class SetTCPClient extends Action {
 
     @Override
     public void run() {
-
-        System.out.println("Gonna send to " + ipAddress + ":" + port);
-  
-        try (Socket socket = new Socket(ipAddress, port)) {
- 
-            OutputStream output = socket.getOutputStream();
-            PrintWriter writer = new PrintWriter(output, true);
- 
-            Console console = System.console();
-            String text;
- 
-            do {
-                text = console.readLine("Enter text: ");
- 
-                writer.println(text);
- 
-                InputStream input = socket.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
- 
-                String time = reader.readLine();
- 
-                System.out.println(time);
- 
-            } while (!text.equals("bye"));
- 
+        try {
+            System.out.println("Gonna receive from" + ipAddress + ":" + port);
+            Socket socket = null;
+            try {
+                socket = new Socket(ipAddress, port);
+            } catch (IOException ex) {
+     
+                System.out.println("I/O error: " + ex.getMessage());
+            }
+    
+            InputStream input = null;
+            OutputStream output = null;
+    
+            try {
+                input = socket.getInputStream();
+            } catch (IOException ex) {
+                Utils.showError("Can't get socket input stream.", this.getClass());
+            }
+            
+            try {
+                output = new FileOutputStream("teste.png");
+            } catch (FileNotFoundException ex) {
+                Utils.showError("File not found. ", this.getClass());
+            }
+            
+            byte[] bytes = new byte[64*1024];
+    
+            int count;
+            while ((count = input.read(bytes)) > 0) {
+                output.write(bytes, 0, count);
+            }
+    
             socket.close();
- 
-        } catch (IOException ex) {
- 
-            System.out.println("I/O error: " + ex.getMessage());
+        } catch (IOException e) {
+            Utils.showError("Failed to connect!", this.getClass());
         }
     }
 }

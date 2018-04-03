@@ -1,6 +1,10 @@
 package Action;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,11 +16,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import Channel.ControlChannel;
+import Database.ChunksRecorder;
 import Messages.GetTCPIP;
 import Messages.Message;
 import Messages.SetTCPIP;
+import Utils.FileManager;
 import Utils.Utils;
 
 public class SetTCPServer extends Action {
@@ -43,15 +50,27 @@ public class SetTCPServer extends Action {
 
     private String ipAddress;
 
-    public SetTCPServer(ControlChannel controlChannel, int peerID, GetTCPIP message) {
+    /**
+     * Data Structure to get update after eliminating chunks, referent to the Peer stored files' chunks
+     */
+    private ChunksRecorder record;
+
+    public SetTCPServer(ChunksRecorder record, ControlChannel controlChannel, int peerID, GetTCPIP message) {
         this.controlChannel = controlChannel;
         this.peerID = peerID;
         this.protocolVersion = message.getProtocolVersion();
         this.fileID = message.getFileID();
+        this.record = record;
     }
 
     @Override
     public void run() {
+
+        ArrayList<Integer> chunks = record.getChunksList(fileID);
+
+        if (chunks == null)
+            return;
+
         try {
             ipAddress = InetAddress.getLocalHost().getHostAddress();            
         } catch (UnknownHostException e) {
@@ -76,25 +95,50 @@ public class SetTCPServer extends Action {
  
  
             while (true) {
-                Socket socket = serverSocket.accept();
+                Socket socket = null;
+
+                try {
+                    socket = serverSocket.accept();                   
+                } catch (IOException ex) {
+                    Utils.showError("Can't accept client connection. ", this.getClass());
+                }
                 System.out.println("New client connected");
- 
-                InputStream input = socket.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
- 
-                OutputStream output = socket.getOutputStream();
-                PrintWriter writer = new PrintWriter(output, true);
- 
- 
-                String text;
- 
-                do {
-                    text = reader.readLine();
-                    String reverseText = new StringBuilder(text).reverse().toString();
-                    writer.println("Server: " + reverseText);
- 
-                } while (!text.equals("bye"));
- 
+
+                File[] backupFiles = FileManager.getPeerBackups(peerID);
+                if (backupFiles == null)
+                    Utils.showError("Failed to get Peer backup files", this.getClass());
+
+                InputStream input = null;
+                OutputStream output = null;
+
+                try {
+                    output = socket.getOutputStream();
+                } catch (FileNotFoundException e) {
+                    Utils.showError("Server exception: " + e.getMessage(), this.getClass());
+                }
+  
+                for (File backupFile : backupFiles) {
+                    
+                    if (backupFile.isDirectory() && backupFile.getName().equals(fileID)) {
+                        
+                        for (File chunkFile : backupFile.listFiles()) {
+
+                            try {
+                                input = new FileInputStream(chunkFile); 
+                            } catch (IOException ex) {
+                                Utils.showError("Can't get socket input stream.", this.getClass());
+                            }
+
+                            byte[] bytes = new byte[64*1024];
+
+                            int count;
+                            while ((count = input.read(bytes)) > 0) {
+                                output.write(bytes, 0, count);
+                            }
+                        }
+                    }
+                } 
+
                 socket.close();
             }
  
