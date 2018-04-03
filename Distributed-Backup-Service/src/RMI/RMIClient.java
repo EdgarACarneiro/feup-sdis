@@ -21,9 +21,10 @@ public class RMIClient {
      * @param accessPoint he access point identifier / name
      */
     public RMIClient(String accessPoint) {
+        String[] acc = accessPoint.split("/");
         try {
-            Registry registry = LocateRegistry.getRegistry();
-            stub = (RMIInterface) registry.lookup(accessPoint);
+            Registry registry = LocateRegistry.getRegistry(acc[0]);
+            stub = (RMIInterface) registry.lookup(acc[1]);
         } catch(Exception e) {
             Utils.showError("Failed to initiate RMI", this.getClass());
         }
