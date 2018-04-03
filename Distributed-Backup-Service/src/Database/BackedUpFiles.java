@@ -2,19 +2,20 @@ package Database;
 
 import Utils.Utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class representing all the files that were backed up from this Peer
  */
-public class BackedUpFiles {
+public class BackedUpFiles implements Serializable {
 
     /**
      * Class used to save information regarding files that were backed up.
      * Saves file name as well as records about the perceived replication degree of each file's chunk in the disk
      */
-    public class FilesInfo {
+    public class FilesInfo implements Serializable {
 
         /**
          * The real file name of the file

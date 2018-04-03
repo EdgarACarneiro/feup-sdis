@@ -27,6 +27,16 @@ public final class FileManager {
     public final static String BASE_DIRECTORY_NAME = "backup-";
 
     /**
+     * The configuration file name for the configurations regarding backed up files
+     */
+    public final static String BACKED_UP_FILES_SERIALIZABLE = "BackedUpFiles.ser";
+
+    /**
+     * The configuration file name for the configurations regarding chunks stored from other peers
+     */
+    public final static String CHUNKS_RECORDER_SERIALIZABLE = "ChunksRecorder.ser";
+
+    /**
      * Chunks' size in bytes : 64KBytes (chunk's Body)
      */
     private static final int CHUNKS_SIZE = 64000;

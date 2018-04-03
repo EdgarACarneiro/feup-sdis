@@ -1,5 +1,8 @@
 package Database;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -8,9 +11,9 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Class that holds the records for all the chunks stored in this Peer
  */
-public class ChunksRecorder {
+public class ChunksRecorder implements Serializable {
 
-    public class ChunkInfo {
+    public class ChunkInfo implements Serializable {
 
         public int repDegree = 0;
 

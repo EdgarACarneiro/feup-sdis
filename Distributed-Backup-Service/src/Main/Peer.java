@@ -9,20 +9,28 @@ import Database.ChunksRecorder;
 import Utils.Utils;
 import ThreadPool.ThreadPool;
 
-import java.io.File;
+import java.io.*;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static Utils.FileManager.getPeerDirectory;
+import Utils.FileManager;
 
 /**
- * Class representing a Main.Peer in the service
+ * Class representing a Peer in the service
  */
 public class Peer implements RMI.RMIInterface {
+
+    /**
+     * Number of seconds it takes to perform a save loop to the files
+     */
+    private static final Integer SAVE_LOOP_SECONDS = 3;
 
     /**
      * The channel used for communication regarding control
@@ -67,12 +75,12 @@ public class Peer implements RMI.RMIInterface {
     /**
      * The hashMap used for keeping information about the files that were backed up
      */
-    private BackedUpFiles backedUpFiles = new BackedUpFiles();
+    private BackedUpFiles backedUpFiles;
 
     /**
      * Class used to save records of what chunks are stored in this Peer disk
      */
-    public ChunksRecorder chunksRecord = new ChunksRecorder();
+    public ChunksRecorder chunksRecord;
 
     /**
      * Regex used to validate the program args for initiating a peer
@@ -95,7 +103,7 @@ public class Peer implements RMI.RMIInterface {
         peerID = Integer.parseInt(serverID);
         this.accessPoint = accessPoint;
 
-        dirName = getPeerDirectory(peerID);
+        dirName = FileManager.getPeerDirectory(peerID);
         new File(dirName).mkdir();
 
         controlChannel = new ControlChannel(channelMC, this);
@@ -108,10 +116,50 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(restoreChannel);
 
         initializeRMI();
+        initDatabase();
 
         if (this.protocolVersion == 2)
             threadPool.executeThread(new CheckDeleteAction(controlChannel, this.protocolVersion, peerID));
-            
+    }
+
+    /**
+     * Initialize the database using either serializable files or the default constructors.
+     * A thread is also started, to save to the files every X to X seconds
+     */
+    private void initDatabase() {
+        File backedUpFiles_File = new File(dirName + "/" + FileManager.BACKED_UP_FILES_SERIALIZABLE);
+        File chunksRecord_File = new File(dirName + "/" + FileManager.CHUNKS_RECORDER_SERIALIZABLE);
+
+        try {
+            if (backedUpFiles_File.exists())
+                backedUpFiles = (BackedUpFiles) (new ObjectInputStream(new FileInputStream(backedUpFiles_File))).readObject();
+            else {
+                backedUpFiles_File.createNewFile();
+                backedUpFiles = new BackedUpFiles();
+            }
+
+            if (chunksRecord_File.exists()) {
+                chunksRecord = (ChunksRecorder) (new ObjectInputStream(new FileInputStream(chunksRecord_File))).readObject();
+            } else {
+                chunksRecord_File.createNewFile();
+                chunksRecord = new ChunksRecorder();
+            }
+
+            // Scheduling a save loop of to seconds
+            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(() -> {
+                try {
+                    (new ObjectOutputStream(new FileOutputStream(chunksRecord_File))).writeObject(chunksRecord);
+                    (new ObjectOutputStream(new FileOutputStream(backedUpFiles_File))).writeObject(backedUpFiles);
+
+                } catch (IOException e1) {
+                    Utils.showError("Failed to save the database to files", this.getClass());
+                }
+            }, SAVE_LOOP_SECONDS, SAVE_LOOP_SECONDS, TimeUnit.SECONDS);
+
+        } catch (java.io.IOException | java.lang.ClassNotFoundException e) {
+            Utils.showError("Failed to initialize database from files", this.getClass());
+        }
     }
 
     /**
@@ -148,37 +196,73 @@ public class Peer implements RMI.RMIInterface {
         }
     }
 
+    /**
+     * Getter for the used back up channel
+     *
+     * @return the back up channel
+     */
     public BackupChannel getBackupChannel() {
         return backupChannel;
     }
 
+    /**
+     * Getter for the used control channel
+     *
+     * @return the control channel
+     */
     public ControlChannel getControlChannel() {
         return controlChannel;
     }
 
+    /**
+     * Getter for the used restore channel
+     *
+     * @return the restore channel
+     */
     public RestoreChannel getRestoreChannel() {
         return restoreChannel;
     }
 
+    /**
+     * Getter for this peer identifier
+     *
+     * @return the peer identifier
+     */
     public int getPeerID() {
         return peerID;
     }
 
+    /**
+     * Getter for the protocol version being used in this peer
+     *
+     * @return the protcol version in format 'X.Y'
+     */
     public float getProtocolVersion() {
         return protocolVersion;
     }
 
+    /**
+     * Getter for the main thread pool being used in the application launched by this Peer
+     *
+     * @return the thread pool used
+     */
     public ThreadPool getThreadPool() {
         return threadPool;
     }
 
+    /**
+     * Getter for information regarding the files backed up having this peer as initiator peer
+     *
+     * @return The information mentioned above
+     */
     public BackedUpFiles getBackedUpFiles() {
         return backedUpFiles;
     }
 
-    /* INTERFACE FUNCTIONS */
-    // TODO - below functions
 
+    /* INTERFACE FUNCTIONS */
+
+    @Override
     public void backupAction(ArrayList<String> args) {
         if (args.size() < 2)
             Utils.showError("Not enough arguments given for backup action", this.getClass());
@@ -188,6 +272,7 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(new TriggerBackupAction(this, protocolVersion, peerID, args.get(0), args.get(1)));
     }
 
+    @Override
     public void restoreAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for restore action", this.getClass());
@@ -205,6 +290,7 @@ public class Peer implements RMI.RMIInterface {
         }
     }
 
+    @Override
     public void deleteAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for delete action", this.getClass());
@@ -214,6 +300,7 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(new TriggerDeleteAction(controlChannel, protocolVersion, peerID, args.get(0)));
     }
 
+    @Override
     public void reclaimAction(ArrayList<String> args) {
         if (args.isEmpty())
             Utils.showError("Not enough arguments given for reclaim disk space action", this.getClass());
@@ -223,6 +310,7 @@ public class Peer implements RMI.RMIInterface {
         threadPool.executeThread(new TriggerReclaimAction(controlChannel, chunksRecord, protocolVersion, peerID, args.get(0)));
     }
 
+    @Override
     public String stateAction(ArrayList<String> args) {
         if (args.size() > 0)
             Utils.showWarning("Too many arguments given for state action", this.getClass());
@@ -230,6 +318,6 @@ public class Peer implements RMI.RMIInterface {
         TriggerStateAction info =  new TriggerStateAction(chunksRecord, backedUpFiles);
         threadPool.executeThread(info);
 
-        return "aedaedadeeaade";
+        return info.getResult();
     }
 }
