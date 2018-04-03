@@ -298,7 +298,7 @@ public class Peer implements RMI.RMIInterface {
         if (args.size() > 1)
             Utils.showWarning("Too many arguments given for delete action", this.getClass());
 
-        threadPool.executeThread(new TriggerDeleteAction(controlChannel, protocolVersion, peerID, args.get(0)));
+        threadPool.executeThread(new TriggerDeleteAction(controlChannel, backedUpFiles, protocolVersion, peerID, args.get(0)));
     }
 
     @Override

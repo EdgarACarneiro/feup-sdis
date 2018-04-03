@@ -186,6 +186,15 @@ public class BackedUpFiles implements Serializable {
         return true;
     }
 
+    /**
+     * Remove the given file from the database
+     *
+     * @param fileID The file identifier
+     */
+    public void removeFile(String fileID) {
+        filesInfo.remove(fileID);
+    }
+
     @Override
     public String toString() {
         return "BackedUpFiles{" +

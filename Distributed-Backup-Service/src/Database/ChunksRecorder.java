@@ -117,6 +117,7 @@ public class ChunksRecorder implements Serializable {
             ConcurrentHashMap<Integer, ChunkInfo> newEntry = new ConcurrentHashMap<>();
             newEntry.put(chunkNum, chunk);
             chunksRecord.put(fileID, newEntry);
+            filesDesiredRD.put(fileID, desiredRD);
         }
         else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);
