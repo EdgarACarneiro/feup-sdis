@@ -126,7 +126,7 @@ public abstract class MulticastChannel implements Runnable{
                     msg.length, inetAddr, port);
             socket.send(msgPacket);
 
-            System.out.println("Sent packet with msg: " + new String(msg, 0, 8));
+            Utils.log("Sent packet with msg: " + new String(msg, 0, 8));
 
         } catch (IOException  ex) {
             Utils.showError("Failed to send message through multicast channel", this.getClass());

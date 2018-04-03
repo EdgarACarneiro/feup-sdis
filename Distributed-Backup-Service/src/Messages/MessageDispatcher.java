@@ -98,7 +98,7 @@ public class MessageDispatcher implements Runnable {
         String header = new String(byteHeader, 0, byteHeader.length);
         byte[] chunk = Arrays.copyOfRange(readMsg, byteHeader.length, msgLength);
 
-        System.out.println(findType(header)); // TODO - Delete
+        Utils.log(findType(header)); // TODO - Delete
 
         try {
             switch (findType(header)) {

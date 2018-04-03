@@ -80,7 +80,7 @@ public class ChunksRecorder implements Serializable {
             newEntry.put(chunkNum, chunk);
             chunksRecord.put(fileID, newEntry);
 
-            filesDesiredRD.put(fileID, desiredRD);
+            Utils.log(fileID, desiredRD);
         }
         else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);

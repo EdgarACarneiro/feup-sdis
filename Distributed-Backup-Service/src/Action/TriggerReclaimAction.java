@@ -81,18 +81,18 @@ public class TriggerReclaimAction extends Action {
     @Override
     public void run() {
         record.updateMaxSpace(maxKBytes);
-        System.out.println("Reclaim redefined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + record.getUsedDiskSpace() + " KBytes.");
+        Utils.log("Reclaim redefined max disk usage to " + this.maxKBytes + " KBytes and occupied space was " + record.getUsedDiskSpace() + " KBytes.");
 
         if (record.getUsedDiskSpace() > this.maxKBytes) {
             shrinkSize = record.getUsedDiskSpace() - this.maxKBytes;
-            System.out.println("Storage space will be shrunk down by at least " + shrinkSize);
+            Utils.log("Storage space will be shrunk down by at least " + shrinkSize);
 
             File[] files = FileManager.getPeerBackups(senderID);
 
             for (File file : files) {
                 if (file.isDirectory() && shrinkSize > 0) {
                     Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
-                    System.out.println("DELETING CHUNKS FROM " + file.getName() + "...");
+                    Utils.log("DELETING CHUNKS FROM " + file.getName() + "...");
 
                     File fileChunks = new File(file.getParentFile(), file.getName());
                     File[] chunkList = fileChunks.listFiles();
@@ -103,7 +103,7 @@ public class TriggerReclaimAction extends Action {
                                 return;
 
                             Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
-                            System.out.println("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
+                            Utils.log("DELETED CHUNK " + chunk.getName() + " FROM " + file.getName());
 
                             shrinkSize -= record.getChunkSize(file.getName(), Integer.parseInt(chunk.getName()) );
                             record.removeChunk(file.getName(), Integer.parseInt(chunk.getName()));
@@ -115,7 +115,7 @@ public class TriggerReclaimAction extends Action {
                 }
             }
         } else {
-            System.out.println("There was no need to shrink down disk usage!");
+            Utils.log("There was no need to shrink down disk usage!");
         }
     }
 

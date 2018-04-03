@@ -63,7 +63,6 @@ public class DeleteAfterCheckAction extends Action {
 
     @Override
     public void run() {
-        System.out.println(fileID);
         if (peerStoredChunks.wasDeleted(fileID))
             sendDelete();
     }

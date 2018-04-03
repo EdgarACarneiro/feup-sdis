@@ -26,7 +26,7 @@ public class SetTCPIP extends Message implements msgGenerator {
 
     public SetTCPIP(String header) {
         super(REGEX_STRING);
-        System.out.println(header);
+        Utils.log(header);
         Matcher protocolMatch = msgRegex.matcher(header);
 
         if (!protocolMatch.matches()) {
@@ -39,7 +39,7 @@ public class SetTCPIP extends Message implements msgGenerator {
         fileID = protocolMatch.group(FIELD_ID_GROUP);
         ipAddress = protocolMatch.group(5) + "." + protocolMatch.group(6) + "." +protocolMatch.group(7) + "." +protocolMatch.group(8);
         port = Integer.parseInt(protocolMatch.group(9));
-        System.out.println(ipAddress + "\n" + port);
+        Utils.log(ipAddress + "\n" + port);
     }
 
     public SetTCPIP(float protocolVersion, int senderID, String fileID, String ipAddress, int port) {

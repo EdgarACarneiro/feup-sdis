@@ -60,7 +60,7 @@ public class CheckDeleteAction extends Action {
             Utils.showError("Failed to get Peer backup files", this.getClass());
 
         for (File backupFile : backupFiles) {
-            System.out.println("NEW CHILD: " + backupFile.getName());
+            Utils.log("NEW CHILD: " + backupFile.getName());
             checkDelete(backupFile.getName());
         }
     }
