@@ -96,7 +96,7 @@ public class RemovedAction extends ActionHasReply {
             hasChunkStored = record.decChunkRecord(fileID, chunkNum, receivedPeerID);
 
         if (hasChunkStored) {
-            System.out.println("Hmm, you deleted a file from something I have...\n" +
+            Utils.log("Hmm, you deleted a file from something I have...\n" +
                                 "It was file:" + fileID + ", chunk: " + chunkNum);
 
             if (! record.isRDBalanced(fileID, chunkNum)) {

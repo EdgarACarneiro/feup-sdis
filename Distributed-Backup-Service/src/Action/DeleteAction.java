@@ -52,17 +52,15 @@ public class DeleteAction extends Action {
             Utils.showError("Failed to get Peer backup files", this.getClass());
 
         for (File backupFile : backupFiles) {
-            System.out.println("NEW CHILD: " + backupFile.getName());
 
             if (backupFile.isDirectory() && backupFile.getName().equals(fileID)) {
-                System.out.println("DELETING " + backupFile.getName() + "...");
 
                 if (Utils.deleteFolder(backupFile)) {
-                    System.out.println("SUCCESSFULLY DELETED " + backupFile.getName() + "!");
+                    Utils.log("SUCCESSFULLY DELETED " + backupFile.getName() + "!");
                     peerStoredChunks.removeFile(fileID);
                 }
                 else
-                    System.out.println("FAILED");
+                    Utils.log("FAILED TO DELETE "+ backupFile.getName() + "!");
             }
         }
     }

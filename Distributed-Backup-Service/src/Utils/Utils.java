@@ -48,6 +48,7 @@ public final class Utils {
      * @param toLog Message to be saved
      */
     public synchronized static void log(String toLog) {
+        System.out.println(toLog);
 		FileOutputStream logStream;
 		try {
 			logStream = new FileOutputStream(logFile, true);
