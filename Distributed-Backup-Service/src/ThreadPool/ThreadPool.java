@@ -15,7 +15,7 @@ public class ThreadPool {
     /**
      * The number of threads in the pool
      */
-    private static final int THREAD_POOL_SIZE = 10;
+    private static final int THREAD_POOL_SIZE = 30;
 
     /**
      * Executor for executing the threads

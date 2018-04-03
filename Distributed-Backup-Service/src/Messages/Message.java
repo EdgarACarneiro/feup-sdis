@@ -4,6 +4,9 @@ import Utils.Utils;
 
 import java.util.regex.Pattern;
 
+/**
+ * A generic message
+ */
 public class Message {
 
     /**
@@ -61,11 +64,22 @@ public class Message {
      */
     protected String fileID;
 
-
+    /**
+     * Message constrcutor
+     *
+     * @param Regex The regex to be used to parse the message
+     */
     protected Message(String Regex) {
         msgRegex = Pattern.compile(Regex, Pattern.UNIX_LINES);
     }
 
+    /**
+     * Message constructor
+     *
+     * @param protocolVersion The protocol version the message will use
+     * @param senderID The peer that is going to sen this message
+     * @param fileID The file identifier associated
+     */
     protected Message (float protocolVersion, int senderID, String fileID) {
         this.protocolVersion = protocolVersion;
         this.senderID = senderID;
@@ -77,14 +91,29 @@ public class Message {
         this.fileID = fileID;
     }
 
+    /**
+     * Getter for the protocol version used in the message
+     *
+     * @return The protocol version used
+     */
     public float getProtocolVersion() {
         return protocolVersion;
     }
 
+    /**
+     * Getter for the identifier of the sender peer
+     *
+     * @return The peer identifier
+     */
     public int getSenderID() {
         return senderID;
     }
 
+    /**
+     * Getter for the file identifier associated to the message
+     *
+     * @return the file identifier
+     */
     public String getFileID() {
         return fileID;
     }

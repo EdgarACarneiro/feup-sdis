@@ -6,6 +6,9 @@ import java.util.regex.Matcher;
 
 import static Utils.Utils.byteArrayConcat;
 
+/**
+ * Class representing a Putchunk Message
+ */
 public class PutchunkMsg extends Message implements msgGenerator {
 
     /**
@@ -29,6 +32,12 @@ public class PutchunkMsg extends Message implements msgGenerator {
      */
     private int repDegree;
 
+    /**
+     * Putchunk message constructor
+     *
+     * @param header The message header
+     * @param chunk The message chunk, in bytes
+     */
     public PutchunkMsg(String header, byte[] chunk) {
         super(REGEX_STRING);
         Matcher protocolMatch = msgRegex.matcher(header);
@@ -46,6 +55,16 @@ public class PutchunkMsg extends Message implements msgGenerator {
         this.chunk = chunk;
     }
 
+    /**
+     * Putchunk Message constructor
+     *
+     * @param protocolVersion The communication protocol version
+     * @param senderID The peer identifier that will send this message
+     * @param fileID The file identifier
+     * @param chunkNum The number of the chunk to be sent
+     * @param repDegree The replication degree
+     * @param chunk The chunk bytes
+     */
     public PutchunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, int repDegree, byte[] chunk) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
@@ -66,14 +85,29 @@ public class PutchunkMsg extends Message implements msgGenerator {
          return byteArrayConcat(header, chunk);
     }
 
+    /**
+     * Getter for the Chunk number
+     *
+     * @return the chunk number
+     */
     public int getChunkNum() {
         return chunkNum;
     }
 
+    /**
+     * Getter for the replication degree
+     *
+     * @return the replication degree
+     */
     public int getRepDegree() {
         return repDegree;
     }
 
+    /**
+     * Getter for the chunk bytes
+     *
+     * @return Array containing the chunk bytes
+     */
     public byte[] getChunk() {
         return chunk;
     }

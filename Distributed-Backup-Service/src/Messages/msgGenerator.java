@@ -1,5 +1,8 @@
 package Messages;
 
+/**
+ * Interface that forces message to generate a string from fields
+ */
 public interface msgGenerator {
 
     /**
@@ -7,5 +10,5 @@ public interface msgGenerator {
      *
      * @return The byte array containing the message
      */
-    public byte[] genMsg();
+    byte[] genMsg();
 }

@@ -120,24 +120,6 @@ public class TriggerReclaimAction extends Action {
     }
 
     /**
-     * Get Current Usage
-     */
-    private long getCurrentUsage() {
-        File dir = new File(System.getProperty("user.dir"));
-        File[] directoryListing = dir.listFiles();
-
-        if (directoryListing != null) {
-            for (File child : directoryListing) {
-                if (child.getName().equals(FileManager.BASE_DIRECTORY_NAME + senderID)){
-                    File newDir = new File(dir, child.getName());
-                    return Utils.findSize(newDir);
-                }
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Get Free Space
      */
     private long getFreeSpace() {

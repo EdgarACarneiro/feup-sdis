@@ -6,6 +6,9 @@ import java.util.regex.Matcher;
 
 import static Utils.Utils.byteArrayConcat;
 
+/**
+ * Class representing a chunk message
+ */
 public class ChunkMsg extends Message implements msgGenerator {
 
     /**
@@ -24,7 +27,12 @@ public class ChunkMsg extends Message implements msgGenerator {
      */
     private byte[] chunk;
 
-
+    /**
+     * The chunk message constructor
+     *
+     * @param header The header of the message
+     * @param chunk The chunk associated to the message, in bytes
+     */
     public ChunkMsg(String header, byte[] chunk) {
         super(REGEX_STRING);
         Matcher protocolMatch = msgRegex.matcher(header);
@@ -41,6 +49,15 @@ public class ChunkMsg extends Message implements msgGenerator {
         this.chunk = chunk;
     }
 
+    /**
+     * Chunk message constructor
+     *
+     * @param protocolVersion The communication protocol version
+     * @param senderID The peer identifier that will send this message
+     * @param fileID The file identifier
+     * @param chunkNum The number of the chunk to be sent
+     * @param chunk The chunk to associate to the chunk message
+     */
     public ChunkMsg(float protocolVersion, int senderID, String fileID, int chunkNum, byte[] chunk) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
@@ -59,10 +76,20 @@ public class ChunkMsg extends Message implements msgGenerator {
         return byteArrayConcat(header, chunk);
     }
 
+    /**
+     * Getter for the chunk number
+     *
+     * @return the chunk number
+     */
     public int getChunkNum() {
         return chunkNum;
     }
 
+    /**
+     * Getter for the chunk associated to the message
+     *
+     * @return the chunk
+     */
     public byte[] getChunk() {
         return chunk;
     }

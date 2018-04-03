@@ -13,12 +13,26 @@ import java.util.Date;
  */
 public final class Utils {
 
+    /**
+     * The log file to be used by log messages
+     */
     private static File logFile = new File("logFile.txt");
 
+    /**
+     * For displaying text with the normal color on the screen
+     */
 	public static final String ANSI_RESET = "\u001B[0m";
+    /**
+     * For displaying text with red color on the screen
+     */
     public static final String ANSI_RED = "\u001B[31m";
+    /**
+     * For displaying text with green color on the screen
+     */
     public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_CYAN = "\u001B[36m";
+    /**
+     * For displaying text with yellow color on the screen
+     */
     public static final String ANSI_YELLOW = "\u001B[33m";
 
 
@@ -40,6 +54,15 @@ public final class Utils {
      */
     public static void showWarning(String warningMsg, Object callingClass) {
         System.out.println(ANSI_YELLOW + callingClass.toString() + " warning: " + ANSI_RESET + warningMsg);
+    }
+
+    /**
+     * Method responsible for showing success messages
+     *
+     * @param successMsg The success message to be displayed
+     */
+    public static void showSuccess(String successMsg) {
+        System.out.println(ANSI_GREEN + "Success Message: " + ANSI_RESET + successMsg);
     }
 
     /**
@@ -94,38 +117,5 @@ public final class Utils {
             }
         }
         return folder.delete();
-    }
-
-    /**
-	 * Get directory size
-	 *
-	 * @return Boolean with success or not 
-	 */
-    public static long findSize(File file) { 
-        long totalSize = 0;
-        ArrayList<String> directory = new ArrayList<String>();
-        
-        if(file.isDirectory()) { 
-           directory.add(file.getAbsolutePath());
-           while (directory.size() > 0) {
-              String folderPath = directory.get(0);
-              directory.remove(0);
-              File folder = new File(folderPath);
-              File[] filesInFolder = folder.listFiles();
-              int noOfFiles = filesInFolder.length;
-              
-              for(int i = 0 ; i < noOfFiles ; i++) { 
-                 File f = filesInFolder[i];
-                 if(f.isDirectory()) { 
-                    directory.add(f.getAbsolutePath());
-                 } else { 
-                    totalSize+=f.length();
-                 } 
-              } 
-           } 
-        } else { 
-           totalSize = file.length();
-        } 
-        return totalSize/1000;
     }
 }

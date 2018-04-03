@@ -1,7 +1,5 @@
 package Database;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,8 +77,6 @@ public class ChunksRecorder implements Serializable {
             ConcurrentHashMap<Integer, ChunkInfo> newEntry = new ConcurrentHashMap<>();
             newEntry.put(chunkNum, chunk);
             chunksRecord.put(fileID, newEntry);
-
-            Utils.log(fileID, desiredRD);
         }
         else if (! record.containsKey(chunkNum)) {
             record.put(chunkNum, chunk);

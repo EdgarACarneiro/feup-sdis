@@ -4,13 +4,22 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
+/**
+ * Class representing the mos common type of messages sent / received
+ */
 public class CommonMsg extends Message {
 
     /**
-     * The chunk number
+     * The number of the chunk in the message
      */
     protected int chunkNum;
 
+    /**
+     * Common message constructor
+     *
+     * @param receivedMsg The message received
+     * @param regex The regex to be used to parse the message
+     */
     protected CommonMsg(String receivedMsg, String regex) {
         super(regex);
         Matcher protocolMatch = msgRegex.matcher(receivedMsg);
@@ -26,11 +35,24 @@ public class CommonMsg extends Message {
         chunkNum = Integer.parseInt(protocolMatch.group(CHUNK_NUM_GROUP));
     }
 
+    /**
+     * Common Message constructor
+     *
+     * @param protocolVersion The communication protocol version
+     * @param senderID The peer identifier that will send this message
+     * @param fileID The file identifier
+     * @param chunkNum The number of the chunk to be sent
+     */
     protected CommonMsg(float protocolVersion, int senderID, String fileID, int chunkNum) {
         super(protocolVersion, senderID, fileID);
         this.chunkNum = chunkNum;
     }
 
+    /**
+     * Getter for the number of the chunk associated to the message
+     *
+     * @return The chunk's number
+     */
     public int getChunkNum() {
         return chunkNum;
     }

@@ -4,6 +4,9 @@ import Utils.Utils;
 
 import java.util.regex.Matcher;
 
+/**
+ * Class representing a check delete message
+ */
 public class CheckDeleteMsg extends Message implements msgGenerator {
 
     /**
@@ -12,6 +15,11 @@ public class CheckDeleteMsg extends Message implements msgGenerator {
     private final static String REGEX_STRING =
             "\\s*?CHECKDELETE\\s+?(\\d\\.\\d)\\s+?(\\d+?)\\s+(([a-f0-9]){64})\\s+?\\r\\n\\r\\n";
 
+    /**
+     * Check Delete message constructor
+     *
+     * @param receivedMsg The received message
+     */
     public CheckDeleteMsg(String receivedMsg) {
         super(REGEX_STRING);
         Matcher protocolMatch = msgRegex.matcher(receivedMsg);
@@ -26,6 +34,13 @@ public class CheckDeleteMsg extends Message implements msgGenerator {
         fileID = protocolMatch.group(FIELD_ID_GROUP);
     }
 
+    /**
+     * Check delete message constructor
+     *
+     * @param protocolVersion The communication protocol version
+     * @param senderID The peer identifier that will send this message
+     * @param fileID The file identifier
+     */
     public CheckDeleteMsg(float protocolVersion, int senderID, String fileID) {
         super(protocolVersion, senderID, fileID);
     }
