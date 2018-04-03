@@ -48,7 +48,7 @@ public class RemovedAction extends ActionHasReply {
     private int receivedPeerID;
 
     /**
-     *
+     * Data Structure to get update after eliminating chunks, referent to the Peer stored files' chunks
      */
     private ChunksRecorder record;
 
