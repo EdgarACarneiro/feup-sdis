@@ -1,5 +1,7 @@
 # PRIMEIRO PROJECTO SDIS - 'Distributed Backup Service'
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/EdgarACarneiro/feup-sdis-first-project?branch=master&token=73af2f9e4040616bd03783488961507e9db45aa7)](https://bettercodehub.com/)
+
 Serviço de Backup distribuido num LAN com ambiente cooperativo, usando o espaço livre do disco. 
 
 ## [GUIÃO](https://web.fe.up.pt/~pfs/aulas/sd2018/projs/proj1/proj1.html)
