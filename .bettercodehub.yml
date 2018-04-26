@@ -3,3 +3,5 @@ languages:
 - java
 exclude:
 - /Client-ServerUDP/.*
+- /Distributed-Backup-Service/src/Action/SetTCPClientV2.java
+- /Distributed-Backup-Service/src/Action/SetTCPServerV2.java
