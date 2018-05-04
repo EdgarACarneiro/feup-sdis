@@ -12,4 +12,4 @@ __Spotlight__: the project code got a 6/10 evaluation on bettecodehub (no automa
 
 ## Authors
 * Edgar Carneiro – [@EdgarACarneiro](https://github.com/EdgarACarneiro)
-* Afonso Ramos – [@AJRamos308](https://github.com/afonsojramos)
+* Afonso Ramos – [@afonsojramos](https://github.com/afonsojramos)
