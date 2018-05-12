@@ -26,7 +26,7 @@ $ rmiregistry &
 
 To start a peer, use the following command as an example:
 ```
-$ java Main/Peer 2.0 2 teste2 224.0.3:8888 224.0.0.4:8888 224.0.0.5:8888
+$ java Main/Peer 1.0 2 teste2 224.0.3:8888 224.0.0.4:8888 224.0.0.5:8888
 ```
 
 To start the TestApp, use the following command as an example:
